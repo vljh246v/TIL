@@ -213,4 +213,187 @@ Map<String, List<String>> map;
 
 # **3. JVM 에서 제네릭 처리**
 - 제네릭은 컴파일시에만 유효하다. 바이트 코드 변환시 Object형을 변환된다.
-- 
+  ```java
+  // 기본 코드
+  public class GenericErasureExample1 {
+
+    public static void main(String[] args) {
+      List<String> myList = new ArrayList<>();
+      myList.add("Hello");
+      myList.add("World");
+
+      String hello = myList.get(0);
+      String world = myList.get(1);
+
+      System.out.println(hello + " " + world);
+    }
+  }
+
+  // 디컴파일 코드(인텔리 j 버전)
+  public class GenericErasureExample1 {
+    public GenericErasureExample1() {
+    }
+
+    public static void main(String[] args) {
+      List<String> myList = new ArrayList();
+      myList.add("Hello");
+      myList.add("World");
+      String hello = (String)myList.get(0);
+      String world = (String)myList.get(1);
+      System.out.println(hello + " " + world);
+    }
+  }
+
+  // 디컴파일 코드
+  public class GenericErasureExample1 {
+    public GenericErasureExample1() {
+    }
+
+    public static void main(String[] args) {
+      List myList = new ArrayList();
+      myList.add("Hello");
+      myList.add("World");
+      String hello = (String)myList.get(0);
+      String world = (String)myList.get(1);
+      System.out.println(hello + " " + world);
+    }
+  }
+
+  // 바이트 코드
+  // access flags 0x9
+  public static main([Ljava/lang/String;)V
+    // parameter  args
+   L0
+    LINENUMBER 9 L0
+    NEW java/util/ArrayList // 타입 정보 없음
+    DUP
+    INVOKESPECIAL java/util/ArrayList.<init> ()V
+    ASTORE 1
+   L1
+   ...
+  ```
+
+- 디컴파일 코드를 보면 제네릭 타입 선언등의 내용이 삭제되고 변환된 것을 볼 수 있다. 이를 제네릭 삭제 라고 한다.
+- 제네릭의 적용으로 기존 코드에 문제가 생기지 않도록 하기 위해서 컴파일 후에느 넺네릭 관련 코드가 삭제 되도록 했다.
+- 타입 파라미터는 컴파일러에 의해 해석되는 부분이고 자바 가상머신에서는 해석이 되지 않기 때문이다.
+- 제네릭은 런타임에 체크하는 것이 아니라 컴파일 시에 정합성을 체크하게 된다.
+- 제네릭 관련 원칙
+  - 컴파일 시에 해석되고 바이트 코드로 변환될 때에는 제거된다.
+  - 클래스 선언 시 사용된 제네릭 타입은 제거되며 메서드에서 리턴 받을 때는 컴파일러에 의해 형 변환된 코드가 자동 추가 된다.
+
+# **4. 와일드카드와 타입 제한**
+- 제네릭에서는 '?' 를 와일드 카드로 사용할 수 있다.
+  ```java
+  void printCollection(Collection<Object> c){
+    for(Object e : c){
+      System.out.println(e);
+    }
+  }
+  ```
+- 실제 위 코드에서 파라미터를 Collection<Object> 로 설정을 해두었기 때문에 반드시 Collection<Object> 생성된 객체만 받을 수 있다.
+- 제네릭의 타입 파라미터의 목적은 사용할 클래스의 타입을 명확하 하기 위함이기 때문에 Collection<Object> 외에 다른 타입은 다른 것으로 판단한다.
+- 이러한 경우 와일드카드를 사용하면 타입 파라미터에 어떤 클래스가지정되어도 다 허용하겠다는 뜻이다.
+- 타입 파라미터미터는 어떤 타입을 지정하더라도 다 수용할 수 있지만 실제 클래스 생성 시에는 특정 클래스를 지정해야 한다.
+- 반면 와일드카드로 지정되 메서드는 실행 시에 타입 파라미터에 지정된 클래스와는 무관하게 사용된다.
+- 반면 클래스를 설계할 때 제네릭 타입으로 특정 클래스 혹은 인터페이스와 상속 관계에 있도록 제한하고 싶을 때가 있다. 이러한 것을 바운드 타입 파라미터라고 한다.
+  
+## **4.1. extends 를 이용한 제한**
+
+- 아래 처럼 엔티티 클래스의 상속 관계를 설계 했다고 하자.
+
+![자동차 상속 관계](https://lh3.googleusercontent.com/pw/ACtC-3fJM-RcDmG-IeQJFVTumorCPIRtYUmzaf9gMVXH2h_zpCSX34A1ylNW6slZt571tp0KruoWRBKFXVhpnYZsqnLCS9O4C2BEFnF-CwUq-LnJtDNSaWVqREyWUNDwMQmvTp1TRC6omcYAgsd2jCy26w8YXQ=w968-h540-no?authuser=0)
+
+- 자동차 클래스와 상속 관계에 있는 클래스만으로 제네릭 타입을 제안하고 싶을경우 타입 파라미터에 상속 관계를 정의할 수 있다.
+  ```java
+  public class GenericBoundExample <T extends Vehicle> {
+    private T vehicleType;
+
+    public void setVehicleType(T vehicleType) {
+      this.vehicleType = vehicleType;
+    }
+
+    public T getVehicleType() {
+      return vehicleType;
+    }
+
+    public static void main(String[] args) {
+      GenericBoundExample<Sedan> sedan = new GenericBoundExample<>();
+      GenericBoundExample<Truck> truck = new GenericBoundExample<>();
+      GenericBoundExample<String> error = new GenericBoundExample<>(); // 컴파일 에러
+    }
+  }
+  ```
+
+- extends 키워드를 통해 반드시 특정 클래스를 상속 혹은 구현한 클래스만을 지정할 수 있다.
+- 제네릭 타입으로는 클래스뿐만 아니라 인터페이스도 사용할 수 있다.
+- 제네릭 메서드 에서도 extends 키워드를 통해 타입을 제한할 수 있다.
+- 타입을 제한할 때는 타입을 하나 이상 지정할 수도 있다. <T extends A & B & C>
+- 또한 클래스를 가장 앞에 두어야 한다. <T extends Class1 & interface1 & interface2>
+
+## **4.2. super 를 이용한 제한**
+- 반대로 super 키워드를 이용한 타입 제한은 지정한 클래스나 인터페이스의 상위 클래스 혹인 인터페이스를 허용하겠다는 뜻
+- extends 와 달리 여러 타입을 AND 조건으로 지정할 수 없다.
+
+
+## **4.3 extends ? super ?**
+- 언제 extends를 써야하고 super를 써야할까?
+- 제네릭 메서드에서 입력 파라미터의 경ㅇ extends 와일드 카드를 이용하는 것이 좋다.
+- 제네릭 메서드에서 출력 파라미터의 경우 super 와일드 카드를 이용하는것이 좋다.
+- 입력은 데이터를 생성하는 주체 - extends
+- 출력은 데이터를 소비하는 주체 - super
+
+# **5. 제네릭 제약 조건**
+
+**제네릭의 타입은 자바의 기본형을 사용할 수 없다.**
+- 필요한 경우 기본형에 대응하는 래퍼 클래스를 사용해야 함(int -> Integer)
+  
+**제네릭 코딩은 컴파일 시에만 사용된다.**
+- 바이트 코드로 변환하면 관련 코딩이 재거된다.
+
+**제네릭 타입으로 정의한 배열은 생성할 수 없다.**
+- 변수 선언은 가능, 생성은 불가능
+  
+**제네릭의타입 변수는 정적 필드 혹은 메서드에서 사용할 수 없다.**
+  ```java
+  public class Generic3<T> {
+    private static T t;
+
+    public static T method(){
+      return t;
+    }
+  }
+  ```
+- static 키워드특징상 클래스가 로딩되면서 생성되고, 싱글턴 형태로 메모리에 남아 사용되는데, 이때 제네릭 타입으로 특정 지을수 없다.
+
+**제네릭 타입 변수로 객체를 생성할 수 없다.**
+  ```java
+  public class Generic3<T> {
+    public void method2(){
+      T t = new T();
+    }
+  }
+  ```
+
+**제네릭 클래스를 catch 하거나 throw할 수 없다.**
+  ```java
+  public class Generic3<T> {
+    public void method3(){
+      try {
+
+      }catch (T e){
+        throw new T();
+      }
+    }
+  }
+  ```
+
+
+# **6. 다이아몬드 연산자**
+  ```java
+  // java 7 이전
+  Map<String, List<String>> myMap = new HashMap<String, List<String>>();
+
+  // 이후
+  Map<String, List<String>> myMap = new HashMap<>();
+  ```
+- 객체 선언부에 <> 를 ㄱ술하면 변수 선언 시에 사용된 제네릭 타입이 그대로 적용 된다.
