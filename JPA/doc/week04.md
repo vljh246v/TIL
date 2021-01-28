@@ -279,3 +279,190 @@
 > 3. JPA는 모든 엔티티에 일관된 방식으로 대리키 사용을 권장한다.
 
 ## **4.7 필드와 컬럼 매핑: 레퍼런스**
+- 필드와 컬럼 매핑 분류
+  
+  ![필드와 컬럼 매핑 분류](https://lh3.googleusercontent.com/pw/ACtC-3dxhFfiOZAMlGQUgCDr-N8Xjj9bhW1k_06o5kQihb6Cr30BvzVeAn9cbLfXVKCMcB7Fn2CADmOLeS_GAAIs0JTinqCRY8n6yu0HEqMilP0F-wPIhN2FOLcJOUt_EDNqOHK_tPsIMiKASj3FAZYvvnQveg=w560-h234-no?authuser=0)
+
+
+### **4.7.1 @Column**
+- @Column은 객체 필드를 테이블 컬럼에 매핑한다.
+- name, nullable이 주로 사용
+- insertable, updateable 속성은 정보를 읽기만 하고 실수로 변경하는 것을 방지하고 싶을 때 사용
+  
+  ![@Column 속성 정리](https://lh3.googleusercontent.com/pw/ACtC-3dTFygHCyeuoKvMJ-E0Amg7HOPtMg3Bd9nH2-tu5-CrqD8hE5vY3l3wHJXafo4VwViZMJ1PVLQQXX-qGc64XEToVsH2EWaCd5RgPYCRHGYYNUZgDwV4A_cc8wf0fS-nlTYMWqT0NcZIrdFz0Atv1hOvkQ=w682-h507-no?authuser=0)
+
+
+**DDL 생성 속성에 따른 생성 DDL**
+- **nullable (DDL 생성 기능)**
+
+  ```java
+  @Column(nullable = false)
+  private String data;
+
+  // 생성된 DDL
+  data varchar (255) not null
+  ```
+ 
+- **unique (DDL 생성 기능)**
+
+  ```java
+  @Column(unique = true)
+  private String username;
+
+  // 생성된 DDL
+  alter table Tablename
+    add constraint UK_Xxx unique (username)
+  ```
+
+- **columnDefinition (DDL 생성 기능)**
+
+  ```java
+  @Column(columnDefinition = "varchar(100) default 'EMPTY'")
+  private String DATA;
+
+  // 생성된 DDL
+  data varchar(100) default 'EMPTY'
+  ```
+
+- **length (DDL 생성 기능)**
+
+  ```java
+  @Column(length = 400)
+  private String DATA;
+
+  // 생성된 DDL
+  data varchar(400)
+  ```
+
+- **precision, scale (DDL 생성 기능)**
+
+  ```java
+  @Column(precision = 10, scale = 2)
+  private BigDecimal cal;
+
+  // 생성된 DDL
+  cal numberic (10, 2) // H2, PostgreSQL
+  cal number (10, 2) // 오라클
+  cal decimal (10, 2) // MySQL
+  ```
+
+### **4.7.2 @Enumerated**
+- 자바의 enum 타입을 매핑할 때 사용한다.
+
+
+  ![@Enumerated 속성 정리](https://lh3.googleusercontent.com/pw/ACtC-3e7c0yBmAjGq7YwuoPELwgJ3SgDb6IA8fKtV_wc9rmCLI9G8dRLc2naoz4G8Y2XAVxrMXbpUIjUgGZGhrYU5LKut8WRL7FwrmGIlVFuEKkNmzVWFyQGU2mIO7c4TZUpWt_2MtUxZZXzAmXHwB2VMYNpGA=w676-h142-no?authuser=0)
+
+- @Enumerated 사용 예
+  - enum 클래스는 다음과 같다.
+
+    ```java
+    enum RoleType {
+      ADMIN, USER
+    }
+    ```
+
+  - 다음은 enum 이름으로 매핑한다. 
+  
+    ```java
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType;
+
+    // ...
+
+    member.setRoleType(RoleType.ADMIN); // DB에 문자 ADMIN 으로 저장됨
+    ```
+
+- EnumType.ORDINAL은 enum  에 정의된 순서대로 ADMIN 은 0, USER 는 1 값이 데이터베이스에 저장된다.
+  - 장점 : 저장되는 데이터 크기가 작아진다.
+  - 단저 : 이미 저장이 되었다면 enum 의 순서를 변경하면 안된다.
+  
+- EnumType.STRING (권장)
+  - 장점 :  저장된 enum 의 순서가 바뀌거나 enum이 추가되어도 안전하다.
+  - 단점 : 저장되는 데이터 크기가 크다.
+
+
+### **4.7.3 @Temporal**
+- 날짜 타임을 매핑할 때 사용한다.
+- 하지만 java.util.Date, java.util.Calendar 을 크게 사용할것 같지는 않아 time 패키지 [참고 링크](https://www.baeldung.com/jpa-java-time) 첨부
+
+### **4.7.4 @Lob**
+- 데이터베이스 BLOB, CLOB 타입과 매핑한다.
+
+**속성 정리**
+- @Lob 에는 지정할 수 있는 속성이 없다.
+- 매핑하는 필드 타입에 따라 CLOB(문자) / BLOB(그외) 로 나누어서 매핑한다.
+  - CLOB : String, char[], java.sql.CLOB
+  - BLOB : byte[], java.sql.BLOB
+
+### **4.7.5 @Transient**
+- 이 필드는 매핑하지 않고, 임시로 객체에 어떤 값을 보관하고 싶을 때 사용한다.
+  
+  ```java
+  @Transient
+  private Integer temp;
+  ```
+
+### **@Access**
+- 필드 접근 : AccessType.FIELD로 지정한다. 필드에 직접 접근한다. 필드 접근 권한이 private 이어도 접근할 수 있다.
+- 프로퍼티 저근 : AccessType.PROPERTY로 지정한다. 접근자(getter)를 사용한다.
+- @Access를 설정하지 않으면 @Id 의 위치를 기준으로 접근 방식이 설정된다.
+
+  ```java
+  @Entity
+  @Access(AccessType.FIELD)
+  public class Member {
+    @Id
+    private String id;
+
+    // @Id가 필드에 있으므로 @Access(AccessType.FIELD)로 설정한 것과 같다.
+    // 따라서 @Access 생략 가능
+  }
+  ```
+
+  ```java
+  @Entity
+  @Access(AccessType.PROPERTY)
+  public class Member {
+
+    private String id;
+
+    private String data1;
+
+    @Id
+    public String getId(){
+      return id;
+    }
+
+    @Column
+    public String getData1(){
+      return data1
+    }
+
+    // @Id가 프로퍼티에에 있으므로 @Access(AccessType.PROPERTY)로 설정한 것과 같다.
+    // 따라서 @Access 생략 가능
+  }
+  ```
+
+- 프로퍼티 접근 방식과 필드 접근방식을 함께 사용할 수도 있다.
+
+  ```java
+  @Entity
+  public class Member {
+
+    @Id
+    private String id;
+
+    @Transient
+    private String firstName;
+
+    @Transient
+    private String lastName;
+
+    @Access(AccessType.PROPERTY)
+    public String getFullName(){
+      return firstName + lastName;
+    }
+
+    // 회원 테이블 FULLNAME 컬럼에 firstName + lastName 결과과 저장된다.
+  }
+  ```
