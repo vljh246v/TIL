@@ -175,4 +175,107 @@
 - 출력된 값은 저장 시점에 데이터베이스가 생성한 값을 JPA가 조회한 것이다.
 - 따라서 이 전략은 트랜잭션을 지원하는 쓰기 지연이 동작하지 않는다.
 
+### **4.6.3 SEQUENCE 전략**
+- 시퀀스는 유일한 값을 순서대로 생성하는 특별한 오브젝트이고, SEQUENCE 전략은 이 시퀀스를 사용해서 기본 키를 작성한다.
+- 시퀀스를 지원하는 데이터베이스에서 사용할 수 있다.
+- 아래는 시퀀스를 생성하고 매핑하는 예제다.
+  
+  ```sql
+  CREATE TABLE BOARD (
+    ID BIGINT NOT NULL PRIMARY KEY,
+    DATA VARCHAR (255)
+  )
 
+  -- 시퀀스 생성
+  CREATE SEQUENCE BOARD_SEQ START WITH 1 INCREMENT BY 1;
+  ```
+
+  ```java
+  @Entity
+  @SequenceGenerator(
+      name = "BOARD_SEQ_GENERATOR",
+      sequenceName = "BOARD_SEQ",
+      initialValue = 1, allocationSize = 1)
+  public class Board {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOARD_SEQ_GENERATOR")
+    private Long id;
+  }
+
+  ```
+
+- @SequenceGenerator 를 사용해서 BOARD_SEQ_GENERATOR 라는 시퀀스 생서기를 등록했다.
+- sequenceName 으로 설정한 시퀀스와 시퀀스 생성기를 매핑한다.
+- 그리고 @GeneratedValue 전략을 GenerationType.SEQUENCE 로 설정을 하고 시퀀스 생성기를 선택해준다.
+  
+  ```java
+  private static void logic(EntityManager em){
+
+    Board board = new Board();
+    em.persist(board);
+    System.out.println("board.id : " + board.getId());
+  }
+
+  // board.id : 1
+  ```
+- 시퀀스 사용 코드는 IDENTITY와 내부 동작 방식이 다르다.
+- SEQUENCE 전략은 em.persist() 를 호출할 때 먼저 데이터베이스 시퀀스를 사용해서 식별자를 조회한다.
+- 그리고 조회한 식별자를 엔티티에 할당한 후에 엔티티를 여옥성 컨텍스트에 저장한다.
+- 이후 트랜잭션을 커밋해서 플러시가 일어난다.
+
+**@SequenceGenerator**
+- 속성
+  - name : 식별자 생성기 이름
+  - sequenceName : 데이터베이스에 등록되어 있는 시퀀스 이름
+  - initialValue : DDL 생성시에만 사용됨, 시퀀스 DDL 을 생성할 때 처음 시작하는 수를 지정한다.
+  - allocationSize : 시퀀스 한 번 호출에 증가하는 수(성능 최적화에 사용됨)
+  - catalog,  schema : 데이터베이스 catalog, schema 이름
+  
+### **4.6.4 TABLE 전략**
+- TABLE 전략은 키 생성 전용 테이블을 하나 만들고 여기에 이름과 값으로 사용할 컬럼을 만들어 데이터베이스 시퀀스를 흉내내는 전략이다.
+- TABLE 전략을 사용하려면 키 생성 용도로 사용할 테이블을 만들어야 한다. 
+  
+  ```sql
+  create table MY_SEQUENCES (
+    sequence_name varchar(255) not null,
+    next_val bigint,
+    primary key (sequence_name)
+  )
+  -- default 컬럼 이름을 사용( 컬럼 이름 변경 가능)
+  ```
+  ```java
+  @Entity
+  @TableGenerator(
+      name = "BOARD_SEQ_GENERATOR",
+      table = "MY_SEQUENCES",
+      pkColumnValue = "BOARD_SEQ", allocationSize = 1
+  )
+  public class Board {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "BOARD_SEQ_GENERATOR")
+    private Long id;
+  }
+  ```
+
+- 실제 테이블에 삽입된 데이터를 보면 sequence_name 컬럼에는 우리가 pkColumnValue로 지정한 'BOARD_SEQ'가 들어있다.
+
+### **4.6.5 AUTO 전략**
+- GenerationType.Auto는 데이터베이스에 따라 자동으로 선택한다.
+- 장점은 데이터베이스가 변경되어도 코드 수정이 없다는 것이다.
+- 아직 키 생성 전략이 확정되지 않은 초기 단계나 프로토타입에 편리
+
+### **4.6.6 기본키 매핑 정리**
+- 영속성 컨텍스트는 엔티티를 식별자 값으로 구분하므로 엔티티를 영속 상태로 만들려면 식별자 값이 반드시 있어야 한다.
+- 직접할당 :  애플리케이션에서 직접 식별자 값을 할당
+- SEQUENCE : 데이터베이스 시퀀스에서 식별자 값을 획득한 후 영속성 컨텍스트에 저장한다.
+- TABLE 데이터베이스 시퀀스 생성용 테이블에서 식별자 값을 회득한 후 영속성 컨텍스트에 저장한다.
+- IDENTITY : 데이터베이스에 엔티티를 저장해서 식별자 값을 획득한 후 영속성 컨텍스트에 저장한다.
+
+> 권장하는 식별자 선택 전략
+> 1. 자연 키 보다는 대리 키를 권장한다.
+> 2. 비즈니스 환경은 언젠가 변한다.
+> 3. JPA는 모든 엔티티에 일관된 방식으로 대리키 사용을 권장한다.
+
+## **4.7 필드와 컬럼 매핑: 레퍼런스**
