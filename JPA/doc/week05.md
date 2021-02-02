@@ -361,3 +361,141 @@
         System.out.println("member.username = " + member.getUsername());
     }
     ```
+
+## **5.4 연관관계의 주인**
+- 단순히 @OneToMany만 있으면 되지 mappedBy는 왜 필요한 것인가?
+- 엄밀히 말하면 객체는 양방향 연관관계라는것은 없다. 서로 다른 단방향 연관관계 2개를 로직으로 묶은것 뿐이다.
+- 테이블은 외래키 하나로 두 테이블 연관관계를 관리한다.
+- 엔티티를 단방향으로 매핑하면 참조를 하나만 사용하므로 이 참조로 외래키를 관리하면 된다.
+- 양방향으로 관리하려면 두곳에서 서로를 참조해야하고, 객체의 참조는 둘인데 외래 키는 하나이기 때문에 둘 사이에 차이가 발생한다.
+- 두 객체 연관관계 중 하나를 정해서 테이블의 외래키를 관리해야 하는데 이것을 연관관계의 주인이라 한다.
+  
+### **5.4.1 양방향 매핑의 규칙: 연관관계의 주인**
+
+- 두 연관관계 중 하나를 연관관계의 주인으로 정해야 한다.
+- 연관관계의 주인만이 데이터베이스 연관고나계와 매핑되고 외래 키를 관리(등록, 수정, 삭제) 할 수 있다. 반면 주인이 아닌 쪽은 읽기만 할 수 이싿.
+- 주인은 mappedBy 속성을 사용하지 않는다.
+- 주인이 아니면 mappedBy 속성을 사용해서 속성의 값으로 연관관계의 주인을 지정해야 한다.
+- 그렇다면 Member.team, Team.members 중 어떤 것을 연관과계의 주인으로 정해야 할까?
+  ![둘 중 하나를 연관관계의 주인으로 선택해야 한다.](https://lh3.googleusercontent.com/pw/ACtC-3crg4Ln-cizxwYuJMWqeNxeNUPdaDSLsRAvP2O8RcH1H76vZXhohoUtaAAXipDGJh3Szzqq2A_dH2H4cw3ljv7NKMusSoezb0GDYK5wRpeDeSxUm6DauEvzN3GudQkqvBwO_QqM3UYxmsgbh_Q0I98TlA=w717-h388-no?authuser=0)
+
+- 회원 -> 팀(Member.team) 방향
+    ```java
+    class Member {
+        @ManyToOne
+        @JoinColumn(name="TEAM_ID")
+        private Team team;
+        ...
+    }
+
+    class Team {
+        @OneToMany
+        private List<Member> members = new ArrayList<Member>();
+    }
+    ```
+- 연관관계의 주인을 정한다는 것은 사실 외래 키 관리자를 선택하는 것이다.
+- 만약 Member.team 을 주인으로 선택하게 되면 자기 테이블에 있는 외래 키를 관리하게 된다.
+- 하지만 Team.members를 주인으로 선택하면 물리적으로 전혀 다른 테이블의 외리 키를 관리해야 한다.
+
+### **5.4.2 연관관계의 주인은 외래 키가 있는 곳**
+- 연관관계의 주인은 테이블에 외래 키가 있는 곳으로 정해야 한다.
+- 주인이 아닌 엔티티에서는 mappedBy 속성을 사용해 주인이 아님을 설정한다.
+- 정리하면 주인만 데이터베이스 연관관계와 매핑되고 외래 키를 관리 할 수 있다. 주인이 아닌 반대편은 읽기만 가능하고 외래키를 변경하지는 못한다.
+
+## **5.5 양방향 연관관계 저장**
+- 아래는 양방향 연관관계를 사용해서 팀1, 회원1, 회원2를 저장해보는 예제이다.
+    ```java
+    // 팀 저장
+    Team team = new Team("team1", "팀1");
+    em.persist(team);
+
+    // 회원 1 저장
+    Member member1 = new Member("member1", "회원1");
+    member1.setTeam(team); // 연관관계 설정 member1 -> team1
+    em.persist(member1);
+
+    // 회원 2 저장
+    Member member2 = new Member("member2", "회원2");
+    member2.setTeam(team); // 연관관계 설정 member2 -> team1
+    em.persist(member2);
+    ```
+- 위 코드는 단방향 연관관계에서 살펴본 코드와 완전히 같다.
+- 양방향 연관관계에서 주인이 외래 키를 관리한다. 따라서 주인이 아닌 방향은 값을 설정하지 않아도 데이터베이스에 외래 키 값이 정상 입력된다.
+    ```java
+    team1.getMembers().add(member1); // 무시 (연관관계의 주인이 아님)
+    team1.getMembers().add(member2); // 무시 (연관관계의 주인이 아님)
+    ```
+- 주인이 아닌 곳에 입력된 값은 외래 키에 영향을 주지 않는다.
+
+## **5.6 양방향 연관관계의 주의점**
+- 가장 대표적으로 연관관계의 주인에는 값을 입력하지 않고, 주인이 아닌 곳에만 값을 입력하는 것
+    ```java
+    public void testSaveNonOwner() {
+
+        // 회원 1 저장
+        Member member1 = new Member("member1", "회원1");
+        em.persist(member1);
+
+        // 회원 2 저장
+        Member member2 = new Member("member2", "회원2");
+        em.persist(member2);
+
+        Team team1 = new Team("team1", "팀1");
+        team1.getMembers().add(member1);
+        team1.getMembers().add(member2);
+
+        em.persist(team1);
+    }
+    ```
+- 위 코드 같은 경우 연관관계의 주인이 아닌 Team.members에만 값을 저장했기 때문에 외래키에 실제 null값이 입력된다.
+
+### **5.6.1 순수한 객체까지 고려한 양방향 연관관계**
+- 객체 관점에서 양쪽 방향에 모두 갑을 입력해주는것이 가장 앙ㄴ전하다.
+- 순수한 객체 사용시 심각한 문제가 발생할 수도 있다.
+- 순수한 객체를 사용하는 로직에서도 정상 동작을 위해 서로 연관관계를 만들어 주는 것이 실수를 줄일 수있다.
+
+
+### **5.6.2 연관관계 편의 메소드**
+
+- 양방향을 신경쓰다 보면 누락 가능성이 있다.
+- 아래처럼 메서드 리팩토링을 통한 방법이 있다.
+    ```java
+    public class Member {
+        private Team team;
+
+        public void setTeam(Team team) {
+            this.team = team;
+            team.getmMembers.add(this);
+        }
+        ...
+    }
+    ```
+
+### **5.6.3 연관관계 편의 메소드 작성시 주의사항**
+
+- 편의 메소드 사용시 주의해야 할점이 있다. 아래 코드는 버그가 있는 코드이다.
+    ```java
+    member1.setTeam(teamA);
+    member1.setTeam(teamB);
+
+    Mmeber findMember = teamA.getMember(); // member1이 아직 조회 된다.
+    ```
+
+- temaB로 변경할대 teamA -> member1 관계를 제거하지 않았다.
+- 연관관계를 변경할 때는 기존 연관관계를 오나전히 삭제하는 코드를 추가해 주어야 한다.
+
+    ```java
+    public class Member {
+        private Team team;
+
+        public void setTeam(Team team) {
+
+            if(team != null)
+                this.team.getMembers().remove(this);
+                
+            this.team = team;
+            team.getmMembers.add(this);
+        }
+        ...
+    }
+    ```
