@@ -321,3 +321,43 @@
 
     em.remove(team);
     ```
+
+## **5.3 양방향 연관관계**
+- 이번에는 반대방향에서 접근할 수 있도록 팀에서 회원으로 접근하는 관계를 추가하자.
+- 일대다 관계는 여러 건과 연관관계를 맺을 수 있으므로 컬렉션을 사용해야 한다.
+  ![양방향 객체 연관관계](https://lh3.googleusercontent.com/pw/ACtC-3fvRtOVa9AuGpG6GftwTnTQk2RSxk0iq0TF-bEaAtVUJxlOC4lipQrctTLr-p7lxFy8w3JHxZOOvCFVC7YnB13q6v42iKXWuDHGMr4rLLp0r2-tw9R1SjpsiMOCH1vRzEJEqTV61DZXXkj6nRgtJZPtOQ=w670-h199-no?authuser=0)
+
+    - 회원 -> 팀 (Mebmer.team)
+    - 팀 -> 회원 (Team.members)
+
+### **5.3.1 양방향 연관관계 매핑**
+- Team 엔티티에 양방향 관계를 설정하자
+    ```java
+    @Entity
+    public class Team {
+
+        @Id
+        @Column(name = "TEAM_ID")
+        private String id;
+
+        private String name;
+
+        // 추가
+        @OneToMany(mappedBy = "team")
+        private List<Member> members = new ArrayList<>();
+    }
+    ```
+- 팀과 회원은 일대다 관계다. 따라서 팀 엔티티에 컬렉션인 List<Member> members를 추가했다.
+- 그리고 일대다 관계를 매핑하기 위해 @OneToMany 매핑정보를 사용했다.
+- mappedBy 속성은 반대쪽 매핑의 필드 이름값으로 주면된다.
+
+### **5.3.2 일대다 컬렉션 조회**
+- 객체 그래프 탐색을 통해 조회한 회원들을 출력하는 예제이다
+    ```java
+    Team2 team = em.find(Team2.class, "team1");
+    List<Member2> members = team.getMembers();
+
+    for(Member2 member : members){
+        System.out.println("member.username = " + member.getUsername());
+    }
+    ```
