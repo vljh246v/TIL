@@ -1,6 +1,7 @@
 package til.demo.demospringsecurityform.form;
 
 import java.security.Principal;
+import java.util.Objects;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,8 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class SampleController {
 
   @GetMapping("/")
-  public String index(Model model){
-    model.addAttribute("message", "Hello Spring Security");
+  public String index(Model model, Principal principal){
+    if(Objects.isNull(principal)){
+      model.addAttribute("message", "Hello Spring Security");
+    } else {
+      model.addAttribute("message", "Hello " + principal.getName());
+    }
     return "index";
   }
 
