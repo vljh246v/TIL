@@ -14,7 +14,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests() // 어떤 식으로 '인가' 할지
-        .mvcMatchers("/", "/info").permitAll()
+        .mvcMatchers("/", "/info", "/account/**").permitAll()
         .mvcMatchers("/admin").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and()
@@ -25,10 +25,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   // 해당 메서드를 사용해서 원하는 임의의  유저 정보를 설정할 수 있다.
   // {noop} : 패스워드 인코딩 방식으로, 접두사에 어떤 암호화 방식인지 표시해주어야 한다. {noop}는 암호화 하지 않았다.
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.inMemoryAuthentication()
-        .withUser("demo").password("{noop}123").roles("USER").and()
-        .withUser("admin").password("{noop}!@#").roles("ADMIN");
-  }
+  // UserDetailsService 를 구현했기 때문에 주석처리
+  //  @Override
+  //  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+  //    auth.inMemoryAuthentication()
+  //        .withUser("demo").password("{noop}123").roles("USER").and()
+  //        .withUser("admin").password("{noop}!@#").roles("ADMIN");
+  //  }
 }
