@@ -1,8 +1,11 @@
 package til.demo.demospringsecurityform.account;
 
 import static org.junit.Assert.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,6 +19,7 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -24,6 +28,9 @@ public class AccountControllerTest {
 
   @Autowired
   MockMvc mockMvc;
+
+  @Autowired
+  AccountService accountService;
 
   @Test
   public void index_anonymous() throws Exception {
@@ -81,8 +88,38 @@ public class AccountControllerTest {
   @Test
   @WithMockUser(username = "admin", roles = "ADMIN")
   public void admin_admin_annotation() throws Exception {
-    mockMvc.perform(get("/ad min"))
+    mockMvc.perform(get("/admin"))
         .andDo(print())
         .andExpect(status().isOk());
+  }
+
+  @Test
+  @Transactional
+  public void login_success() throws Exception {
+    String username = "demo";
+    String password = "123";
+    Account user = this.createUser(username, password);
+    mockMvc.perform(formLogin().user(user.getUsername()).password(password))
+        .andExpect(authenticated());
+  }
+
+
+  @Test
+  @Transactional
+  public void login_fail() throws Exception {
+    String username = "demo";
+    String password = "123";
+    Account user = this.createUser(username, password);
+    mockMvc.perform(formLogin().user(user.getUsername()).password("1234"))
+        .andExpect(unauthenticated());
+  }
+
+  private Account createUser(String username, String password) {
+    Account account = new Account();
+    account.setUsername(username);
+    account.setPassword(password);
+    account.setRole("USER");
+
+    return accountService.createNew(account);
   }
 }
