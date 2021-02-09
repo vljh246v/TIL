@@ -69,3 +69,50 @@
 -   @JoinColumn(name = "TEAM_ID")을 사용해 Member.team 필드를 TEAM_ID 외래키와 매핑했다. 따라서 Mmeber.team 필드로 TEMA_ID 외래키를 관리한다.
 
 ### **6.1.2 다대일 양방향 [N:1, 1:N]**
+
+-   아래 그림에서 실설(Member.team)이 연관관계의 주인이고 점섬(Team.members)은 연관괸계의 주인이 아니다.
+    ![다대일 양방향](https://lh3.googleusercontent.com/pw/ACtC-3fQgml28u3o_auT5VeDQBmvYFGbOK8reZrpiVUbgIvDgPj2IcmBHIq9MU77dtOvGQKz-DcABHlJnTQ2eZeOF7Mi_LKsExN8t0AzDxC-gRKY3_VoaBStdBVhZmkNI7O39DpA2ebznZvY33jI90_gb819pg=w969-h546-no?authuser=0)
+
+-   회원 / 팀 엔티티는 아래와 같이 설정가능 하다.
+
+    ```java
+    @Entity
+    public class Member {
+        ...
+        @ManyToOne
+        @JoinColumn(name = "TEAM_ID")
+        private Team team;
+
+        public void setTeam(Team team){
+            this.team = team;
+
+            // 무한 루프 방지
+            if(!team.getMembers().contains(this))
+                team.getMembers().add(this);
+        }
+        ...
+    }
+    ...
+
+    @Entity
+    public class Team {
+        ...
+
+        @OneToMany(mappedBy = "team")
+        private List<Member> members = new ArrayList<>();
+
+        public void addMember(Member member){
+            this.members.add(member);
+
+            // 무한 루프 방지
+            if(member.getTeam() != this) {
+                member.setTeam(this);
+            }
+        }
+    }
+    ```
+
+-   양방향은 외래 키가 있는 쪽이 연관관계의 주인이다.
+-   양방향 연관관계는 항상 서로를 참조해야 한다.
+-   편의 메소드는 한 곳에만 작성 하거나 양쪽다 작성 가능하다.
+-   양쪽 다 작성시 무한루프에 주의한다.
