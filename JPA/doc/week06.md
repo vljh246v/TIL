@@ -116,3 +116,110 @@
 -   양방향 연관관계는 항상 서로를 참조해야 한다.
 -   편의 메소드는 한 곳에만 작성 하거나 양쪽다 작성 가능하다.
 -   양쪽 다 작성시 무한루프에 주의한다.
+
+## **6.2 일대다**
+
+-   일대다 관계는 다대일 관계의 반대 방향이다.
+-   엔티티를 하나 이상 참조할 수 있으므로 자바 컬렉션을 사용해야 한다.
+
+### **6.2.1 단방향 [1:N]**
+
+-   하나의 팀은 여러 회원을 참조할 수 있다 : 일대다 / 팀은 회원들은 참조하지만 반대로 회원은 팀을 참조하지 않는다 : 단방향
+    ![일대다 단방향](https://lh3.googleusercontent.com/pw/ACtC-3edfQWsC0IyH0JUQ8InjeBqt2nWbVvGztHI6yjv828ZNXUogTzpnjUHoq8sJ_7mRDQF_NHuHo8qhplUTrZpXxnYnpojXlmcxcwP0W01ZMCnZFyQsbaNqaAPpyeOuU7-p85Z04nA71fpN2-QS2iNXceIwQ=w959-h503-no?authuser=0)
+
+-   위 그림을 보면 팀 엔티티의 Team.members로 회원 테이블의 TEAM_ID 외래 키를 관리한다.
+-   이 매핑은 반대쪽 테이블에 있는 외래 키를 관리한다. 그 이유는 일대다 관계에서 외래키는 다(N) 쪽 테이블에 있기 때문이다.
+-   Members 엔티티에는 외래키를 매핑할 수 있는 참조 필드가 없다.
+
+    ```java
+    @Entity
+    public class Team {
+
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "TEAM_ID")
+        private Long id;
+
+        private String name;
+
+        @OneToMany
+        @JoinColumn(name = "TEAM_ID")
+        private List<Member> members = new ArrayList<>();
+
+        // getter, setter
+    }
+
+    @Entity
+    public class Member {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "MEMBER_ID")
+        private Long id;
+
+        private String username;
+
+        // getter, setter
+    }
+    ```
+
+-   일대다 단방향 관계를 매핑할 때는 @JoinColumn을 명시해야한다.
+-   그렇지 않으면 JPA는 연결 테이블을 중간에 두고 연관관계를 관리하는 조인테이블 전략을 기본으로 사요한다.
+
+**일대다 단방향 매핑의 단점**
+
+-   매핑한 객체과 관리하는 외래 키가 다른 테이블에 있다는 점이다.
+-   다른 테이블에 외래 키가 있으면 연관 관계를 처리하기 위한 UPDATE 가 추가로 일어난다.
+
+    ```java
+    private static void saveMember(EntityManager em) {
+        Member member1 = new Member("member1");
+        Member member2 = new Member("member2");
+
+        Team team1 = new Team("team1");
+        team1.getMembers().add(member1);
+        team1.getMembers().add(member2);
+
+        em.persist(member1); // INSERT-member1
+        em.persist(member2); // INSERT-member2
+        em.persist(team1); // INSERT-team1, UPDATE-member1.fk, UPDATE-member2.fk
+    }
+    ```
+
+-   Member 엔티티는 주인이 아니고 Team 엔티티가 주인이라 Team 엔티티를 insert 할때 MEMBER 테이블에 FK 값이 업데이트 된다.
+
+**일대다 단방향 매핑보다 다대일 양방향 매핑을 사용하자**
+
+-   일대다 단방향 매핑을 사용하면 엔티티를 매핑한 테이블이 아닌 다른 테이블의 외래 키를 관리해야 한다.
+-   좋은 방법은 일대다 단방향 매핑 대신에 다대일 양방향 매핑을 사용하는 것이다.
+
+### **6.2.2 일대다 양방향 [1:N, N:1]**
+
+-   일대다 양방향 매핑은 존재하지 않는다.
+-   정확히는 양방향 매핑에서 @OneToMany 는 연관관계의 주인이 될 수 없다.
+-   이러한 이유로 @ManyToOne 에는 mappedBy 속성이 없다.
+-   하지만 일대다 단방향 매핑 반대편에 외래 키를 사용하는 다대일 단방향 매핑을 읽기 전용으로 하나 추가하면 된다.
+
+    ![일대다 양방향](https://lh3.googleusercontent.com/pw/ACtC-3fu0tJahTz5dVzjy5NK8pikFUGMXBpj4US0AP0R3I7FV4Z8cZdK5_EmpWmO-FnY76pYZgz16Rz5VPEn5r2HXTPkf6wBWg1YF772-vS4OsPnMNquh62aSFmleD8L0kjAPleWpAF3hNASCvkowNS-oQQ6-A=w1003-h501-no?authuser=0)
+
+    ```java
+    public class Member {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "MEMBER_ID")
+        private Long id;
+
+        private String username;
+
+        @ManyToOne
+        @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+        private Team team;
+    }
+    ```
+
+-   이렇게 되면 둘다 동일한 키를 관리하여서 문제가 발생할 수 있다.
+-   반대편인 다대일 쪽은 insertable = false, updatable = false 설정을 해준다.
+-   하지만 이 설정은 일대다 양방향 이라기보다, 일대다 단방향 매핑 반대편에 다대일 단방향 매핑을 읽기 전용으로 추가한 것이다.
+-   여전히 update 문제는 그대로 가지고 있다.
+
+## **6.3 일대일 [1:1]**
