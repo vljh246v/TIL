@@ -3,26 +3,21 @@ package til.demo.demospringsecurityform.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
-@Order(Ordered.LOWEST_PRECEDENCE - 100)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@Order(Ordered.LOWEST_PRECEDENCE - 15)
+public class AnotherSecurityConfig extends WebSecurityConfigurerAdapter {
 
   // 특정 url 기반 접근 설정을 하는 영역
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests() // 어떤 식으로 '인가' 할지
-        .mvcMatchers("/", "/info", "/account/**").permitAll()
-        .mvcMatchers("/admin").hasRole("ADMIN")
-        .anyRequest().authenticated()
-        .and()
-      .formLogin() // form 로그인을 사용
-        .and()
-      .httpBasic();
+    http
+        .antMatcher("/account/**")
+        .authorizeRequests() // 어떤 식으로 '인가' 할지
+        .anyRequest().authenticated();
   }
 
   // 해당 메서드를 사용해서 원하는 임의의  유저 정보를 설정할 수 있다.
