@@ -16,3 +16,5 @@
         }
     }
     ```
+
+- SecurityContextHolder의 기본전략이 ThreadLocal임
