@@ -18,6 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.authorizeRequests() // 어떤 식으로 '인가' 할지
         .mvcMatchers("/", "/info", "/account/**").permitAll()
         .mvcMatchers("/admin").hasRole("ADMIN")
+        .mvcMatchers("/user").hasRole("USER")
         .anyRequest().authenticated()
         .and()
       .formLogin() // form 로그인을 사용
