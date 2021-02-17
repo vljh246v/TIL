@@ -223,3 +223,26 @@
 -   여전히 update 문제는 그대로 가지고 있다.
 
 ## **6.3 일대일 [1:1]**
+
+-   일대일 관계는 양쪽이 서로 하나의 관계만 가진다.
+-   일대일 관계는 그 반대도 일대일 관계다
+-   일대다, 다대일은 항상 다(N) 쪽이 외래 키를 가진다. 반면 일대일 관계는 주 테이블이나 대상 테이블 둘중 어느 곳이나 외래키를 가질 수 있다.
+-   일대일 관계는 주 테이블이나 대상 테이블 중에 누가 외래 키를 가질지 선택해야 한다.
+
+**주 테이블에 외래 키**
+
+-   외래 키를 객체 참조와 비슷하게 사용할 수 있다.
+-   주 테이블이 외래 키를 가지고 있으므로 주 테이블만 확인해도 대상 테이블과 연관관계가 있는지 알 수 있다.
+
+**대상 테이블에 외래 키**
+
+-   테이블 관계를 일대일에서 일대다로 변경할 때 테이블 구조를 그대로 유지할 수 있다.
+
+### **6.3.1 주 테이블에 외래키**
+
+-   JPA 같은 경우 주 테이블에 외래키가 있으면 좀 더 편리하게 매핑할 수 있다.
+
+**단방향**
+
+-   MEMBER가 주 테이블이고 LOCKER는 대상 테이블이다.
+    ![MEMBER-LOCKER](https://lh3.googleusercontent.com/pw/ACtC-3c-d-YGmHDm6jQKTFu7oAIDFa6piohkeVsfwytykhndegNjpnsADbG57_zU5xjyZ-idSby3g6-fczFLNFRR0Wwg8BwlsmMiXkwkok5jO8mgNaVKqntBi1weEMqo3nwGFBy5Vdu6tje6xjT1vmxpCIX7mw=w1228-h653-no?authuser=0)
