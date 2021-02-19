@@ -245,6 +245,7 @@
 **단방향**
 
 -   MEMBER가 주 테이블이고 LOCKER는 대상 테이블이다.
+
     ![MEMBER-LOCKER](https://lh3.googleusercontent.com/pw/ACtC-3c-d-YGmHDm6jQKTFu7oAIDFa6piohkeVsfwytykhndegNjpnsADbG57_zU5xjyZ-idSby3g6-fczFLNFRR0Wwg8BwlsmMiXkwkok5jO8mgNaVKqntBi1weEMqo3nwGFBy5Vdu6tje6xjT1vmxpCIX7mw=w1228-h653-no?authuser=0)
 
     ```java
@@ -275,8 +276,8 @@
 
 **양방향**
 
+-   양방향 관계
     ![일대일 주 테이블에 외래 키, 양방향](https://lh3.googleusercontent.com/pw/ACtC-3c3mG3CSdrmv7RcyUVG9SNf6OEnjOapaSj-ejV1pS5aG5MCVqtZcPu_1g0Ds1nNo_WtqVuefBrOJ_n8iyUWu4dKB25frBqoU6Lp9kd8XDjSFiSCUfPOBEqNBiIHPTv8J6G19T8H6has2zOCrG47P1rPMA=w1228-h685-no?authuser=0)
-
 
     ```java
     public class Member {
@@ -315,9 +316,102 @@
 
 **단방향**
 
+-   대상 테이블에 외래 키가 있는 단방향 관계
+
     ![일대일 대상 테이블에 외래 키, 단방향](https://lh3.googleusercontent.com/pw/ACtC-3c1Xt8H8dbcKE0iEJblB9DgzMVLAY8ZltE5aAG1RLFe7iAUoUybl905WMbW4qnt86o3_koWabNqY3eXOaBYlCkzPI5juSRoi82awxapxYUJS5ZEgErUfTH4aa7Zqdn4m4XIijmC-s3vloi3uSfcaMV3Ag=w1228-h663-no?authuser=0)
 
 -   일대일 관계 중 대상 테이블에 외래 키가 있는 단방향 관계는 JPA에서 지원하지 않는다. 그리고 이런 모양으로 매핑할 수 있는 방법도 없다.
 -   이때는 단방향 관계를 Locker 에서 Member 방향으로 수정하거나, 양방향 관계로 만들고 Locker 를 연관관계의 주인으로 설정해야 한다.
 
 **양방향**
+
+-   대상 테이블에 외래 키가 있는 양방향 관계
+
+    ![일대일 대상 테이블에 외래 키, 양방향](https://lh3.googleusercontent.com/pw/ACtC-3coS-ddbvzQpY2I4VG7vJGyxPhwVC-__vTkRVBHa_DpyTdaB0TLLUpzG7ESjz1NKboQKtaSGT73IZ6AaLim2KhEAGQVcJXarBWwHn2llzYGbaJO-uf6Db9pEevZYzth8zfpTVu1x38iQXmJd1YE6yxI7g=w1228-h690-no?authuser=0)
+
+    ```java
+    public class Member {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "MEMBER_ID")
+        private Long id;
+
+        private String username;
+
+        @OneToOne(mappedBy = "member")
+        private Locker locker;
+    }
+    ...
+    public class Locker {
+
+        @Id @GeneratedValue
+        @Column(name = "LOCKER_ID")
+        private Long id;
+
+        private String name;
+
+        @OneToOne
+        @JoinColumn(name = "MEMBER_ID")
+        private Member member;
+    }
+    ```
+
+-   일대일 매핑에서 대상 테이블에 외래 키를 두고 싶으면 이렇게 양방향으로 매핑한다.
+-   주 엔티티인 Member 엔티티 대신에 대상 엔티티인 Locker 를 연관관계의 주인으로 만들어서 LOCKER 테이블의 외래 키를 관리하도록 했다.
+
+## **6.4 다대다**
+
+-   관계형 데이터베이스는 테이블 2개로 다대다 관계를 표현하기 보다는 일대다, 다대일 관계로 풀어내는 연결 테이블을 사용한다.
+-   보통 중간 연결 테이블을 추가한다.
+
+    ![테이블 다대다 연결 테이블](https://lh3.googleusercontent.com/pw/ACtC-3cmGQVLvcJVkb13za1hI3IZvjtIvIA9N0ZkuXbJmjdrtDl5-iFme5CISNblQbEPD_aPWHjRBW8A55THnT7kiDOWx_LkumM1ErRSaRQKUC-S2HJu08n-3cGLYl2chI9m_ROEvhv5KdwfBro61kG09KopeQ=w1228-h546-no?authuser=0)
+
+-   그런데 객체는 테이블과 다르게 객체 2개로 다대다 관계를 만들 수 있다.
+-   각각 컬렉션으로 참조하면 된다.
+
+### **6.4.1 다대다 단방향**
+
+-   다대다 단방향 관계인 회원과 상품 엔티티
+
+    ```java
+    public class Member {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "MEMBER_ID")
+        private Long id;
+
+        private String username;
+
+        @ManyToMany
+        @JoinTable(name = "MEMBER_PRODUCT", joinColumns = @JoinColumn(name = "MEMBER_ID"),
+            inverseJoinColumns = @JoinColumn(name =
+                "PRODUCT_ID"))
+        private List<Product> products = new ArrayList<>();
+    }
+    ...
+    public class Product {
+
+        @Id @GeneratedValue
+        @Column(name = "PRODUCT_ID")
+        private Long id;
+
+        private String name;
+    }
+    ```
+
+-   회원 엔티티와 상품 엔티티를 @ManyToMany로 매핑했다.
+-   여기서 중요한 점은 @ManyToMany와 @JoinTable을 사용해서 연결 테이블을 바로 매핑한 것이다.
+-   따라서 중간 엔티티 없이 매핑을 완료할 수 있다.
+
+-   @JoinTable
+
+    -   @JoinTable.name : 연결 테이블을 지정한다. 여기서는 MEMBER_PRODUCT 테이블을 선택했다.
+    -   @JoinTable.joinColumns : 현재 방향인 회원과 매핑할 조인 컬럼 정보를 지정한다.
+    -   @JoinTable.inverseJoinColumns : 반대 방향인 상품과 매핑할 조인 컬럼 정보를 지정한다.
+
+-   MEMBER_PRODUCT 테이블은 다대다 관계를 일대다, 다대일 관계로 풀어내기 위해 필요한 연결 테이블일 뿐이다.
+-   @ManyToMany 를 사용해 연결 테이블을 신경 쓰지 않아도 된다.
+
+-   다대다 관계를 저장하는 예제는 아래와 같다.
