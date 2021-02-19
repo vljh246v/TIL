@@ -246,3 +246,78 @@
 
 -   MEMBER가 주 테이블이고 LOCKER는 대상 테이블이다.
     ![MEMBER-LOCKER](https://lh3.googleusercontent.com/pw/ACtC-3c-d-YGmHDm6jQKTFu7oAIDFa6piohkeVsfwytykhndegNjpnsADbG57_zU5xjyZ-idSby3g6-fczFLNFRR0Wwg8BwlsmMiXkwkok5jO8mgNaVKqntBi1weEMqo3nwGFBy5Vdu6tje6xjT1vmxpCIX7mw=w1228-h653-no?authuser=0)
+
+    ```java
+    public class Member {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "MEMBER_ID")
+        private Long id;
+
+        private String username;
+
+        @OneToOne
+        @JoinColumn(name = "LOCKER_ID")
+        private Locker locker;
+    }
+    ...
+
+    public class Locker {
+
+        @Id @GeneratedValue
+        @Column(name = "LOCKER_ID")
+        private Long id;
+
+        private String name;
+    }
+    ```
+
+**양방향**
+
+    ![일대일 주 테이블에 외래 키, 양방향](https://lh3.googleusercontent.com/pw/ACtC-3c3mG3CSdrmv7RcyUVG9SNf6OEnjOapaSj-ejV1pS5aG5MCVqtZcPu_1g0Ds1nNo_WtqVuefBrOJ_n8iyUWu4dKB25frBqoU6Lp9kd8XDjSFiSCUfPOBEqNBiIHPTv8J6G19T8H6has2zOCrG47P1rPMA=w1228-h685-no?authuser=0)
+
+
+    ```java
+    public class Member {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "MEMBER_ID")
+        private Long id;
+
+        private String username;
+
+        @OneToOne
+        @JoinColumn(name = "LOCKER_ID")
+        private Locker locker;
+    }
+    ...
+
+    public class Locker {
+
+        @Id @GeneratedValue
+        @Column(name = "LOCKER_ID")
+        private Long id;
+
+        private String name;
+
+        @OneToOne(mappedBy = "locker")
+        private Member member;
+    }
+    ```
+
+-   양방향이므로 연관관계의 주인을 정해야 한다.
+-   MEMBER 테이블이 외래 키를 가지고 있으므로 Member 클래스의 Member.locker 가 연관관계의 주인이다.
+-   따라서 반대쪽 Locker.member 에 mappedBy를 선언해 줘야 한다.
+
+### 6.3.2 대상 테이블에 외래 키
+
+**단방향**
+
+    ![일대일 대상 테이블에 외래 키, 단방향](https://lh3.googleusercontent.com/pw/ACtC-3c1Xt8H8dbcKE0iEJblB9DgzMVLAY8ZltE5aAG1RLFe7iAUoUybl905WMbW4qnt86o3_koWabNqY3eXOaBYlCkzPI5juSRoi82awxapxYUJS5ZEgErUfTH4aa7Zqdn4m4XIijmC-s3vloi3uSfcaMV3Ag=w1228-h663-no?authuser=0)
+
+-   일대일 관계 중 대상 테이블에 외래 키가 있는 단방향 관계는 JPA에서 지원하지 않는다. 그리고 이런 모양으로 매핑할 수 있는 방법도 없다.
+-   이때는 단방향 관계를 Locker 에서 Member 방향으로 수정하거나, 양방향 관계로 만들고 Locker 를 연관관계의 주인으로 설정해야 한다.
+
+**양방향**
