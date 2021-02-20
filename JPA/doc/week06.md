@@ -415,3 +415,20 @@
 -   @ManyToMany 를 사용해 연결 테이블을 신경 쓰지 않아도 된다.
 
 -   다대다 관계를 저장하는 예제는 아래와 같다.
+
+    ```java
+    private static void save(EntityManager em) {
+        Product productA = new Product();
+        productA.setId(1L);
+        productA.setName("상품 A");
+        em.persist(productA);
+
+        Member member1 = new Member();
+        member1.setId(1L);
+        member1.setUsername("회원1");
+        member1.getProducts().add(productA);
+        em.persist(member1);
+    }
+    ```
+
+### **6.4.2 다대다: 양방향**
