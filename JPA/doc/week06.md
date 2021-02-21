@@ -432,3 +432,26 @@
     ```
 
 ### **6.4.2 다대다: 양방향**
+
+-   역방향도 @ManyToMany 를 사용하여 원하는 곳에 mappedBy로 연관관계의 주인을 지정한다.
+
+    ```java
+    public class Product {
+
+        @Id @Column(name = "PRODUCT_ID")
+        private Long id;
+
+        @ManyToMany(mappedBy = "products")
+        private List<Member> memberList;
+
+        private String name;
+    }
+    ```
+
+-   양방향 연관관계는 편의 메소드를 추가해서 관리하는것이 편리하다.
+
+### **6.4.3 다대다: 매핑의 한계와 극복, 연결 엔티티 사용**
+
+-   @ManyToMany를 사용하면 연결 테이블을 자동으로 처리해주므로 도메인 모델이 단순해지고 여러 가지로 편리하다.
+-   다만 실무에서 사용하기에는 한계가 있다.
+-   단순 연결 테이블이 아닌 다른 데이터가 들어갈 경우 다른 컬럼이 필요하다.
