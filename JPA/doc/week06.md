@@ -455,3 +455,43 @@
 -   @ManyToMany를 사용하면 연결 테이블을 자동으로 처리해주므로 도메인 모델이 단순해지고 여러 가지로 편리하다.
 -   다만 실무에서 사용하기에는 한계가 있다.
 -   단순 연결 테이블이 아닌 다른 데이터가 들어갈 경우 다른 컬럼이 필요하다.
+-   아래처럼 연결 테이블에 키 외에 다른 컬럼을 추가 한다면 더는 @ManyToMany를 사용할 수없다.
+
+    ![테이블, 연결 테이블에 필드 추가](https://lh3.googleusercontent.com/pw/ACtC-3fAab0icdYxLa_QBPSjlEMyGqsx7SiI2kTGN8Nfh9RNMmQNNPFMHM36JruA2rpouXxdLZUEZaY2UP0vTISWvz3T-uq7o2G49xFqR47oLOudYO2lqs4h80-8DiSAej9CpfxGT7iq5Fo_b4qFaQUQI0sMOA=w847-h174-no?authuser=0)
+
+-   결국 아래 그림처럼 연결 테이블을 매핑하는 연결 엔티티를 만들어야 한다.
+-   그리고 엔티티 간의 관계도 테이블 관계처럼 다대다에서 일대다, 다대일 관계로 풀어야 한다.
+
+    ![클래스, 다대다를 푸는 연결 엔티티](https://lh3.googleusercontent.com/pw/ACtC-3e8OA3-ZL84by2u8zGRN_XVKRWokn_BAe74TIhSgRpPSEYKPNHSXm_GknW3M7rq7d_hXnsXN_KaCiTtE-pvv7gupFiX9-8zFKo4jGIlvdPms3WiXKUYqOCkKlrPNXs_ukgf3XSEuQ1v97Ns6sRylw7lrQ=w701-h164-no?authuser=0)
+
+    ```java
+    @IdClass(MemberProductId.class)
+    public class MemberProduct {
+
+        @Id
+        @ManyToOne
+        @JoinColumn(name = "MEMBER_ID")
+        private Member member;
+
+        @Id
+        @ManyToOne
+        @JoinColumn(name = "PRODUCT_ID")
+        private Product product;
+
+        private int orderAmount;
+    }
+    ```
+
+-   @IdClass 복합키 매핑
+
+**복합 기본 키**
+
+-   회원-상품 엔티티는 기본키가 복합키이다.
+-   JPA에서 복합키를 사용하려면 별도의 식별자 클래스를 만들어야 한다.
+-   @IdClass 로 지정 가능하다.
+-   복합키를 위한 식별자 클래스는 다음과 같은 특성이 있다.
+    -   Serializable을 구현해야 한다.
+    -   equals 와 hashCode를 구현해야 한다.
+    -   기본 생성자가 있어야 한다.
+    -   식별자 클래스는 public 이어야 한다.
+    -   @IdClass 또는 @EmbeddedId 을 사용할 수 있다.
