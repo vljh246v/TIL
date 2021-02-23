@@ -38,4 +38,7 @@
 
     ![/async-handler](https://lh3.googleusercontent.com/pw/ACtC-3ff3VHjSyTvWC7UiDCJcmSpHSuRdQFIQ6HB_WJRMrOmh9Zr-P4tiBvlwZ_yYBXqvwXekNfRJkjNkBBcV3Bip8s1Xz0Dz-Fjl8YCid7KLoK1tjuYkY11ugtwzK5gavTN44_YPQoKUDibuKJRvvydrnN50g=w1228-h724-no?authuser=0)
 
--   이런 식으로 다른 쓰레드에서 시큐리티 컨텍스트를 공유할 수 있도록 해주는 필터가 WebAsyncManagerIntegrationFilter 이다.
+-   이런 식으로 시큐리티 컨텍스트는 쓰레드 로컬 변수라 다른 쓰레드에서는 접근할 수 없지만, 다른 쓰레드에서 시큐리티 컨텍스트를 공유할 수 있도록 해주는 필터가 WebAsyncManagerIntegrationFilter 이다.
+
+-   PreProcess 에서 시큐리티 컨텍스트를 새로 생성한다.
+-   PostProcess 에서 시큐리티 컨텍스트를 정리 한다.
