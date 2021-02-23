@@ -495,3 +495,18 @@
     -   기본 생성자가 있어야 한다.
     -   식별자 클래스는 public 이어야 한다.
     -   @IdClass 또는 @EmbeddedId 을 사용할 수 있다.
+
+### **6.4.4 다대다: 새로운 기본 키 사용**
+
+-   추천하는 기본 키 생성 전략은 데이커베이스에서 자동으로 생성해주는 대리 키를 Long 값으로 사용하는 것이다.
+
+-   간편하고, 영구히 쓸 수 있으며 비즈닛느에 의존적이지 않다.
+
+    ![테이블, N:M 다대다 새로운 기본 키](https://lh3.googleusercontent.com/pw/ACtC-3fk3gZEMy9zCT-tXAQpuTyIG1DpAhRU7qUbWZ9wtEZTABhwH63g5HGv3mqFid_xoI2AL8v5Qk1r7CDK3aidVNrfR0yaTjbfWjhueZdfg6zgIt5uvEwLyDAPrdfgXyxvHfS4fHge-tlKPrCJ4VnMYpPMSw=w867-h217-no?authuser=0)
+
+-   MEMBER_ID, PRODUCT_ID는 외래 키로만 사용한다.
+
+### **6.4.5 다대다 연관관계 정리**
+
+-   식별 관계 : 받아온 식별자를 기본 키 + 외래 키로 사용한다.
+-   비식별 관계 : 받아온 식별자는 외래 키로만 사용하고 새로운 식별자를 추가한다.
