@@ -3,6 +3,7 @@ package til.demo.demospringsecurityform.config;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -87,6 +88,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().mvcMatchers("/favicon.ico");
+    web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
   }
 }
