@@ -79,3 +79,126 @@
 - **@DiscriminatorColumn(name = "DTYPE") :** 부모 클래스에 구분 컬럼을 지정한다. 이 컬럼으로 저장된 자식 테이블을 구분할 수 있다. 기본값이 DTYPE이므로 @DiscriminatorColumn으로 줄여 사용해도 된다.
 
 - **@DiscriminatorValue("M") :** 엔티티를 저장할 때 구분 컬럼에 입력할 값을 지정한다. 만일 영화 엔티티를 저장하면 구분 컬럼이 DTYPE에 값 M이 저장된다.
+
+- 자식 테이블의 기본 키 컬럼명을 변경하고 싶으면 @PrimaryKeyJoinColumn 를 사용하면 된다.
+
+  ```java
+  @Entity
+  @DiscriminatorValue("B")
+  @PrimaryKeyJoinColumn(name = "BOOK_ID")
+  public class Book extends Item{
+
+    private String author; // 작가
+    private String isbn; // ISBN
+  }
+  ```
+
+**장점**
+
+- 테이블이 정규화된다.
+- 외래 키 참조 무결성 제약 조건을 활용할 수 있다.
+- 저장공간을 효율적으로 사용한다.
+
+**단점**
+
+- 조회할 때 조인이 많이 사용되므로 성능이 저하될 수 있다.
+- 조회 쿼리가 복잡하다.
+- 데이터를 등록할 INSERT SQL을 두번 실행한다.
+
+**특징**
+
+- jpa 표준 명세는 구분 컬럼을 사용하도록 하지만 하이버네이트를 포함한 몇 구현체는 구분 컬럼(@DiscriminatorColumn) 없이도 동작한다.
+
+**관련 어노테이션**
+
+- @PrimaryKeyJoinColumn, @DiscriminatorColumn, @DiscriminatorValue
+
+### **7.1.2 단일 테이블 전략**
+
+- 이름 그대로 테이블을 하나만 사용한다.
+- 구분 컬럼으로 어떤 자식 데이터가 저장되었는지 구분
+- 조인이 없어서 가장 빠르다
+- 주의점은 매핑한 컬럼은 모두 null을 허용해야 한다.
+- 다른 엔티티와 매핑된 컬럼은 사용하지 않으므로 null이 입력
+
+  ```java
+  @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+  @DiscriminatorColumn(name = "DTYPE")
+  public abstract class Item {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ITEM_ID")
+    private Long id;
+
+    private String name; // 이름
+    private int price; // 가격
+  }
+
+  ...
+
+  @Entity
+  @DiscriminatorValue("B")
+  public class Book extends Item{
+
+    private String author; // 작가
+    private String isbn; // ISBN
+  }
+
+  ...
+
+  @Entity
+  @DiscriminatorValue("M")
+  public class Movie extends Item{
+
+    private String director; // 감독
+    private String actor; // 배우
+  }
+
+  ...
+
+  @Entity
+  @DiscriminatorValue("A")
+  public class Album extends Item{
+
+    private String artist;
+  }
+  ```
+
+- @Inheritance(strategy = InheritanceType.SINGLE_TABLE) 로 지정하면 단일 테이블 전략을 사용한다.
+
+**장점**
+
+- 조인이 필요 없으므로 일반적으로 조회 성능이 빠르다.
+- 조회 쿼리가 단순하다.
+
+**단점**
+
+- 자식 엔티티가 매핑한 컬럼ㅇ느 모두 null을 허용해야 한다.
+- 단일 테이블 저장이라 테이블이 커질 수 있다. 그렇기 때문에 상황에 따라 오히려 느려질 수 있다
+
+**특징**
+
+- 구분 컬럼을 꼭 사용해야 한다. 따라서 @DiscriminatorColumn 을 꼭 설정해야 한다.
+- @DiscriminatorValue을 설정하지 않으면 기본적으로 엔티티 이름을 사용한다.
+
+### **7.1.3 구현 클래스마다 테이블 전략**
+
+- 자식 엔티티 마다 테이블을 만든다. 그리고 각각에 필요한 컬럼이 모두 있다.
+
+  ```java
+  @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+  @DiscriminatorColumn(name = "DTYPE")
+  public abstract class Item {
+
+    @Id @GeneratedValue
+    @Column(name = "ITEM_ID")
+    private Long id;
+
+    private String name; // 이름
+    private int price; // 가격
+  }
+  ```
+
+- 추천하지 않음
+
+## **7.2 @MappedSuperclass**
