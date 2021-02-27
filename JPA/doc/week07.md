@@ -461,3 +461,182 @@
 - 특정 상황에서 JPQL이 더 길어질 수 있다.
 
 ### **7.3.3 복합 키: 식별 관계 매핑**
+
+- 부모, 자식, 손자 까지 계속 기본 키를 전달하는 식별 관계
+  ![](https://lh3.googleusercontent.com/pw/ACtC-3f_QE7RHCknsvKPAojrdKtM4h3Gmm6JZcCiFT3VmT3v1h3KUe-zYMKnWPsNFLIs79Y0ySP9UPiTZCrzgZS2GFF9q93nEnBvC0ui1Pxeiut-ctf2uWt_WwW-9Bf2HGq-1zQt5Rr3ABpbtA-UQ1EByMbTMw=w737-h156-no?authuser=0)
+
+- @IdClass나 @EmbeddedId를 사용해서 식별자를 매핑해야 한다.
+
+**@IdClass와 식별 관계**
+
+- @IdClass로 식별관계를 정의 하는 예제
+
+  ```java
+  // 부모
+  @Entity
+  public class Parent {
+
+    @Id @Column(name = "PARENT_ID")
+    private String id;
+
+    private String name;
+  }
+
+  ...
+
+  // 자식
+  @Entity
+  @IdClass(ChildId.class)
+  public class Child {
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "PARENT_ID")
+    private Parent parent;
+
+    @Id @Column(name = "CHILD_ID")
+    private String childId;
+
+    private String name;
+  }
+
+  ...
+
+  // 자식 ID
+  @NoArgsConstructor // lombok 사용
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  @Setter
+  @Getter
+  public class ChildId implements Serializable {
+
+    private String parent;
+    private String childId;
+
+  }
+
+  ...
+
+  // 손자
+  @Entity
+  @IdClass(GrandChildId.class)
+  public class GrandChild {
+
+    @Id
+    @ManyToOne
+    @JoinColumns({
+        @JoinColumn(name = "PARENT_ID"),
+        @JoinColumn(name = "CHILD_ID")
+    })
+    private Child child;
+
+    @Id @Column(name = "GRANDCHILD_ID")
+    private String id;
+
+    private String name;
+  }
+
+  ...
+
+
+  // 손자 ID
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  @Setter
+  @Getter
+  public class GrandChildId implements Serializable {
+
+    private ChildId child;
+    private String id;
+  }
+  ```
+
+**@EmbeddedId와 식별 관계**
+
+- @EmbeddedId로 식별관계를 구성할 때는 @MapsId를 사용해야 한다.
+
+  ```java
+  // 부모
+  @Entity
+  public class Parent {
+
+    @Id @Column(name = "PARENT_ID")
+    private String id;
+
+    private String name;
+  }
+
+  ...
+
+  // 자식
+  @Entity
+  public class Child {
+
+    @EmbeddedId
+    private ChildId id;
+
+    @MapsId("parentId")
+    @ManyToOne
+    @JoinColumn(name = "PARENT_ID")
+    private Parent parent;
+
+    private String name;
+  }
+
+  ...
+
+  // 자식 ID
+  @NoArgsConstructor // lombok 사용
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  @Setter
+  @Getter
+  @Embeddable
+  public class ChildId implements Serializable {
+
+    private String parentId;
+
+    @Column(name = "CHILD_ID")
+    private String childId;
+  }
+
+  ...
+
+  // 손자
+  @Entity
+  public class GrandChild {
+
+    @EmbeddedId
+    private GrandChildId id;
+
+    @MapsId("childId")
+    @ManyToOne
+    @JoinColumns({
+        @JoinColumn(name = "PARENT_ID"),
+        @JoinColumn(name = "CHILD_ID")
+    })
+    private Child child;
+
+    private String name;
+  }
+
+  ...
+
+  // 손자 ID
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  @Setter
+  @Getter
+  @Embeddable
+  public class GrandChildId implements Serializable {
+
+    private ChildId childId;
+
+    @Column(name = "GRANDCHILD_ID")
+    private String id;
+  }
+  ```
+
+- @EmbeddedId는 식별 관계로 사용할 연관관계의 속성에 @MapsId를 사용하면 된다.
