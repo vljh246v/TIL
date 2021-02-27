@@ -202,3 +202,74 @@
 - 추천하지 않음
 
 ## **7.2 @MappedSuperclass**
+
+- 부모 클래스는 테이블과 매핑하지 않고 부모 클래스를 상속받은 자식 클래스에게 매핑 정보만 제공하고 싶으면 @MappedSuperclass를 사용하면 된다.
+
+- @Entity는 실제 테이블과 매핑 되지만 @MappedSuperclass는 실제 테이블과 매핑되지 않는다.
+
+  ![@MappedSuperclass 설명 객체](https://lh3.googleusercontent.com/pw/ACtC-3ddhE9t0smsKBqoQZn0iaVywjvljxQGHj0BEYR5_odbYK5M8rGn_pgfTJOYUD8GXvCSx0ePjFHq63aYlJ0KKTRdXhYByy6Vsgy0ap6iRS5Y2FsUA2UVXpKgc3P-gTsmty4WX30i-o3Qtd64xNpjIxb7Sg=w945-h461-no?authuser=0)
+
+  ```java
+  @MappedSuperclass
+  public abstract class BaseEntity {
+
+    @Id @GeneratedValue
+    private Long id;
+
+    private String name;
+  }
+
+  ...
+
+  @Entity
+  public class Member extends BaseEntity{
+
+    private String email;
+  }
+
+  ...
+
+  @Entity
+  public class Seller extends BaseEntity{
+
+    private String shopName;
+  }
+  ```
+
+- BaseEntity 는 공통 매핑 정보를 정의하고, 자식 엔티티들은 상속을 통해 매핑 정보를 물려 받았다.
+- 부모로부터 물려받은 매핑 정보를 재정의하려면 @AttributeOverrides 나 @AttributeOverride 를 사용하고, 재정의 하려면 @AssociationOverrides나 @AssociationOverride를 사용한다.
+
+  ```java
+  @Entity
+  @AttributeOverride(name = "id", column = @Column(name = "MEMBER_ID"))
+  public class Member extends BaseEntity{
+
+    private String email;
+  }
+  ```
+
+- 둘 이상을 재정의하려면 @AttributeOverrides 사용하면 된다.
+
+  ```java
+  @Entity
+  @AttributeOverrides({
+      @AttributeOverride(name = "id", column = @Column(name = "MEMBER_ID")),
+      @AttributeOverride(name = "name", column = @Column(name = "MEMBER_NAME"))
+  })
+  public class Member extends BaseEntity{
+
+    private String email;
+  }
+  ```
+
+- @MappedSuperclass 특징
+
+  - 테이블과 매핑되지 않고 자식 클래스에 엔티티 매핑 정보를 상속하기 위해 사용한다.
+  - @MappedSuperclass로 지정한 클래스는 엔티티가 아니므로 em.find()나 JPQL 에서 사용할 수없다.
+  - 이 클래스를 직접 생성해서 사용할 일은 거의 없으므로 추상 클래스로 만드는 것을 권장한다.
+
+- @MappedSuperclass를 사용하면 등록일자, 수정일자, 등록자, 수정자 같은 여러 엔티티에서 공통으로 사용하는 속성을 효과적으로 관리할 수 있다
+
+## **7.3 복합 키와 식별 관계 매핑**
+
+### **7.3.1 식별 관계 vs 비식별 관계**
