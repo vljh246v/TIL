@@ -273,3 +273,191 @@
 ## **7.3 복합 키와 식별 관계 매핑**
 
 ### **7.3.1 식별 관계 vs 비식별 관계**
+
+- 데이터베이스 테이블 사이에 관계는 외래 키가 기본 키에 포함되는지 여부에 따라 식별 관계와 비식별 관계로 구분한다.
+
+**식별 관계**
+
+- 식별 관계는 부모 테이블의 기본 키를 내려받아서 자식 테이블의 기본 키 + 외래키로 사용하는 관계다.
+  ![식별 관계](https://lh3.googleusercontent.com/pw/ACtC-3fu8QiFnLOR3iVlJXCKF6UF1JVPYbEk5X_X6_Xuc6lFk72qeq2nF-Byzc_tZAJ6Hv6L9ZXTb6Dd6l9tM12pVBaICMvHsyhTL_TF10bG1IrHnUK78xupiYWsNLJgy2ivfwNIuL4tYfGhjVkQdtwMQOVA9w=w613-h173-no?authuser=0)
+
+**비식별 관계**
+
+- 비식별 관계는 부모 테이블의 기본 키를 받아서 자식 테이블의 외래 키로만 사용하는 관계다
+
+  ![비식별 관계](https://lh3.googleusercontent.com/pw/ACtC-3fDPRk4hbbRey_4GWTVO1L3hVRx0g4U_gNwtxXoJdzsNRAO7g8_gPWY5RovZ-LGTAROJLJ1Ejx5Cp8yl4dcdcFx0wffcMeTJNdyBsnzeixuhRH7xdbEiV_u88z-WXtiAVcZLXTvdKXYVQZnEsAIKNEcHQ=w619-h401-no?authuser=0)
+
+  - 필수적 비식별 관계 : 외래 키에 NULL을 허용하지 않는다. 연관관계를 필수적으로 맺어야 한다.
+  - 선택적 비식별 관계 : 외래 키에 NULL을 허용한다. 연관관계를 맺을지 말지 선택할 수 있다.
+
+### **7.3.2 복합키 : 비식별 관계 매핑**
+
+- JPA에서 식별자를 둘 이상 사용하려면 별도의 식별자 클래스를 만들어야 한다.
+
+  ```java
+  @Entity
+  public class Hello {
+    @Id
+    private String id1;
+
+    @Id
+    private String id2; // 에러!!!!!!
+  }
+  ```
+
+- JPA는 영속성 컨텍스트에 엔티티를 보관할 때 엔티티의 식별자를 키로 사용한다.
+- 그리고 식별자를 구분하기 위해 equals 와 hashCode를 사요해서 동등성 비교를 한다.
+- 식별자 필드가 2개 이상이면 별도의 식별자 클래스를 만들고 그곳에 equals와 hashCode를 구현해야 한다.
+- JPA는 복합 키를 지원하기 위해 @IdClass 와 @EmbeddedId 2가지 방법을 제공하는데 @IdClass는 관계형 데이터베이스에 가까운 방법이고 @EmbeddedId는 좀더 객체지향에 가까운 방법이다.
+
+**@IdClass**
+
+- 복합 키 테이블은 비식별 관계고 PARENT는 복합 기본 키를 사용한다.
+
+  ![복합 키 테이블](https://lh3.googleusercontent.com/pw/ACtC-3eEh8npMlx_7PxxSufaENW1Hgt0V1yGKPRza08hwfBtSqht_zYil9ieJSeh2_A8h_KkQ44Lc7GNF03PH6QdyTlgzXgE_BPovcH2I7qcpnnrv0aLqKWkH4ofOhP8A7SyAPs437jRqTmGtDaL8zROEM7aXQ=w535-h190-no?authuser=0)
+
+- 기본 키를 PARENT_ID1, PARENT_ID2로 묶은 복합 키로 구성했다.
+- 복합 키를 매핑하기 위해 식별자 클래스를 별도로 만들어야 한다.
+
+  ```java
+  @Entity
+  @IdClass(ParentId.class)
+  public class Parent {
+
+    @Id
+    @Column(name = "PARENT_ID1")
+    private String id1;
+
+    @Id
+    @Column(name = "PARENT_ID2")
+    private String id2;
+
+    private String name;
+  }
+  ```
+
+- 각각 기본 키 컬럼을 @Id로 매핑했다. 그리고 @IdClass를 사용해서 ParentId 클래스를 식별자 클래스로 지정했다
+
+  ```java
+  @NoArgsConstructor // lombok 사용
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  public class ParentId implements Serializable {
+
+    private String id1;
+    private String id2;
+  }
+  ```
+
+- @IdClass를 사용할 때 식별자 클래스는 다음 조건을 만족 해야 한다
+
+  - 식별자 클래스의 속성명과 엔티티에서 사용하는 식별자의 속성명이 같아야 한다.
+  - Serializable 인터페이스를 구현해야 한다.
+  - equals, hashCode 를 구현해야 한다.
+  - 기본 생성자가 있어야 한다.
+  - 식별자 클래스는 public이어야 한다.
+
+  ```java
+  // 저장
+  Parent parent = new Parent();
+  parent.setId1("myId1");
+  parent.setId2("myId2");
+  parent.setName("parentName");
+  em.persist(parent);
+  ```
+
+- em.persist(parent)을 통해 영속성 컨텍스트에 등록하기 직전, 내부에서 ParentId 클래스를 생서해 영속성 컨텍스트의 키로 사용한다.
+
+  ```java
+  ParentId parentId = new ParentId("myId1", "myId2");
+  Parent resultParent = em.find(Parent.class, parentId);
+  ```
+
+- 부모 테이블의 기본 키 컬럼이 복합 키이므로 자식 테이블의 외래 키도 복합 키다.
+
+  ```java
+  @Entity
+  public class Child {
+
+    @Id
+    private String id;
+
+    @ManyToOne
+    @JoinColumns({
+        @JoinColumn(name = "PARENT_ID1", referencedColumnName = "PARENT_ID1"),
+        @JoinColumn(name = "PARENT_ID2", referencedColumnName = "PARENT_ID2")
+
+    })
+    private Parent parent;
+  }
+  ```
+
+**@EmbeddedId**
+
+- @IdClass가 데이터베이스에 맞춘 방법이라면 @EmbeddedId는 좀 더 객체지향적인 방법이다.
+
+  ```java
+  @Entity
+  public class Parent {
+
+    @EmbeddedId
+    private ParentId id;
+
+    private String name;
+  }
+  ```
+
+- Parent 엔티티에서 식별자 클래스를 직접 사용하고 @EmbeddedId 어노테이션을 붙여주면 된다.
+
+  ```java
+  @NoArgsConstructor // lombok 사용
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  @Embeddable
+  public class ParentId implements Serializable {
+
+    @Column(name = "PARENT_ID1")
+    private String id1;
+
+    @Column(name = "PARENT_ID2")
+    private String id2;
+  }
+  ```
+
+- @EmbeddedId를 적용한 식별자 클래스는 다음 조건을 만족해야 한다.
+
+  - @Embeddable 어노테이션을 붙여주어야 한다.
+  - Serializable 인터페이스를 구현해야 한다.
+  - equals, hashCode 를 구현해야 한다.
+  - 기본 생성자가 있어야 한다.
+  - 식별자 클래스는 public이어야 한다.
+
+  ```java
+  // 저장
+  Parent parent = new Parent();
+  ParentId parentId = new ParentId("myId1", "myId2");
+  parent.setId(parentId);
+  parent.setName("parentName");
+  em.persist(parent);
+
+  ...
+
+  // 조회
+  ParentId parentId = new ParentId("myId1", "myId2");
+  Parent resultParent = em.find(Parent.class, parentId);
+  ```
+
+- 조회 코드도 식별자 클래스 parentId를 직접 사용한다.
+
+**복합 키와 equals(), hashCode()**
+
+- 영속성 컨텍스트는 엔티티의 식별자를 키로 사용해서 엔티티를 관리한다.
+- 식별자를 비교할 때 equals()와 hashCode()를 사용한다.
+- 따라서 복합키는 equals()와 hashCode()를 필수로 사용해야 한다.
+
+**@IdClass vs @EmbeddedId**
+
+- @EmbeddedId가 @IdClass비교해서 더 객체지향적이다.
+- 특정 상황에서 JPQL이 더 길어질 수 있다.
+
+### **7.3.3 복합 키: 식별 관계 매핑**
