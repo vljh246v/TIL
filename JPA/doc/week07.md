@@ -640,3 +640,101 @@
   ```
 
 - @EmbeddedId는 식별 관계로 사용할 연관관계의 속성에 @MapsId를 사용하면 된다.
+
+### **7.3.4 비식별 관계로 구현**
+
+- 예제를 비식별 관계로 변경하면 아래와 같다.
+
+  ![비식별 관계로 변경](https://lh3.googleusercontent.com/pw/ACtC-3c3rbAanduBtMdTe8TL_vaZhD6lHTrz1fsgYk2eFieR0uG3JnH6g2fXWGV0OlJfx3lu3J4sL2Hjhygr-1QBr0RWM3FWoCvY5k9_k1Fck42eR3LoSrdPZs6ULm6niYtpCxp2XRdUTy8doZfpadfR6YqTDw=w743-h164-no?authuser=0)
+
+  ```java
+  // 부모
+  @Entity
+  public class Parent {
+
+    @Id @GeneratedValue
+    @Column(name = "PARENT_ID")
+    private Long id;
+
+    private String name;
+  }
+
+  ...
+
+  // 자식
+  @Entity
+  public class Child {
+
+    @Id @GeneratedValue
+    @Column(name = "CHILD_ID")
+    private Long id;
+
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "PARENT_ID")
+    private Parent parent;
+  }
+
+  ...
+
+  // 손자
+  @Entity
+  public class GrandChild {
+
+    @Id @GeneratedValue
+    @Column(name = "GRANDCHILD_ID")
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "CHILD_ID")
+    private Child child;
+
+    private String name;
+  }
+  ```
+
+- 복합키 매핑보다 매핑도 쉽고 코드도 단순하다.
+
+### **7.3.5 일대일 식별 관계**
+
+- 일대일 식별 관계는 자식 테이블의 기본 키 값으로 부모 테이블의 기본 키 값만 사용한다.
+  ![식별 관계 일대일](https://lh3.googleusercontent.com/pw/ACtC-3dnryeUpeoWnxTCqgQsp3TEBcVnP6I0I9Q0QZCsTs7d5KslYB7uS0wSkO1TXOZrpKO3uCL6Nu9qN3Bq57bU9Gt-yoEE349k3CyQu0w7e8o8NWF9IDobq2lpL0gec_8WwB44ACer_AXSYuH3yU0kN12DhA=w514-h143-no?authuser=0)
+
+- 부모 테이블의 기본 키가 복합 키가 아니면 자식 테이블의 기본 키는 복합 키로 구성하지 않아도 된다.
+
+  ```java
+  // 부모
+  @Entity
+  public class Board {
+
+    @Id  @GeneratedValue
+    @Column(name = "BOARD_ID")
+    private Long id;
+
+    private String title;
+
+    @OneToOne(mappedBy = "board")
+    private BoardDetail boardDetail;
+  }
+
+  ...
+
+  // 자식
+  @Entity
+  public class BoardDetail {
+
+    @Id
+    private Long boardId;
+
+    @MapsId //BoardDetail.boardId 매핑
+    @OneToOne
+    @JoinColumn(name = "BOARD_ID")
+    private Board board;
+
+    private String content;
+  }
+  ```
+
+### **7.3.6 식별, 비식별 관계의 장단점**
+
