@@ -27,6 +27,7 @@ reportWebVitals();
 
 console.log('process.env.NODE_ENV', process.env.NODE_ENV)
 console.log('process.env.REACT_APP_API_URI', process.env.REACT_APP_API_URL)
+console.log('process.env.REACT_APP_TEMP1', process.env.REACT_APP_TEMP1)
 
 // REACT_APP_*
 // REACT_APP_API_URL=api.myapp.com npm start
