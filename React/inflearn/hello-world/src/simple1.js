@@ -14,7 +14,7 @@ function Container() {
                 <span style={{marginTop: 20}}>
                     현재 카운트 : 
                 </span>
-                <span style={{marginRight: 10}}>
+                <span style={{marginRight: 10, color: 'red'}}>
                     {count}
                 </span>
                 <button onClick={() => setCount(count + 1) }>

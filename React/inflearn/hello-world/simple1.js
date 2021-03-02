@@ -14,7 +14,8 @@ function Container() {
     }
   }, "\uD604\uC7AC \uCE74\uC6B4\uD2B8 :"), /*#__PURE__*/React.createElement("span", {
     style: {
-      marginRight: 10
+      marginRight: 10,
+      color: 'red'
     }
   }, count), /*#__PURE__*/React.createElement("button", {
     onClick: () => setCount(count + 1)
