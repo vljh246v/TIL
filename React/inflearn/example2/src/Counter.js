@@ -4,8 +4,7 @@ import Title from './Title';
 export default function Counter(){
     const [count, setCount] = useState({value:0});
     function onClick() {
-        count.value += 1;
-        setCount(count);
+        setCount({...count, value: count.value + 1});
     }
 
     return (
