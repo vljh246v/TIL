@@ -43,7 +43,7 @@ import React, { useState, useEffect} from 'react';
 // import React, { useState} from 'react'
 // import Profile from './Profile'
 
-// export default App(){
+// export default function App(){
 //     const [userId, setUserId] = useState(0)
 //     return (
 //         <>
@@ -53,14 +53,14 @@ import React, { useState, useEffect} from 'react';
 //     )
 // }
 
-import WidthPrinter from './WidthPrinter';
+// import WidthPrinter from './WidthPrinter';
 
-export default function App() {
-    const [count, setCount] = useState(0);
-    return (
-        <>
-            {count === 0 && <WidthPrinter/>}
-            <button onClick = {() => setCount(count + 1)}>증가</button>
-        </>
-    );
-}
+// export default function App() {
+//     const [count, setCount] = useState(0);
+//     return (
+//         <>
+//             {count === 0 && <WidthPrinter/>}
+//             <button onClick = {() => setCount(count + 1)}>증가</button>
+//         </>
+//     );
+// }
