@@ -27,14 +27,15 @@
 
 import React, { useState, useEffect} from 'react'
 
-export default function App() {
-    const[count1, setCount1] = useState(0);
-    const[count2, setCount2] = useState(0);
-    function onClick() {
-        setCount1(count1 + 1);
-        setCount2(count2 + 1);
-    }
-
-    const result = count1 >= count2;
-    ...
+export default function App(){
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        document.title = `업데이트 횟수: ${count}`
+    })
+    console.log('render called');
+    return (
+        <button onClick={() => setCount(count + 1)}>
+            increase
+        </button>
+    )
 }
