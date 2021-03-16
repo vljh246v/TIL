@@ -58,3 +58,13 @@
   - 설정 방법 : @ManeyToOne(fetch = FetchType.LAZY)
 
 ### **8.2.1 즉시 로딩**
+- 즉시 로딩을 사용하려면 @ManyToOne 의 fetch 속성을 FetchType.EAGER 로 지정한다.
+- @ManyToOne(fetch = FetchType.EAGER)
+- JPA 구현체는 즉시 로딩을 최적화 하기위해 가능하면 조인 쿼리를 사용한다.
+- NOT NULL 제약조건을 사용하면 실제로 INNER JOIN 을 사용한다.-> 최적화에 유리
+
+### **8.2.2 지연로딩**
+- 지연 로딩을 사용하려면 @ManyToOne의 fetch 속성을 FetchType.LAZY 로 지정한다.
+- 실제 프록시 객체를 사용해서 사용될 때까지 데이터 로딩을 미룬다.
+
+## **8.3 지연 로딩 활용**
