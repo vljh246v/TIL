@@ -25,17 +25,30 @@
 //     )
 // }
 
-import React, { useState, useEffect} from 'react'
+// import React, { useState, useEffect} from 'react'
+
+// export default function App(){
+//     const [count, setCount] = useState(0);
+//     useEffect(() => {
+//         document.title = `업데이트 횟수: ${count}`
+//     })
+//     console.log('render called');
+//     return (
+//         <button onClick={() => setCount(count + 1)}>
+//             increase
+//         </button>
+//     )
+// }
+
+import React, { useState} from 'react'
+import Profile from './Profile'
 
 export default function App(){
-    const [count, setCount] = useState(0);
-    useEffect(() => {
-        document.title = `업데이트 횟수: ${count}`
-    })
-    console.log('render called');
+    const [userId, setUserId] = useState(0)
     return (
-        <button onClick={() => setCount(count + 1)}>
-            increase
-        </button>
+        <>
+            <Profile userId={userId}></Profile>
+            <button onClick={() => setUserId(userId + 1)}>User Id 변경</button>
+        </>
     )
 }
