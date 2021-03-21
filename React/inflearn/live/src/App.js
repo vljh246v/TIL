@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+// import React, { useState, useEffect} from 'react';
 // import ReactDOM from 'react-dom';
 
 // export default function App(){
@@ -53,14 +53,68 @@ import React, { useState, useEffect} from 'react';
 //     )
 // }
 
-import WidthPrinter from './WidthPrinter';
+// import WidthPrinter from './WidthPrinter';
 
-export default function App() {
+// export default function App() {
+//     const [count, setCount] = useState(0);
+//     return (
+//         <>
+//             {count === 0 && <WidthPrinter/>}
+//             <button onClick = {() => setCount(count + 1)}>증가</button>
+//         </>
+//     );
+// }
+
+
+// 5 - context
+
+import React, {createContext, useState, useContext} from 'react';
+
+// const UserContext = createContext('unknown');
+
+// export default function App() {
+//     const [name, setName] = useState('mike');
+//     return (
+//         <div>
+//             <UserContext.Provider value={name}>
+//                 <div>상단 메뉴</div>
+//                 <Profile></Profile>
+//                 <div>하단 메뉴</div>
+//                 <input type="text" value={name} onChange={e => setName(e.target.value)}/>
+//             </UserContext.Provider>
+//         </div>
+//     );
+// }
+
+const UserContext = createContext({username: 'unknown', helloCount: 0});
+
+
+export default function App(){
+    // const [username, setUsername] = useState('demo');
+    const [user, setUser] = useState({username: 'demo', age: 31});
     const [count, setCount] = useState(0);
+    console.log('App render')
     return (
-        <>
-            {count === 0 && <WidthPrinter/>}
-            <button onClick = {() => setCount(count + 1)}>증가</button>
-        </>
+        <div>
+            <UserContext.Provider value={user}>
+                <Profile/>
+                <button onClick={() => setCount(count + 1)}>증가</button>
+            </UserContext.Provider>
+        </div>
     );
+}
+
+const Profile = React.memo(function () {
+    return (
+        <div>
+            <Greeting></Greeting>
+            {/* ... */}
+        </div>
+    );
+});
+
+function Greeting() {
+    console.log('Greeting render')
+    const {username} = useContext(UserContext)
+    return <p>{`${username}님 안녕하세요`}</p>
 }
