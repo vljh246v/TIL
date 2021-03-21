@@ -68,7 +68,7 @@
 
 // 5 - context
 
-import React, {createContext, useState, useContext} from 'react';
+// import React, {createContext, useState, useContext} from 'react';
 
 // const UserContext = createContext('unknown');
 
@@ -86,35 +86,56 @@ import React, {createContext, useState, useContext} from 'react';
 //     );
 // }
 
-const UserContext = createContext({username: 'unknown', helloCount: 0});
+// const UserContext = createContext({username: 'unknown', helloCount: 0});
 
+
+// export default function App(){
+//     // const [username, setUsername] = useState('demo');
+//     const [user, setUser] = useState({username: 'demo', age: 31});
+//     const [count, setCount] = useState(0);
+//     console.log('App render')
+//     return (
+//         <div>
+//             <UserContext.Provider value={user}>
+//                 <Profile/>
+//                 <button onClick={() => setCount(count + 1)}>증가</button>
+//             </UserContext.Provider>
+//         </div>
+//     );
+// }
+
+// const Profile = React.memo(function () {
+//     return (
+//         <div>
+//             <Greeting></Greeting>
+//             {/* ... */}
+//         </div>
+//     );
+// });
+
+// function Greeting() {
+//     console.log('Greeting render')
+//     const {username} = useContext(UserContext)
+//     return <p>{`${username}님 안녕하세요`}</p>
+// }
+
+
+
+// 6 - ref
+import React, { useRef, useEffect} from 'react';
 
 export default function App(){
-    // const [username, setUsername] = useState('demo');
-    const [user, setUser] = useState({username: 'demo', age: 31});
-    const [count, setCount] = useState(0);
-    console.log('App render')
+    // useRef 훅을 사용
+    const inputRef = useRef();
+    useEffect(() => {
+        inputRef.current.focus();
+    }, []);
+
     return (
         <div>
-            <UserContext.Provider value={user}>
-                <Profile/>
-                <button onClick={() => setCount(count + 1)}>증가</button>
-            </UserContext.Provider>
+            {/* 반환하는 속성값에 useRef에서 return 값을 입력해주면 됨 */}
+            <input type="text" ref={inputRef} /> 
+            <button>저장</button>
         </div>
-    );
-}
-
-const Profile = React.memo(function () {
-    return (
-        <div>
-            <Greeting></Greeting>
-            {/* ... */}
-        </div>
-    );
-});
-
-function Greeting() {
-    console.log('Greeting render')
-    const {username} = useContext(UserContext)
-    return <p>{`${username}님 안녕하세요`}</p>
+    )
 }
