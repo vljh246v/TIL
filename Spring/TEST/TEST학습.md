@@ -144,3 +144,11 @@ public class WebMockTest {
 }
 
 ```
+
+
+# 2. Repository Test
+
+- Jap 에서 기본적으로 제공해주는 기본적인 메소드(findAll, findById 등등)는 테스트가 필요 없다고 생각함
+- 해당 이유는 어차피 JPA 에서 제공해 주는 기능이기 때문 
+- 그렇기 때문에 테스트 대상은 native query, JPQL 등 개발자가 작성한 쿼리가 동작하는 메서드이다.
+- entity 의 null 및 validation 체크등은 테스트 대상이라고 생각함
