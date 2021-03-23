@@ -1,3 +1,38 @@
+import React, {createContext, useState, useContext} from 'react';
+
+const UserContext = createContext({username: 'unknown', helloCount: 0});
+const SetUserContext = createContext(() => {});
+
+export default function App(){
+    const [user, setUser] = useState({username: 'mike', helloCount: 0})
+    return (
+        <div>
+            <SetUserContext.Provider value={setUser}>
+                <UserContext.Provider value={user}>
+                    <Profile/>
+                </UserContext.Provider>
+            </SetUserContext.Provider>
+        </div>
+    );
+}
+
+
+function Profile() {
+    const setUser = useContext(SetUserContext);
+    const {username, helloCount} = useContext(UserContext);
+
+    return (
+        <React.Fragment>
+            <p>{`${username}님 안녕하세요`}</p>
+            <p>{`인사 횟수 : ${helloCount}`}</p>
+            <button onClick={() => setUser({username, helloCount: helloCount + 1})}>
+                인사하기
+            </button>
+        </React.Fragment>
+    )
+}
+
+
 // import React, { useState, useEffect} from 'react';
 // import ReactDOM from 'react-dom';
 
@@ -509,26 +544,26 @@
 // }
 
 
-import React from 'react';
-import useChangeAppState, {
-    STATE_START,
-    STATE_RUNNING,
-} from './useChangeAppState'
+// import React from 'react';
+// import useChangeAppState, {
+//     STATE_START,
+//     STATE_RUNNING,
+// } from './useChangeAppState'
 
-export default function App() {
-     const [state, next] = useChangeAppState(true);
-     const msg = 
-        state === STATE_START
-        ? '앱 시작'
-        : state === STATE_RUNNING
-        ? '앱 실행 중'
-        : '앱 종료';
+// export default function App() {
+//      const [state, next] = useChangeAppState(true);
+//      const msg = 
+//         state === STATE_START
+//         ? '앱 시작'
+//         : state === STATE_RUNNING
+//         ? '앱 실행 중'
+//         : '앱 종료';
 
-    return (
-        <div>
-            <p>{msg}</p>
-            <button onClick={next}>next</button>
-        </div>
-    )
+//     return (
+//         <div>
+//             <p>{msg}</p>
+//             <button onClick={next}>next</button>
+//         </div>
+//     )
 
-}
+// }
