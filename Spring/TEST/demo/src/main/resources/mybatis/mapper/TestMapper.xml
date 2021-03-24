@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.teststudy.demo.mapper.TestMapper">
+
+  <select id="findById" resultType="com.demo.teststudy.demo.dto.TestDTO">
+    SELECT * FROM test WHERE id = #{id}
+  </select>
+
+  <insert id="save"
+    useGeneratedKeys="true"
+    keyProperty="id"
+    parameterType="com.demo.teststudy.demo.dto.TestDTO">
+    INSERT INTO TEST (code)  values (#code)
+  </insert>
+</mapper>
