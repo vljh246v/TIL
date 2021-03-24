@@ -206,7 +206,7 @@
   
   export default function App(){
       // state는 현재 상태, dispatch는 액션을 발생시키는 함수
-      const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+      const [state, dispatch] = useReducer(reducer1, INITIAL_STATE);
       return (
           <div>
               <p>{`name is ${state.name}`}</p>
@@ -230,7 +230,7 @@
   
   const INITIAL_STATE = {name: 'empty', age: 0};
   const MAX_AGE = 50;
-  function reducer(state, action) {
+  function reducer1(state, action) {
       // 상태값과 action이 입력이 되고, action 을 보고 상태값을 어떻게 변경할지
       switch (action.type) {
           case 'setName':

@@ -67,7 +67,7 @@
         <!-- Provider 에서 value 값을 지정해주면 Consumer에서 사용가능 -->
           <UserContext.Consumer>
             <!--render prop 패턴,  children 함수를 호출함 -->
-              {username => <p>{`${username}님 안녕하세요`}</p>}
+              {value => <p>{`${value}님 안녕하세요`}</p>}
           </UserContext.Consumer>
       );
   }

@@ -14,13 +14,16 @@
   export default function App(){
       // useRef 훅을 사용
       const inputRef = useRef();
+    	const divRef = useRef();
       useEffect(() => {
         // dom 랜더링 이후에 접근 가능해서 부수효과 함수 안에서 사용
           inputRef.current.focus();
+  //       	divRef.current 다음 발표 과제~
       }, []);
   
       return (
           <div>
+          		<div ref={divRef}></div>
               {/* 반환하는 속성값에 useRef에서 return 값을 입력해주면 됨 */}
               <input type="text" ref={inputRef} /> 
               <button>저장</button>
