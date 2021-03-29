@@ -1,10 +1,10 @@
 package com.demo.teststudy.demo.service;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-import static org.assertj.core.api.Assertions.assertThat;
+
 
 import com.demo.teststudy.demo.vo.Args;
 import com.demo.teststudy.demo.vo.Rest;
@@ -45,6 +45,7 @@ public class RestClientTestServiceTest {
     Rest api = restClientTestService.getApi();
 
     // then
-    assertThat(api.getArgs().getA()).isEqualTo(rest.getArgs().getA());
+//    assertThat(api.getArgs().getA()).isEqualTo(rest.getArgs().getA());
+    assertThat(api.getArgs().getA(), is(rest.getArgs().getA()));
   }
 }

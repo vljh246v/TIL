@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-import com.demo.teststudy.demo.controller.GreetingController;
-import com.demo.teststudy.demo.service.GreetingService;
+import com.demo.teststudy.demo.controller.*;
+import com.demo.teststudy.demo.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
