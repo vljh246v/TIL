@@ -1,15 +1,16 @@
-package com.demo.teststudy.demo;
+package com.demo.teststudy.demo.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.demo.teststudy.demo.mapper.*;
-import com.demo.teststudy.demo.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @DataJpaTest
-public class TestRepositoryTest {
+class TestRepositoryTest {
+
 
   @Autowired
   TestRepository testRepository;
@@ -18,4 +19,5 @@ public class TestRepositoryTest {
   public void testRepositoryLoads() {
     assertThat(testRepository).isNotNull();
   }
+
 }
