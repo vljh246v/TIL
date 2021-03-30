@@ -152,7 +152,7 @@
 - 병렬 처리를 통해 다중화할수록 통신량이 많아지고, 대역폭이 최대치에 가까운 처리량을 실현할 수 있다.
 - '압축'을 사용해서 전송량을 줄이는 것도 한 가지 접근 방법이 될 수 있다.
 - 또한 네트워크에서 사용하는 프로토콜 종류 또한 신경을 써야한다.
-  ![파일 전송 병렬화](img/file-transfer-parallelization.jpeg)
+  ![파일 전송 병렬화](img/file-transfer-parallelization.file-transfer-parallelization.jpg)
 
 **네트워크 경로의 병목 현상**
 - 네트워크에서는 눈에 보이지 않는 부분이 병목 지점이 되기 쉽다.
