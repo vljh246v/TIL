@@ -2,7 +2,6 @@ package com.demo.teststudy.demo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.demo.teststudy.demo.mapper.*;
 import com.demo.teststudy.demo.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

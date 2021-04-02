@@ -5,10 +5,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Builder;
 
+@Builder
 @Entity
 @Table(name = "TEST")
-public class Test {
+public class TestEntity {
 
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
