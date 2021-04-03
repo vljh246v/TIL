@@ -66,3 +66,9 @@
     }
     ```
 - 새롭개 생성된 thread 에서는 SecurityContext가 공유가 안된다.
+- SecurityContext에는 SecurityContext를 어떻게 유지할 것인가에 대한 Strategy를 설정할 수 있음 (기본은 Threadlocal)
+    ![SecurityContext 속성](https://lh3.googleusercontent.com/pw/ACtC-3dnpiDg-CPBdEK6dMFxENBicp6gBPZW7HuMtQKH4AqWPlSAXHbtnbYMD3y6ELy6kI9GFxuia7NXOXLagyFmndwqSNp0nt5T5FIfjDUv9T6kUadxrhoKGX4EpnFK9lw4uY9r0NW7rlU9btUo0FR0U0saSg=w733-h154-no?authuser=0)
+- MODE_INHERITABLETHREADLOCAL 모드는 현재 스레드에서 생성하는 하위 스레드에서도 SecurityContext가 공유 된다.
+    ```java
+    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    ```
