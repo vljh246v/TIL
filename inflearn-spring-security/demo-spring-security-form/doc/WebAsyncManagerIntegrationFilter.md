@@ -42,3 +42,27 @@
 
 -   PreProcess 에서 시큐리티 컨텍스트를 새로 생성한다.
 -   PostProcess 에서 시큐리티 컨텍스트를 정리 한다.
+
+# 스프링 시큐리티와 @Async
+- @Async 어노테이션이 붙으면 해당 메소드를 새로은 thread로 실행한다.
+- 일반적으로 @Async가 붙은 메소드 내부에서 SecurityContextHolder를 호출하면 null을 반환한다.
+
+    ```java
+    @Async
+    public void asyncService() {
+        SecurityLogger.log("Async Service");
+        System.out.println("Async service is called");
+    }
+    ...
+    public class SecurityLogger {
+
+        public static void log(String message){
+            System.out.println(message);
+            Thread thread = Thread.currentThread();
+            System.out.println("Thread name : " + thread.getName());
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            System.out.println("principal : " + principal);
+        }
+    }
+    ```
+- 새롭개 생성된 thread 에서는 SecurityContext가 공유가 안된다.
