@@ -569,24 +569,96 @@ import React, {createContext, useState, useContext, useEffect} from 'react';
 // }
 
 
+// export default function App(){
+//     return (
+//         <div>
+//             실전 리엑트 <Profile/>
+//         </div>
+//     );
+// }
+
+
+// function Profile ({userId}) {
+//     const [user, setUser] = useState();
+//     const [needDetail, setNeedDetail] = useState();
+//     useEffect(() => {
+//         fetchUser(userId, needDetail).then(data => setUser(data));
+//     }, [userId, needDetail]);
+
+//     console.log(user, setNeedDetail);
+//     return null;
+// }
+
+// function fetchUser(){}
+
+
+// export default function App(){
+//     return <SelectFruit/>
+// }
+
+// function SelectFruit() {
+//     const [fruits, setFruits] = useState(['apple', 'banana', 'orange']);
+//     const [newFruit, setNewFruit] = useState('');
+
+//     function addNewFruit() {
+//         setFruits([...fruits, newFruit]);
+//         setNewFruit('');
+//     }
+//     return (
+//         <div>
+//             <Select options={fruits}/>
+//             <input
+//                 type="text"
+//                 value={newFruit}
+//                 onChange={e => setNewFruit(e.target.value)}
+//             />
+//             <button onClick={addNewFruit}>추가하기</button>
+//         </div>
+//     );
+// }
+
+// const Select = React.memo(({options}) => (
+//     <div>
+//         {options.map(item => (
+//             <p>{item}</p>
+//         ))}
+//     </div>
+// ));
+
+
 export default function App(){
-    return (
-        <div>
-            실전 리엑트 <Profile/>
-        </div>
-    );
-}
-
-
-function Profile ({userId}) {
-    const [user, setUser] = useState();
-    const [needDetail, setNeedDetail] = useState();
+    const [flag, setFlag] = useState(true);
     useEffect(() => {
-        fetchUser(userId, needDetail).then(data => setUser(data));
-    }, [userId, needDetail]);
-
-    console.log(user, setNeedDetail);
-    return null;
+        setTimeout(() => {
+            setFlag(prev => !prev);
+        }, 1000);
+    });
+    console.log('App')
+    if(flag){
+        return (
+            <div>
+                <Counter />
+                <p>사과</p>
+                <p>바나나</p>
+            </div>
+        );
+    } else {
+        return (
+            <span>
+                <Counter />
+                <p>사과</p>
+                <p>바나나</p>
+            </span>
+        );
+    }
 }
 
-function fetchUser(){}
+function Counter() {
+    const [count, setCount] = useState(0);
+    console.log('Counter')
+    useEffect(() => {
+        const id = setTimeout(() => setCount(prev => prev + 1), 100);
+        return () => clearTimeout(id);
+    });
+    return <p>count : {count}</p>
+}
