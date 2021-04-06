@@ -1,36 +1,36 @@
-import React, {createContext, useState, useContext} from 'react';
+import React, {createContext, useState, useContext, useEffect} from 'react';
 
-const UserContext = createContext({username: 'unknown', helloCount: 0});
-const SetUserContext = createContext(() => {});
+// const UserContext = createContext({username: 'unknown', helloCount: 0});
+// const SetUserContext = createContext(() => {});
 
-export default function App(){
-    const [user, setUser] = useState({username: 'mike', helloCount: 0})
-    return (
-        <div>
-            <SetUserContext.Provider value={setUser}>
-                <UserContext.Provider value={user}>
-                    <Profile/>
-                </UserContext.Provider>
-            </SetUserContext.Provider>
-        </div>
-    );
-}
+// export default function App(){
+//     const [user, setUser] = useState({username: 'mike', helloCount: 0})
+//     return (
+//         <div>
+//             <SetUserContext.Provider value={setUser}>
+//                 <UserContext.Provider value={user}>
+//                     <Profile/>
+//                 </UserContext.Provider>
+//             </SetUserContext.Provider>
+//         </div>
+//     );
+// }
 
 
-function Profile() {
-    const setUser = useContext(SetUserContext);
-    const {username, helloCount} = useContext(UserContext);
+// function Profile() {
+//     const setUser = useContext(SetUserContext);
+//     const {username, helloCount} = useContext(UserContext);
 
-    return (
-        <React.Fragment>
-            <p>{`${username}님 안녕하세요`}</p>
-            <p>{`인사 횟수 : ${helloCount}`}</p>
-            <button onClick={() => setUser({username, helloCount: helloCount + 1})}>
-                인사하기
-            </button>
-        </React.Fragment>
-    )
-}
+//     return (
+//         <React.Fragment>
+//             <p>{`${username}님 안녕하세요`}</p>
+//             <p>{`인사 횟수 : ${helloCount}`}</p>
+//             <button onClick={() => setUser({username, helloCount: helloCount + 1})}>
+//                 인사하기
+//             </button>
+//         </React.Fragment>
+//     )
+// }
 
 
 // import React, { useState, useEffect} from 'react';
@@ -567,3 +567,26 @@ function Profile() {
 //     )
 
 // }
+
+
+export default function App(){
+    return (
+        <div>
+            실전 리엑트 <Profile/>
+        </div>
+    );
+}
+
+
+function Profile ({userId}) {
+    const [user, setUser] = useState();
+    const [needDetail, setNeedDetail] = useState();
+    useEffect(() => {
+        fetchUser(userId, needDetail).then(data => setUser(data));
+    }, [userId, needDetail]);
+
+    console.log(user, setNeedDetail);
+    return null;
+}
+
+function fetchUser(){}
