@@ -1,0 +1,14 @@
+# HeaderWriterFilter
+- 응답 헤더에 시큐리티 관련 헤더를 추가해주는 필터
+- 기본적으로 5개의 Header Writer가 적용
+  - XContentTypeOptionHeaderWriter
+    - 마임 타입 스니핑 방어
+    - 마임 타입 스니핑 방어 : 브라우저들이 마임 타입을 지정된 형식 이외의 형식으로 분석하려고 할때 필요함, 실행할 수 없는 타입을 실행하려고 시도하다 보안상 이슈가 발생할 수 있음
+    - 값을 nosniff 로 설정하면 설정된 컨텐츠 타입으로만 랜덩링 하게 되어 있음
+  - XXssProtectionHeaderWriter
+    - 브라우저에 내장된 XSS 필터 적용
+  - CacheControlHeadersWriter
+    - 캐시 히스토리 취약점 방어
+    - 민감한 정보가 노출 될 수 있는 동적 페이지는 캐시를 사용하지 않도록 설정
+  - HstsHeaderWriter : HTTPS로만 소통하도록 강제
+  - XFrameOptionsHeaderWriter : clickjacking 방어
