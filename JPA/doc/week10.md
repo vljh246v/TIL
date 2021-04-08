@@ -6,3 +6,6 @@
 - JPQL
 - Criterai
 - 네이티브 SQL
+
+
+식별자로 조회  : EntityManager.find();
