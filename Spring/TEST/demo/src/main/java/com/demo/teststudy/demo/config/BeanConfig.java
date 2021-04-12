@@ -7,8 +7,4 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BeanConfig {
 
-  @Bean(initMethod = "beanInitMethod")
-  public TempBean tempBean(){
-    return new TempBean();
-  }
 }
