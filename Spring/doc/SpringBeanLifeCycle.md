@@ -203,3 +203,7 @@
 
 - 소멸
     ![소멸](https://lh3.googleusercontent.com/pw/ACtC-3fuI7dmJOjdk9FXrNOw38NkS4kHSltn85qN9ufcQSjwPcxFpEFb4Ge8hq8or7QxgF4KmzSONvLK0sAaQSglgadx1B1bypt2uF68-07HM9VvyiDFWC_n-lzc4S1bVRG22mZYRMFBTR4_yKyhKGQkqiC6Kg=w1090-h71-no?authuser=0)
+
+
+## 참고
+[참고](https://madplay.github.io/post/spring-bean-lifecycle-methods)
