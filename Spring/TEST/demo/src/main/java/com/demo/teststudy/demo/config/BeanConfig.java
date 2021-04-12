@@ -7,4 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BeanConfig {
 
+  @Bean(destroyMethod = "beanDestroyMethod", initMethod = "beanInitMethod")
+  public TempBean tempBean(){
+    return new TempBean();
+  }
 }
