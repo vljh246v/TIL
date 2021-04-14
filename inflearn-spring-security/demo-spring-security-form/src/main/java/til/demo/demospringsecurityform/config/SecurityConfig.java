@@ -70,10 +70,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .anyRequest().authenticated()
         .expressionHandler(securityExpressionHandler());
 
+    http.formLogin()
+          .loginPage("/login");// form 로그인을 사용
 
-      http.formLogin() // form 로그인을 사용
-        .and()
-      .httpBasic();
+    http.httpBasic();
+
+    http.logout()
+        .logoutSuccessUrl("/");
+
 
     SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
   }
