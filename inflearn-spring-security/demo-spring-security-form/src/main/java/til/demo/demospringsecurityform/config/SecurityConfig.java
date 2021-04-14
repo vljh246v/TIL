@@ -71,7 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .expressionHandler(securityExpressionHandler());
 
     http.formLogin()
-          .loginPage("/login");// form 로그인을 사용
+          .loginPage("/login") // form 로그인을 사용
+          .permitAll();
 
     http.httpBasic();
 
