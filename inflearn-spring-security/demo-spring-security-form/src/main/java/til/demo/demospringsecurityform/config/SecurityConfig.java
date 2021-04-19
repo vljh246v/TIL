@@ -1,14 +1,19 @@
 package til.demo.demospringsecurityform.config;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
@@ -20,6 +25,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 
@@ -80,12 +87,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.logout()
         .logoutSuccessUrl("/");
 
-    http.sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .sessionFixation()
-          .changeSessionId()
-        .maximumSessions(1) // maximum 세션 수
-          .maxSessionsPreventsLogin(false); // 세로운 세션을 접근 금지
+    // TODO ExceptionTranslationFilter -> FilterSecurityInterceptor
+    // TODO AuthenticationException -> AuthenticationEntryPoint
+    // TODO AccessDeniedException -> AccessDeniedHandler
+
+    http.exceptionHandling()
+        .accessDeniedHandler(new AccessDeniedHandler() {
+          @Override
+          public void handle(HttpServletRequest request, HttpServletResponse response,
+              AccessDeniedException accessDeniedException) throws IOException, ServletException {
+            UserDetails principal = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+            String username = principal.getUsername();
+
+            System.out.println(username + " is denied to access " + request.getRequestURI());
+            response.sendRedirect("/access-denied");
+          }
+        });
+
 
     SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
   }
