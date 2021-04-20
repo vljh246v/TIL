@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -29,10 +30,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import til.demo.demospringsecurityform.account.AccountService;
 
 @Configuration
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+  @Autowired
+  AccountService accountService;
 
   public AccessDecisionManager accessDecisionManager(){
 
@@ -83,6 +89,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           .permitAll();
 
     http.httpBasic();
+
+    http.rememberMe()
+        .userDetailsService(accountService)
+        .key("remeber-me-sample");
 
     http.logout()
         .logoutSuccessUrl("/");
