@@ -14,3 +14,10 @@
     ![](https://lh3.googleusercontent.com/pw/ACtC-3fDo9khgVXb0VVxx0MS-vSIQt2K8GDuto9JB3jasSN5L0hkWr_BA_cTy1iaQ2kOSztQ8Ziv4mfZIWHIlQ9bDYllc-yVbXXriTUNWTDR7WfUwq3PD2hn2SMm6Hc5G9IR7ZjGyidykaFaj1BrdGS7npOPzg=w931-h877-no?authuser=0)
 
 -   exception을 처리하는 필터에서 login 화면을 호출한다.
+
+
+- HTTP 리소스 시큐리티 처리를 담당하는 필터 AccessDecisionManager를 사용하여 인가를 처리한다.
+- http.authorizeRequests() 에서 설정하는 내용을 가지고 확인
+- matc
+  ```java
+  ```
