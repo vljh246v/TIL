@@ -18,6 +18,15 @@
 
 - HTTP 리소스 시큐리티 처리를 담당하는 필터 AccessDecisionManager를 사용하여 인가를 처리한다.
 - http.authorizeRequests() 에서 설정하는 내용을 가지고 확인
-- matc
-  ```java
+- matchers 
+  ```jav
+     http.authorizeRequests() // 어떤 식으로 '인가' 할지
+        .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()
+        .mvcMatchers("/admin").hasRole("ADMIN")
+        .mvcMatchers("/user").hasRole("USER")
   ```
+
+- hasRole, hasAuthority : ROLE_ 를 접두어로 쓰기 때문에 hasRole을 사용
+- anyRequest().anonymous() 를 통해 익명 사용자만 접근가능하게 한다.
+- anyRequest().rememberMe() : rememberMe 기능을 사용한 사용자를 인증하겠다.
+- anyRequest().fullyAuthenticated() : rememberMe 인증이 된 사용자 같은 경우 다시 인증을 요구함
