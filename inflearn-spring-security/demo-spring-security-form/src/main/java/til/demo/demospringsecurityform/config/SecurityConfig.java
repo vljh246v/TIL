@@ -30,7 +30,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import til.demo.demospringsecurityform.account.AccountService;
+import til.demo.demospringsecurityform.common.LoggingFilter;
 
 @Configuration
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
@@ -77,6 +79,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   // 특정 url 기반 접근 설정을 하는 영역
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+
+    http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
+
     http.authorizeRequests() // 어떤 식으로 '인가' 할지
         .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()
         .mvcMatchers("/admin").hasRole("ADMIN")
@@ -91,8 +96,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.httpBasic();
 
     http.rememberMe()
+        .useSecureCookie(true)
         .userDetailsService(accountService)
         .key("remeber-me-sample");
+
 
     http.logout()
         .logoutSuccessUrl("/");

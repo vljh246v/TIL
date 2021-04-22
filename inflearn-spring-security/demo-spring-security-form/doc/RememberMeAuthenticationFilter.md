@@ -22,3 +22,6 @@
     ```
 - 추가를 하면 아래와 같이 필터 목록에 RememberMeAuthenticationFilter가 추가된걸 볼 수 있다.
     ![필터 추가](https://lh3.googleusercontent.com/pw/ACtC-3c7wX5e5Y108QEjIJrLouUPHFWTKcLPtXHk6cfGJPmmxiRnoovfYtTNZe5p5-ewvE-qHJgWypJUpeKjnZz6HjyWogIDcxHRC7J-AW0yHkm2uGNvtIi4cwLGEe-593q2PczK4xs1sd4goZBVo2OevSK0BQ=w786-h697-no?authuser=0)
+
+
+- http.rememberMe().useSecureCookie(true) 설정을 통해 https 쿠키에 접근 가능하도록 설정 가능
