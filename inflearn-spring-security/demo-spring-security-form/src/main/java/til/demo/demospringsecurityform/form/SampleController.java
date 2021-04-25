@@ -4,13 +4,17 @@ import java.security.Principal;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import til.demo.demospringsecurityform.account.Account;
 import til.demo.demospringsecurityform.account.AccountContext;
 import til.demo.demospringsecurityform.account.AccountRepository;
+import til.demo.demospringsecurityform.account.UserAccount;
+import til.demo.demospringsecurityform.common.CurrentUser;
 import til.demo.demospringsecurityform.common.SecurityLogger;
 
 @Controller
@@ -24,11 +28,11 @@ public class SampleController {
   AccountRepository  accountRepository;
 
   @GetMapping("/")
-  public String index(Model model, Principal principal){
-    if(Objects.isNull(principal)){
+  public String index(Model model, @CurrentUser Account account){
+    if(Objects.isNull(account)){
       model.addAttribute("message", "Hello Spring Security");
     } else {
-      model.addAttribute("message", "Hello " + principal.getName());
+      model.addAttribute("message", "Hello " + account.getUsername());
     }
     return "index";
   }
