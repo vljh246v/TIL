@@ -14,6 +14,7 @@ import til.demo.demospringsecurityform.account.Account;
 import til.demo.demospringsecurityform.account.AccountContext;
 import til.demo.demospringsecurityform.account.AccountRepository;
 import til.demo.demospringsecurityform.account.UserAccount;
+import til.demo.demospringsecurityform.book.BookRepository;
 import til.demo.demospringsecurityform.common.CurrentUser;
 import til.demo.demospringsecurityform.common.SecurityLogger;
 
@@ -26,6 +27,9 @@ public class SampleController {
 
   @Autowired
   AccountRepository  accountRepository;
+
+  @Autowired
+  BookRepository bookRepository;
 
   @GetMapping("/")
   public String index(Model model, @CurrentUser Account account){
@@ -59,6 +63,7 @@ public class SampleController {
   @GetMapping("/user")
   public String user(Model model, Principal principal){
     model.addAttribute("message", "Hello User " + principal.getName());
+    model.addAttribute("books", bookRepository.findCurrentUserBooks());
     return "user";
   }
 
