@@ -1,4 +1,4 @@
-import React, {createContext, useState, useContext, useEffect} from 'react';
+import React, {createContext, useState, useContext, useEffect, useReducer} from 'react';
 
 // const UserContext = createContext({username: 'unknown', helloCount: 0});
 // const SetUserContext = createContext(() => {});
@@ -626,39 +626,153 @@ import React, {createContext, useState, useContext, useEffect} from 'react';
 // ));
 
 
-export default function App(){
-    const [flag, setFlag] = useState(true);
-    useEffect(() => {
-        setTimeout(() => {
-            setFlag(prev => !prev);
-        }, 1000);
-    });
-    console.log('App')
-    if(flag){
-        return (
-            <div>
-                <Counter />
-                <p>사과</p>
-                <p>바나나</p>
-            </div>
-        );
-    } else {
-        return (
-            <span>
-                <Counter />
-                <p>사과</p>
-                <p>바나나</p>
-            </span>
-        );
-    }
+// export default function App(){
+//     const [flag, setFlag] = useState(true);
+//     useEffect(() => {
+//         setTimeout(() => {
+//             setFlag(prev => !prev);
+//         }, 1000);
+//     });
+//     console.log('App')
+//     if(flag){
+//         return (
+//             <div>
+//                 <Counter />
+//                 <p>사과</p>
+//                 <p>바나나</p>
+//             </div>
+//         );
+//     } else {
+//         return (
+//             <span>
+//                 <Counter />
+//                 <p>사과</p>
+//                 <p>바나나</p>
+//             </span>
+//         );
+//     }
+// }
+
+// function Counter() {
+//     const [count, setCount] = useState(0);
+//     console.log('Counter')
+//     useEffect(() => {
+//         const id = setTimeout(() => setCount(prev => prev + 1), 100);
+//         return () => clearTimeout(id);
+//     });
+//     return <p>count : {count}</p>
+// }
+
+
+
+// const AppContext = createContext();
+// const DispatchContext = createContext(() => {});
+
+// export default function App() {
+//     const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+//     return (
+//         <div>
+//             <AppContext.Provider value={state}>
+//                 <DispatchContext.Provider value={dispatch}>
+//                     <User/>
+//                     <Product/>
+//                 </DispatchContext.Provider>
+//             </AppContext.Provider>
+//         </div>
+//     );
+// }
+
+// const INITIAL_STATE = {
+//     user: { name: 'mike'},
+//     product: { name: 'iphone'}
+// };
+
+// function reducer(state, action) {
+//     switch(action.type) {
+//         case 'setUserName' :
+//             return {
+//                 ...state,
+//                 user: {...state.user, name: action.name}
+//             }
+//         default:
+//             return null;
+//     };
+// }
+
+
+// function User() {
+//     console.log('User render');
+//     const {user} =  useContext(AppContext);
+//     const dispatch = useContext(DispatchContext);
+
+//     return (
+//         <div>
+//             <p>{`${user.name}님 안녕하세요`}</p>
+//             <button onClick={() => dispatch({type: 'setUserName', name: 'john'})}>
+//                 사용자 이름 수정
+//             </button>
+//         </div>
+//     )
+// }
+
+// function Product() {
+//     console.log('Product render')
+//     const {product} = useContext(AppContext);
+//     return <p>{`제품 이름 : ${product.name}`}</p>
+// }
+
+import {createStore} from 'redux';
+import {Provider, useSelector, useDispatch} from 'react-redux';
+
+export default function App() {
+    return (
+        <div>
+            <Provider store={store}>
+                <User/>
+                <Product/>
+            </Provider>
+        </div>
+    )
 }
 
-function Counter() {
-    const [count, setCount] = useState(0);
-    console.log('Counter')
-    useEffect(() => {
-        const id = setTimeout(() => setCount(prev => prev + 1), 100);
-        return () => clearTimeout(id);
-    });
-    return <p>count : {count}</p>
+const INITIAL_STATE = {
+    user: { name: 'mike'},
+    product: { name: 'iphone'}
+};
+
+
+function reducer(state = INITIAL_STATE, action) {
+    switch(action.type) {
+        case 'setUserName' :
+            return {
+                ...state,
+                user: {...state.user, name: action.name}
+            }
+        default:
+            return state;
+    };
+}
+
+const store = createStore(reducer)
+
+
+function User() {
+    console.log('User render');
+    const user = useSelector(state => state.user);
+    const dispatch = useDispatch();
+
+    return (
+        <div>
+            <p>{`${user.name}님 안녕하세요`}</p>
+            <button onClick={() => dispatch({type: 'setUserName', name: 'john'})}>
+                사용자 이름 수정
+            </button>
+        </div>
+    )
+}
+
+function Product() {
+    console.log('Product render')
+    const product = useSelector(state => state.product);
+    return <p>{`제품 이름 : ${product.name}`}</p>
 }
