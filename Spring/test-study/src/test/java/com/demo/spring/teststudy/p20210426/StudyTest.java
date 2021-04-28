@@ -1,5 +1,6 @@
 package com.demo.spring.teststudy.p20210426;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Duration;
@@ -15,11 +16,8 @@ class StudyTest {
   @Test
   @DisplayName("스터디 만들기 (/ω＼)")
   void create_new_study(){
-    assertTimeoutPreemptively(Duration.ofMillis(100), () -> {
-      new Study(10);
-      Thread.sleep(300);
-    });
-    // TODO ThreadLocal 사용 코드가 있을경우 예상치 못한 결과가 있을 수 있음
+    Study actual = new Study(10);
+    assertThat(actual.getLimit()).isGreaterThan(0);
   }
 
   @Test
