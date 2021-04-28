@@ -2,6 +2,7 @@ package com.demo.spring.teststudy.p20210426;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Duration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,11 +15,10 @@ class StudyTest {
   @Test
   @DisplayName("스터디 만들기 (/ω＼)")
   void create_new_study(){
-    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-        () -> new Study(-10));
-    String message = illegalArgumentException.getMessage();
-
-    assertEquals("limit은 0보다 커야한다.", message);
+    assertTimeout(Duration.ofMillis(100), () -> {
+      new Study(10);
+      Thread.sleep(300);
+    });
   }
 
   @Test
