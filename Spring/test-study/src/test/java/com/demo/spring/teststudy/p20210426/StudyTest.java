@@ -1,45 +1,34 @@
 package com.demo.spring.teststudy.p20210426;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.junit.jupiter.api.Assumptions.assumingThat;
 
-import java.time.Duration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 class StudyTest {
 
   @Test
-  @DisplayName("스터디 만들기 (/ω＼)")
-  void create_new_study(){
-
+  @DisplayName("스터디 만들기1 (/ω＼)")
+  @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")
+  void create_new_study() {
     String test_env = System.getenv("TEST_ENV");
+    System.out.println(test_env);
+    Study actual = new Study(100);
 
-    assumeTrue("LOCAL".equalsIgnoreCase(test_env));
-
-    assumingThat("LOCAL".equalsIgnoreCase(test_env), () -> {
-      System.out.println(test_env);
-      Study actual = new Study(10);
-      assertThat(actual.getLimit()).isGreaterThan(0);
-    });
-
-    assumingThat("demo".equalsIgnoreCase(test_env), () -> {
-      System.out.println(test_env);
-      Study actual = new Study(20);
-      assertThat(actual.getLimit()).isGreaterThan(10);
-    });
-
-
+    assertThat(actual.getLimit()).isGreaterThan(0);
   }
 
+
   @Test
-  void create1(){
+  @DisplayName("스터디 만들기2 (/ω＼)")
+  @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "DEMO")
+  void create_new_study_again(){
+    String test_env = System.getenv("TEST_ENV");
     System.out.println("create1");
   }
 
