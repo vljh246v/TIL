@@ -2,6 +2,8 @@ package com.demo.spring.teststudy.p20210426;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 import java.time.Duration;
 import org.junit.jupiter.api.AfterAll;
@@ -16,8 +18,24 @@ class StudyTest {
   @Test
   @DisplayName("스터디 만들기 (/ω＼)")
   void create_new_study(){
-    Study actual = new Study(10);
-    assertThat(actual.getLimit()).isGreaterThan(0);
+
+    String test_env = System.getenv("TEST_ENV");
+
+    assumeTrue("LOCAL".equalsIgnoreCase(test_env));
+
+    assumingThat("LOCAL".equalsIgnoreCase(test_env), () -> {
+      System.out.println(test_env);
+      Study actual = new Study(10);
+      assertThat(actual.getLimit()).isGreaterThan(0);
+    });
+
+    assumingThat("demo".equalsIgnoreCase(test_env), () -> {
+      System.out.println(test_env);
+      Study actual = new Study(20);
+      assertThat(actual.getLimit()).isGreaterThan(10);
+    });
+
+
   }
 
   @Test
