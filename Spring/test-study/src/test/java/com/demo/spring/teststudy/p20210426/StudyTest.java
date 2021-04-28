@@ -19,6 +19,7 @@ class StudyTest {
       new Study(10);
       Thread.sleep(300);
     });
+    // TODO ThreadLocal 사용 코드가 있을경우 예상치 못한 결과가 있을 수 있음
   }
 
   @Test
