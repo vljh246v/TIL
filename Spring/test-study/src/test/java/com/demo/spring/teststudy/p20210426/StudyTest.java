@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
@@ -14,21 +15,17 @@ class StudyTest {
 
   @Test
   @DisplayName("스터디 만들기1 (/ω＼)")
-  @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")
+  @Tag("fast")
   void create_new_study() {
-    String test_env = System.getenv("TEST_ENV");
-    System.out.println(test_env);
-    Study actual = new Study(100);
-
-    assertThat(actual.getLimit()).isGreaterThan(0);
+    Study study = new Study(100);
+    assertThat(study.getLimit()).isGreaterThan(0);
   }
 
 
   @Test
   @DisplayName("스터디 만들기2 (/ω＼)")
-  @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "DEMO")
+  @Tag("slow")
   void create_new_study_again(){
-    String test_env = System.getenv("TEST_ENV");
     System.out.println("create1");
   }
 
