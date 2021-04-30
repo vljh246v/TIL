@@ -20,3 +20,14 @@
     </profile>
     <!-- ./mvnw test -P ci -->
     ```
+
+## JUnit 5: 커스텀 태그
+- 메타 어노테이션으로 만들어서 사용 가능
+    ```java
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Tag("fast")
+    @Test
+    public @interface FastTest { }
+    ```
+- @Tag 어노테이션 vlaue는  타입세이프한것이 아니기 때문에 메타 어노테이션을 만들어 두고 사용하는것이 좋음
