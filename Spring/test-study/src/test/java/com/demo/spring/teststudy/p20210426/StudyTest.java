@@ -10,6 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class StudyTest {
 
@@ -29,23 +31,10 @@ class StudyTest {
     System.out.println("create1");
   }
 
-  @BeforeAll
-  static void beforeAll(){
-    System.out.println("beforeAll");
-  }
-
-  @AfterAll
-  static void afterAll(){
-    System.out.println("afterAll");
-  }
-
-  @BeforeEach
-  void beforeEach(){
-    System.out.println("beforeEach");
-  }
-
-  @AfterEach
-  void afterEach(){
-    System.out.println("afterEach");
+  @DisplayName("스터디 만들기")
+  @ParameterizedTest(name = "{index} {displayName} message={0}")
+  @ValueSource(strings = {"날씨가", "많이", "추워지고", "있네요"})
+  public void parameterizedTest(String message){
+    System.out.println(message);
   }
 }
