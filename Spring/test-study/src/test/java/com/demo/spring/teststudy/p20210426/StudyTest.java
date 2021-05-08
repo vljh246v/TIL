@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -25,25 +26,30 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class StudyTest {
 
+  int value = 1;
+
+  @Order(2)
   @Test
   @DisplayName("스터디 만들기1 (/ω＼)")
   @Tag("fast")
   void create_new_study() {
-    Study study = new Study(100);
+    System.out.println(this);
+    System.out.println(value++);
+    Study study = new Study(1);
     assertThat(study.getLimit()).isGreaterThan(0);
   }
 
 
-
+  @Order(1)
   @Test
   @DisplayName("스터디 만들기2 (/ω＼)")
   @Tag("slow")
   void create_new_study_again(){
-    System.out.println("create1");
+    System.out.println(this);
+    System.out.println("create1 " + value++);
   }
 
   @DisplayName("스터디 만들기")
