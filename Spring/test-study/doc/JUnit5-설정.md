@@ -6,3 +6,4 @@
   - junit.jupiter.testinstance.lifecycle.default = per_class : 테스트 인스턴스를 per_메소드일지 클래스일지 일괄적용하고 싶은 설정을 명시
   - 확장팩 자동 감지 기능 : junit.jupiter.extensions.autodetection.enabled = true
   - @Disabled 무시하고 실행하기 : junit.jupiter.conditions.deactivate = org.junit.*DisabledCondition
+  - 테스트 이름 표기 전략 설정 : junit.jupiter.displayname.generator.default = org.junit.jupiter.api.DisplayNameGenerator$ReplaceUnderscores
