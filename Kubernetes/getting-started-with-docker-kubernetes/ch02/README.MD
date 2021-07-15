@@ -80,3 +80,36 @@
   - NAMES : 컨테이너의 고유한 이름
 
 ### 2.2.3 컨테이너 삭제
+
+- docker rm 명령어를 사용해 컨테이너를 삭제할 수 있음
+  ![docker rm](https://lh3.googleusercontent.com/pw/AM-JKLU213JyQavfBTXPWmRYcJJ5zUgyYj5J_bDCTovQ6VguqQOt0UmbbgunE27YHcjp3wk5A2gazxELlioUMLZG4cJGfjQvYtkN-1rnaW49Md1XBYvAvTRyjj01lFnnP6W3MCf3l4-DJIj1WoF7xV13cGIp8g=w972-h186-no?authuser=0)
+
+- 하지만 실행중인 컨테이너는 docker stop 명령어를 통해 정지 후 삭제를 하거나 -f 옵션을 사용해 강제로 삭제할 수 있음
+- docker container prune 명령어를 통해 모든 컨테이너를 삭제할 수 있음
+
+### 2.2.4 컨테이너 외부 노출
+
+- 컨테이너는 가상 머신과 마찬가지로 가상 ip 를 할당받음
+- 컨테이너를 새롭게 생성한 후 ifconfig 명령어로 컨테이너의 네트워크 인터페이스를 살펴보자
+  ![network_test](https://lh3.googleusercontent.com/pw/AM-JKLXsLlx74Sa7i5gNYXWORtBWjCQ5RyNgQj-L4fYY4vJbZRZmkJH-X5iUNm_4wlfsNzKHVMJkhVMfRAe-I2hCvR4b_on8P-HGB2YAn79VxRazM3ipD-lwUvOw0V1F8xwdy-08UlYWodQWERhobytFBVIHFA=w495-h241-no?authuser=0)
+- eth0 인터페이스와 로컬호스트 lo 인터페이스가 있음
+- 아무런 설정이 없다면 이 컨테이너는 외부에서 접근할 수 없으며 도커가 설치된 호스트에서만 접근할 수 있음
+- 외부에 컨테이너의 애플리케이션을 노출하기 위해서는 eth0 의 ip와 포트를 호스트의 ip와 포트에 바인딩해야 함
+- 아래와 같이 -p 옵션을 통해 컨테이너의 포트를 호스트의 포트와 바인딩해 연결할 수 있게 설정함
+
+```sh
+# docker run -i -t --name mywebserver -p 80:80 ubuntu:14.04
+```
+
+- -p 옵션 입력 형식은 [호스트의 포트]:[컨테이너의 포트] 이다
+- 다음 명령어로 아파치 웹서버를 설치할 수 있다.
+
+```sh
+root@33e74681cba5:/# apt-get update
+root@33e74681cba5:/# apt-get install apache2 -y
+root@33e74681cba5:/# service apache2 start
+```
+
+- 실제로 아파치 서버가 설치된 것은 컨테이너 내부이므로 호스트에는 어떠한 영향도 주지 않습니다.
+
+### 2.2.5 컨테이너 애플리케이션 구축
