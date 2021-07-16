@@ -113,3 +113,27 @@ root@33e74681cba5:/# service apache2 start
 - 실제로 아파치 서버가 설치된 것은 컨테이너 내부이므로 호스트에는 어떠한 영향도 주지 않습니다.
 
 ### 2.2.5 컨테이너 애플리케이션 구축
+
+- 서비스를 컨테이너화 할 때 여러개의 애플리케이션을 한 컨테이너에 설치할 수도 있음
+- 그러나 컨테이너에 애플리케이션을 하나만 동작시키면 독립성과 버전관리, 소스코드 모듈화 등이 더욱 쉬워짐
+- 구분해서 관리하는것이 도커에서 공식적으로 권장하는 구조
+- 데이터베이스, 워드프레스 웹 서버 컨테이너를 연동해 예제 애플리케이션을 만들어 보자
+
+```sh
+docker run -d \
+--name wordpressdb \
+-e MYSQL_ROOT_PASSWORD=password \
+-e MYSQL_DATABASE=wordpress \
+mysql:5.7
+
+docker run -d \
+-e WORDPRESS_DB_PASSWORD=password \
+--name wordpress
+--link wordpressdb:mysql \
+-p 80 \
+wordpress
+```
+
+- 워드프레스 웹 서버 컨테이너 옵션에 -p 80을 입력했으므로 호스트의 포트 중 하나와 컨테이너의 80포트가 연결됨
+- docker -ps 명령어로 호스트의 어느 포트와 연결 되었는지 확인 가능
+  ![docker-ps](https://lh3.googleusercontent.com/pw/AM-JKLXdK2weo9tD7JUbX4vgfWbbJJQ0kYoeO0bPI5mfgxSSJnomP9x6kJi_FCKwokxbnIpUH4ScAJKmFDiV3aOmrb3G_L_sFnPJRJvkK2yuOiXxDmpZI1-EAaRg0fPXDJc919G-lttxWJxfhKfxelu-vEdXvg=w875-h88-no?authuser=0)
