@@ -137,3 +137,19 @@ wordpress
 - 워드프레스 웹 서버 컨테이너 옵션에 -p 80을 입력했으므로 호스트의 포트 중 하나와 컨테이너의 80포트가 연결됨
 - docker -ps 명령어로 호스트의 어느 포트와 연결 되었는지 확인 가능
   ![docker-ps](https://lh3.googleusercontent.com/pw/AM-JKLXdK2weo9tD7JUbX4vgfWbbJJQ0kYoeO0bPI5mfgxSSJnomP9x6kJi_FCKwokxbnIpUH4ScAJKmFDiV3aOmrb3G_L_sFnPJRJvkK2yuOiXxDmpZI1-EAaRg0fPXDJc919G-lttxWJxfhKfxelu-vEdXvg=w875-h88-no?authuser=0)
+
+- -d 옵션
+  - -t, -i가 attach 가능한 상태로 설정한다면 -d는 Detached 모드로 컨테이너를 실행
+  - Detached 는 컨테이너를 백그라운드에서 동작하는 애플리케이션으로 설정함
+  - 우분투나 CentOS 컨테이너같은경우 -i, -t 옵션으로 run을 실행하면 표준 입출력이 활성화된 셀 환경을 사용할 수 있음
+  - 대부분의 기본 이미지들은 컨테이너를 시작할 때 /bin/bash를 커맨드로 설정해 실행함으로써 배시 셸을 쓸 수 있게 설정함
+  - 그러다 -d 옵션으로 run을 실행하면 입출력이 없는 상태로 컨테이너를 실행
+  - 컨테이너 내부에서 프로그램이 터미널을 차지하는 포그라운드로 실행되 사용자 입력을 받지 않음
+  - Detached 모드인 컨테이너는 반드시 커넽이너에서 프로그램이 실행돼야 함
+  - mysql은 하나의 터미널을 차지하는 mysqld를, 워드프레스는 하나의 터미널을 차지하는 apache2-foreground를 실행하므로 -d 옵션을 지정해 백그라운드로 설정한 것
+- -e 옵션
+  - 컨테이너 내부의 환경변수를 설정
+- --link 옵션
+  - 컨테이너 간에 이름으로 서로를 찾을 수 있게 도와주는 옵션
+  - 하지면 해당 옵션은 DEPRECATED 된 옵션임
+  - 도커 브리지 네트워크를 사용하는 것을 권장
