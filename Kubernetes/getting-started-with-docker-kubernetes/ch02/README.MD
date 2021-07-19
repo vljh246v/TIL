@@ -166,4 +166,84 @@ wordpress
 
 #### 2.2.6.1 호스트 볼륨 공유
 
--
+- 아래 명령어를 입력해서 컨테이너를 생성한다.
+
+```sh
+docker run -d \
+--name wordpressdb_hostvolume \
+-e MYSQL_ROOT_PASSWORD=password \
+-e MYSQL_DATABASE=wordpress \
+-v D:/workspaces/jaehyun/TIL/Kubernetes/getting-started-with-docker-kubernetes/volume:/var/lib/mysql \
+mysql:5.7
+```
+
+```sh
+docker run -d \
+-e WORDPRESS_DB_PASSWORD=password \
+--name wordpress_hostvolume \
+--link wordpressdb_hostvolume:mysql \
+-p 80 \
+wordpress
+```
+
+- -v 옵션이 추가했고, 그 값을 D:/workspaces/jaehyun/TIL/Kubernetes/getting-started-with-docker-kubernetes/volume:/var/lib/mysql 로 설정했음
+- 이는 호스트의 D:/workspaces/jaehyun/TIL/Kubernetes/getting-started-with-docker-kubernetes/volume 디렉토리와 컨테이너의 var/lib/mysql 디렉터리를 공유한다는 뜻이다.
+- 미리 호스트의 디렉터리를 생성하지 않아도 자동으로 이를 생성함
+- 컨테이너를 삭제해도 호스트의 디렉터리는 남아있음
+- 이미지에 원래 존재하던 디렉터리에 호스트의 볼륨을 공유하면 컨테이너의 디렉터리 자체가 덮어씌워짐
+
+#### 2.2.6.2 볼륨 컨테이너
+
+- 두번째 방법으로 볼륨을 사용하는 컨테이너를 다른 컨테이너와 공유하는 것
+- --volumes-from 옵션을 통해 -v 또는 -volume 옵션을 적용한 컨테이너의 볼륨 디렉터리를 공유할 수 있음
+
+#### 2.2.6.3 도커 볼륨
+
+- 도커 자체에서 제공하는 볼륨기능을 사용하는 것
+- 볼륨을 다루는 명령어는 docker volume으로 시작
+- 다음 예시는 myvolume이라는 볼륨을 생성함
+
+```sh
+docker volume create --name myvolume
+```
+
+- docker volume ls 명령어로 볼륨확인이 가능하다.
+  ![docker-volume](https://lh3.googleusercontent.com/pw/AM-JKLU20UnMaliECdul-AgKcmmO6ht4tU07IKyI-VULNehWij4arvr7scz4gPt9Ub421aXJeeIbj4A2-Ekh4N78Qy6h8CryWzn5rXWrOClDhmWOt8egEz7ozuVF-cU40Ae4GjUMbkx6-_QmoOqy_YjkhavSYA=w581-h92-no?authuser=0)
+
+- 플러그인 드라이버를 설정해 여러 종류의 스토리지 벡엔드를 쓸 수 있음
+- 현재 예제에서는 기본적으로 제공되는 드라이버인 local을 사용
+- 이 볼륨은 로컬 호스트에 저장되며 도커 엔진에 의해 생성되고 삭제됨
+- -v [볼륨의 이름]:[컨테이너의 공유 디렉터] 명령어 형식을 사용
+
+```sh
+docker run -i -t --name myvolume_1 \
+-v myvolume:/root/ \
+ubuntu:14.04
+```
+
+- echo hello, volume! >> /root/volume 명령어를 통해 volume 파일 생성
+- 다른 컨테이너도 myvolume 볼륨을 쓰면 볼륨을 활용한 디렉토리에 volume 파일이 존재
+
+```sh
+docker run -i -t --name myvolume_2 \
+-v myvolume:/root/ \
+ubuntu:14.04
+```
+
+- cat /root/volume 명령어를 통해 확인
+  ![myvolume_2](https://lh3.googleusercontent.com/pw/AM-JKLVhpP1zlj9YQ-gU0T160NWsTMgQ5UQg3ououDMFRKho3FvcYcEXubXvbJVyVgNgwf-6J_g1l_3a5lzFde-5QoY2owv3d5MBNuuOFLCOGkNwCVIpE-P8QsgxANiiIsWrNnChzasqIroINwJbYrw-cM37ng=w279-h94-no?authuser=0)
+
+- docker inspect 명령어를 사용하면 볼륨이 실제 어디에 저장되는지 알 수 있음
+  ![docker inspect](https://lh3.googleusercontent.com/pw/AM-JKLUgqOHFBDYpt2RCRjxYBVOtVxLQlJDVhsfMpkt9RUT2p_QXLlJ4ebRDo8ba6TqrQsJQ0ZU-fLByL3ssE0fg88hW8QR4yaXcxgwziAenYo67Dmg2MGg_Th513pRRC99EXBw7vQcWzcCnHiPXIxjr6QWSQg=w487-h211-no?authuser=0)
+
+- Driver 는 볼륨이 쓰는 드라이버를 표시
+- Labels는 볼륨을 구분하는 라벨
+- Mountpoint는 해당 볼륨이 실제로 호스트의 어디에 저장됐는지는 의미
+- -v 옵션을 수행할 때 볼륨 이름을 명시하지 않고 공유할 디렉터리 위치만 입력하면 자동으로 생성함
+- 도커 볼륨은 컨테이너를 삭제해도 자동으로 삭제되지 않기 때문에 사용자가 지워줘야함
+- docker volume prune 명령어를 사용
+
+- 컨테이너가 아닌 외부에 데이터를 저장하고 컨테이너는 그 데이터로 동작하도록 설계하는 것응ㄹ 스테이트리스 하다고 함
+- 컨테이너가 삭제돼도 데이터는 보존되므로 스테이트리스한 설계는 도커를 사용할 때 매우 바람직한 설계
+
+### 2.2.7 도커 네트워크
