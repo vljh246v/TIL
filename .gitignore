@@ -137,3 +137,7 @@ Spring/untitled/untitled.iml
 Spring/untitled/.idea/misc.xml
 Spring/untitled/.idea/modules.xml
 Spring/untitled/.idea/workspace.xml
+
+
+# etc
+Kubernetes/getting-started-with-docker-kubernetes/volume/*
