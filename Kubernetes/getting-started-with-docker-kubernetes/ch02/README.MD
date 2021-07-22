@@ -297,3 +297,66 @@ ubuntu:14.04
 #### 2.2.8.1 json-file 로그 사용하기
 
 - 애플리케이션 레벨에서 로그가 기록할 수 있지만, 컨테이너의 표준 출력(StdOut)과 에러(StdErr) 로그를 별도의 메타데이터 파일로 저장하며 이를 확인하는 명령어를 제공
+- 백그라운드 모드로 컨테이너를 생성하는 경우 애플리케이션이 잘 구동되는지 여부를 알 수 없다.
+- docker logs 명령어를 사용해 컨테이너의 표준 출력을 확인함으로써 애플리케이션 상태를 알 수 있다.
+- -e 옵션을 제거해서 필수 환경변수 없이 mysql 컨테이너를 생성하고, docker logs 명령어를 사용하면 아래와 같이 필수 환경벼수를 입력하라는 에러를 볼 수 있다.
+  ![-e](https://lh3.googleusercontent.com/pw/AM-JKLVG2Si8FzUgwUylS1WrtkHJgHetZ5RXXLgPmtU6nlIoyB0HTjf0F7liW0vJHHwpKoXKOm_35DAcFoJzgNuK6gZxg_C7Yl-uPQ1R9hMeKC9Efj4FBqfm4fmBQm2sI1gSXd_r0sOJ2k17ZwqRuV-HNx4BBg=w1578-h348-no?authuser=0)
+- 기본적으로 위와 같은 컨테이너 로그는 JSON 형태로 도커 내부에 저장
+- json 파일 크기 설정은 --log-opt 옵션을 통해 [설정](https://docs.docker.com/config/containers/logging/configure/) 가능
+- 각종 로깅 드라이버를 사용해 컨테이너 로그를 수집할 수 있음(syslog, journald, fluentd, awslogs 등)
+
+#### 2.2.8.2 syslog 로그
+
+- syslog는 유닉스 계열 운영체제에서 로그를 수집하는 오래된 표중 중 하나
+- --log-driver=syslog 옵션을 통해 설정 가능
+
+#### 2.2.8.4 fluentd 로깅
+
+- fuentd는 각종 로그를 수집하고 저장할 수 있는 기능을 제공하는 오픈소스 도구
+
+### 2.2.9 컨테이너 자원 할당 제한
+
+- 컨테이너를 생성하는 run, create 명령어에서 컨테이너의 자원 할당량을 조정하도록 옵션을 입력할 수 있음
+- 컨테이너에 설정된 자원 제한을 확인하는 가장 쉬운 방법은 docker inspect 명령어
+
+#### 2.2.9.1 컨테이너 메모리 제한
+
+- docker run 명령어에서 --memory옵션을 지정해 컨테이너의 메모리를 제한할 수 있음
+- 기본적으로 컨테이너의 Swap 메모리는 메모리의 2배로 설정
+
+#### 2.2.9.2 컨테이너 CPU 제한
+
+##### --cpu-shares
+
+- --cpu-shares옵션은 컨테이너에 가중치를 설정해 컨테이너가 CPU를 상대적으로 얼마나 사용할 수 있는지를 나타냄
+- cpu를  한 개씩 할당하는 방식이 아닌, 시스템에 존재하는 CPU를 어느 비중만큼 나눠 쓸 것인지를 명시하는 옵션
+- 해당 옵션은 상대적인 값을 가짐, 아무런 설정을 하지 않았을 때 컨테이너가 가지는 값은 1024로 이것은 cpu 할당에서 1의 비중을 뜻함
+
+##### --cpuset-cpus
+
+- 호스트에 여러 개의 cpu가 있을 때 해당 옵션을 통해 컨테이너가 특정 cpu만 사용하도록 설정할 수 있음
+
+##### --cpu-period, --cpu-quota
+
+- 컨테이너의 CFS(Completely Fail Scheduler) 주기는 기본적으로 100ms로 설정되지만  --cpu-period와 --cpu-quota 옵션을 통해 주기를 변경할 수 있음
+- --cpu-period=100000 설정은 기본값이며, 이는 100ms 를 뜻함
+- --cpu-quota는 -cpu-period에 설정된 시간 중 CPU 스캐줄리에 얼마나 할당할 것인지를 설정함, 만약 -cpu-period=25000 이라면 cpu주기가 1/4로 줄어듬
+
+##### --cpus
+
+- --cpus 옵션은 --cpu-period, --cpu-quota 동일한 기능을 하지만 좀 더 직관적으로 CPU 개수를 직접 지정함
+
+#### 2.2.9.3 Block I/O 제한
+
+- 컨테이너를 생성할 때아무런 옵션도 설정하지 않으면 컨테이너 내부에서 파일을 읽고 쓰는 대역폭에제한이 설정되지 않음
+- 단, Direct I/O 의 경우에만 블록 입출력이 제한되며, Bufferd I/O는 제한되지 않음
+- --device-write-bps, -- device-read-bps는 각기 쓰고 읽는 작업의 초당 제한을 설정하며, kb/mb/gb 단이로 제한할 수 있음
+- --device-write-iops, --device-read-iops 에는 상대적인 값을 입력함
+
+#### 2.2.9.4 스토리지 드라이버와 컨테이너 저장 공간 제한
+
+- 도커 엔진은  컨테이너 내부의 저장 공간을 제한하는 기능을 보편적으로 제공하지는 않지만, 도커의 스토리지 드라이버나 파일 시스템 등이 특정 조건을 만족하는 경우에만 이 기능을 제한적으로 사용 가능
+- 대부분 컨테이너 자체가 상태를 가지는 것은 그다비 바람직하지 않음
+
+
+## 2.3 도커 이미지
