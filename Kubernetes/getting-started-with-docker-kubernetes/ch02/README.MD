@@ -358,5 +358,110 @@ ubuntu:14.04
 - 도커 엔진은  컨테이너 내부의 저장 공간을 제한하는 기능을 보편적으로 제공하지는 않지만, 도커의 스토리지 드라이버나 파일 시스템 등이 특정 조건을 만족하는 경우에만 이 기능을 제한적으로 사용 가능
 - 대부분 컨테이너 자체가 상태를 가지는 것은 그다비 바람직하지 않음
 
-
 ## 2.3 도커 이미지
+
+- 모든 컨테이너는 이미지를 기반으로 생성
+- 기본적으로 도커 허브라는 중앙 이미지 저장소에서 이미지를 내려 받음
+- 단 누구나 이미지를 올릴 수 있기 때문에 이미지 사용법을 찾거나 제대로 동작한다는 보장은 없음
+- 도커 엔진에서 docker search 명령어를 사용해서 이미지를 찾을 수 있음
+  ![docker-search](https://lh3.googleusercontent.com/pw/AM-JKLW_82rGdy6khZQbsM2lfhoair184CKplagULb8RrDu3zqkXMqud-CUu4HEqMk9kWlN9Lv5h3AOJdc3YJzTsZb91Tg8zwtB2fHAJ_NRZSl_92mxYePR-UJF2gmkU5R3dNIkVX8EzYJ_L6HOgFnnA1V_LtQ=w1972-h442-no?authuser=0)
+
+### 2.3.1 도커 이미지 생성
+
+- 아래 명령어를 통해 컨테이너 내부에 first라는 이름의 파일을 하나 생성해 기존의 이미지로부터 변경사항을 만듬
+
+```sh
+docker run -i -t --name commit_test ubuntu:14.04
+root@ec6060cdc581:/# echo tst_first! >> first
+```
+
+- 그후 빠져나와 docker commit 명령어로 컨테이너를 이미지로 만듬
+- 옵션은 docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+
+```sh
+docker commit \
+-a "vljh246v" -m "my first commit" \
+commit_test \
+commit_test:first
+
+sha256:9fc9ce8d1c9689d52fe186e69acd5c0868599121fe3f2fa75a6c271a5ef53e67
+```
+
+- 저장소 이름은 입력하지 않아도 상관없지만 이미지의 태그를 입력하지 않으면 자동으로 latest로 설정
+- 위 명령어는 이름을 commit_test로, 태그를 first로 설정
+- -a 옵션은 author를 뜻하며, 이미지의 작성자를 나타내는 메타데이터를 이미지에 포함
+- -m 옵션은 커밋 메시지를 뜻함
+- docker images 명령어로 이미지 생성 확인 가능
+- commit_test:first 이미지로 새로운 이미지를 생성하는 예제는 아래와 같다.
+
+```sh
+docker run -i -t --name commit_test2 commit_test:first
+root@c589f35f031e:/# echo test_second! >> second
+
+docker commit \
+-a "vljh246v" -m "my second commit" \
+commit_test2 \
+commit_test:second
+
+sha256:42df2530314241920f75f09c10ab67421ffff8f50291bc61319b738f08cf0b8c
+```
+
+  ![commit_test:second](https://lh3.googleusercontent.com/pw/AM-JKLUxwe84HsYrjvHTxfTu594mkV6eGWQu-dRbofWc_d1HvyiqVPLYRDjCy4vxexL7AkIx5ns90nuaHFFDaBO9KVqE6eOipDhZIsgsC6je75JJcgDsD8wySjJzChPF3vX2FP5TsfONpYgASn6IoLZSJ21XWQ=w900-h214-no?authuser=0)
+
+### 2.3.2 이미지 구조 이해
+
+- inspect 명령어로 이미지의 좀 더 자세한 정보를 확인할 수 있다.
+
+```sh
+docker inspect ubuntu:14.04
+docker inspect commit_test:first
+docker inspect commit_test:second
+```
+
+- Layers 항목을 보면 아래와 같이 표현된다. 
+
+```json
+// ubuntu:14.04
+"Layers": [
+                "sha256:59199d90878e4fda42bcd8a43bfe3ecd964265b2008746c6b18ae3d6ca659033",
+                "sha256:66a563a2553e1b125306d482d02b4579289d982d5e98aef489b3573d6ab4d8b3",
+                "sha256:da6f3a71ac1f04c0f6704f7066cbdb68c227368ea60b070cf12b074bc02e5bf9"
+            ]
+
+// commit_test:first
+"Layers": [
+                "sha256:59199d90878e4fda42bcd8a43bfe3ecd964265b2008746c6b18ae3d6ca659033",
+                "sha256:66a563a2553e1b125306d482d02b4579289d982d5e98aef489b3573d6ab4d8b3",
+                "sha256:da6f3a71ac1f04c0f6704f7066cbdb68c227368ea60b070cf12b074bc02e5bf9",
+                "sha256:1c99ba01daf258cdef41d2ad14caae0796b49f05ec390ad45ad5b8ce4894866f"
+            ]
+
+// commit_test:second
+"Layers": [
+                "sha256:59199d90878e4fda42bcd8a43bfe3ecd964265b2008746c6b18ae3d6ca659033",
+                "sha256:66a563a2553e1b125306d482d02b4579289d982d5e98aef489b3573d6ab4d8b3",
+                "sha256:da6f3a71ac1f04c0f6704f7066cbdb68c227368ea60b070cf12b074bc02e5bf9",
+                "sha256:1c99ba01daf258cdef41d2ad14caae0796b49f05ec390ad45ad5b8ce4894866f",
+                "sha256:d02e91eb316f153a3deee002a12f070dff87ff7a3d585135e2bb82d5d898b6cf"
+            ]
+```
+
+- 보는것과 같이 이미지를 커밋할 때 컨테이너에서 변경된 사항만 새로운 레이어로 저장하고, 그 레이어를 포함해 새로운 이미지를 생성함
+- 그렇기 때문에  commit_test:second 이미지의 실제 크기는 ubuntu:14.04 + commit_test:first + commit_test:second 파일 크기임
+- 이미지 삭제는 docker rmi [이미지 이름] 형태입니다.
+- 다만 commit_test:first 를 삭제한다고 가정하면, commit_test:first를 기반으로 한 commit_test:second가 존재하기 때문에 레이어에 부여된 commit_test:first라는 이름만 삭제하는 것임
+- commit_test:second 까지 삭제를 즉 해당 레이어를 부모로 가지는 이미지가 없을때 이미지가 삭제됨
+
+### 2.3.3 이미지 추출
+
+- docker save 명령어로 컨테이너의 커맨드, 이미지 이름, 태그 등 모든 메타데이터를 포함하여 하나의 파일로 추출 가능
+- docker load 명령어로 불러올 수 있음
+- export, import 명령어도 존재
+
+### 2.3.4 이미지 배포
+
+- 도커 허브를 통해 가능
+- 도커 허브는 도커 이미지를 저장하기 위한 클라우드 서비스
+- 사설 레지스트리를 사용 가능
+
+
