@@ -464,4 +464,72 @@ docker inspect commit_test:second
 - 도커 허브는 도커 이미지를 저장하기 위한 클라우드 서비스
 - 사설 레지스트리를 사용 가능
 
+## 2.4 Dockerfile
 
+### 2.4.1 이미지를 생성하는 방법
+
+- 개발한 애플리케이션을 컨테이너화할 때 가장 먼저 생각나는 방법은 아래와 같음
+  1. 아무것도 존재하지 않는 이미지로 컨테이너 생성
+  2. 어플리케이션을 위한 환경을 설치하고 소스코드 등을 복사해 잘 동작하는 것을 확인
+  3. 컨테이너를 이미지로 커밋
+
+- 이 방법을 사용하면 일일이 수작업으로 패키지를 설치하고 소스코드를 깃에서 복제하거나 호스트에서 복사해양 함
+- 도커는 일련의 과정을 손쉽게 기록하고 수행할 수 있는 빌드 명령어를 제공함
+- 컨테이너에 설치해야 하는 패키지, 추가해야 하는 소스코드, 실행해야 하는 명령어와 쉘 스크립트 등을 하나의 파일에 기록
+- 도커는 이 파일을 읽어 컨테이너에서 작업을 수행한 뒤 이미지로 만들어냄
+- 이러한 작업을 기록한 파일의 이름을 Dockerfile이라고 함
+- 깃과 같은 개발 도구를 통해 어플리케이션의 빌드 및 배포를 자동화할 수 있음
+- 생성한 이미지를 도커 허브등을 통해 배포할 때 이미지 자체를 배포하는 대신 이미지를 생성하는 방법을 기록해 놓은 Dockerfile을 배포할 수도 있음
+
+### 2.4.2 Dockerfile 작성
+
+- Dockerfile 작성을 위해 간단한 웹 서버 이미지를 생성해보자
+- 예제에서 사용할 디렉터리를 생성하고, 디렉터리 안에 HTML 파일을 미리 만들어 둠
+
+```sh
+# mkdir dockerfile && cd dockerfile
+# echo test >> test.html
+
+# vi Dockerfile
+
+
+FROM ubuntu:14.04
+LABEL maintainer "vljh246v <vljh246v@gmail.com>"
+LABEL "purpose"="practice"
+RUN apt-get update
+RUN apt-get install apache2 -y
+ADD test.html /var/www/html
+WORKDIR /var/www/html
+RUN ["/bin/bash", "-c", "echo hello >> test2.html"]
+EXPOSE 80
+CMD apachectl -DFOREGROUND
+```
+
+- Dockerfile은 한 줄이 하나의 명령어가 되고, 명령어를 명시한 뒤에 옵션을 추가하는 방식
+- 명령어는 일반적으로 대문자로 표시
+  - **FRON**
+    - FROM 명령어는 Dockerfile을 작성할 때 반드시 한 번 이상 입력해야 함
+    - 이미지 이름의 포맷은 docker run 명령어에서 이미지 이름을 사용했을 때와 같음
+    - 사용하려는 이미지가 도커에 없다면 자동으로 pull
+  - **LABEL**
+    - 이미지에 메타데이터를 추가합니다.
+    - 키:값 형태로 저장
+    - 추가된 메타데이터는 docker inspect 명령어로 이미지의 정보를 구해서 확인 가능
+  - **RUN**
+    - 이미지를 만들기 위해서 컨테이너 내부에서 명령어를 실행
+    - apt-get update 와 apt-get install apache2 명령어를 실행
+    - 단 이미지를 빌드하는 과정에서 별도의 입력이 불가능하기 때문에 설치를 선택하는 Y/N을 yes로 설정해야 한다.
+    - ["/bin/bash", "-c", "echo hello >> test2.html"] 명령어는 /bin/bash 셀을 사용해 "echo hello >> test2.html" 를 실행함
+    - RUN ["실행 가능한 파일", "명령줄 인자1", "명령줄 인자2", ...]
+  - **ADD**
+    - 파일을 이미지에 추가함
+    - JSON 형태로 ["추가할 파일 이름1", "추가할 파일 이름2",... "컨테이너에 추가될 위치"] 사용 가눙
+  - **EXPOSE**
+    - Dockerfile의 빌드로 생성되 이미지에서 노출할 포트를 설정
+    - 반드시 이 포트가 호스트의 포트와 바인딩 되는 것은 아니며, 단지 컨테이너의 입력한 포트를 사용할 것임을 나타내는 것
+  - **CMD**
+    - CMD는 컨테이너가 시작될 때마다 실행할 명령어를 설정
+    - Dockerfile에서 한번만 사용 가능
+    - 위 예제에서는 컨테이너를 생성할 때 별도의 커맨드를 입력하지 않아도 apachectl -DFOREGROUND 커맨드가 적용되어 컨테이너가 시작될 때 자동으로 아파치 웹 서버가 실행 됨
+
+### 2.4.3 Dockerfile 빌드
