@@ -624,3 +624,89 @@ CMD apachectl -DFOREGROUND
 - 멀티 스테이지 빌드는 필요한 실행 파일만 최종 이미지 결과물에 포함시킴으로써 이미지 크기를 줄일 때 유용하게 사용할 수 있다.
 
 ### 2.4.4 기타 Dockerfile 명령어
+
+#### 2.4.4.1 EVN, VOLUME, ARG, USER
+
+##### ENV
+
+- Dockerfile에서 사용될 환경변수를 지정
+- 설정한 환경 변수는 ${ENV_NAME} 또는 $ENV_NAME 형태로 사용 가능
+
+```Dockerfile
+FROM ubuntu:14.04
+ENV test /home
+WORKDIR $test
+RUN touch $test/mytouchfile
+```
+
+##### VOLUME
+
+- 빌드된 이미지로 컨테이너를 생성했을 때 호스트와 공유할 컨테이너 내부의 
+디렉터리를 설정함
+- VOLUME ["/home/dir", "/home/dir2"] 처럼 JSON 배열의 형식으로 여러 개를 사용하거나 VOLUME /home/dir /home/dir2 로도 사용할 수 있음
+
+##### ARG
+
+- build 명령어를 실행할 때 추가로 입력을 받아 Dockerfile 내에서 사용될 변수의 값을 설정함
+
+##### USER
+
+- USER로 컨테이너 내에서 사용될 사용자 계정의 이름이나 UID를 설정하면 그 아래의 명령어는 해당 사용자 권한으로 실행됨
+- 일반적으로 RUN 명령어로 사용자 그룹과 계정을 생성한 뒤 사용함
+
+#### 2.4.4.2 Onbuild, Stopsignal, Healthcheck, Shell
+
+##### Onbuild
+
+- 빌드된 이미지를 기반으로 하는 다른 이미지가 Dockerfile로 생성될 때 실행할 명령어를 추가함
+
+##### STOPSIGNAL
+
+- 컨테이너가 정지될 때 시스템 콜의 종류를 지정
+- 기본적으로는 SIGTERM로 설정, SIGKILL 및 다른 종료 신호 선택 가능
+
+##### HEALTHCHECK
+
+- HEALTHCHECK는 이미지로부터 생성된 컨테이너에서 동작하는 애플리케이션의 상태를 체크하도록 설정함
+
+##### SHELL
+
+- Dockerfile 에서 기본적으로 사용하는 셸은 리눅스에서 "/bin/sh -c", 윈도우에서는 "cmd /S /C" 
+- 기본 셸을 비활성화 하고 사용하려는 셸을 명시 가능
+
+#### 2.4.4.3 ADD, COPY
+
+- COPY는 로컬 디렉터리에서 읽어 들인 컨텍스트로부터 이미지에 파일을 복사하는 역할을 함
+- COPY test.html  /home/ 또는 COPY ["test.html",  "/home/"] 형태로 사용
+- COPY와 ADD 다른점은 COPY는 로컬의 파일만 이미지에 추가하지만, ADD는 url 및 tar 파일에서도 파일을 추가할 수 있음
+- 다만 정확성이나 보안적인 측면을 위해서도 ADD 보다는 COPY를 사용하는게 좋음
+
+#### 2.4.4.4 ENTRYPOINT, CMD
+
+- CMD는 컨테이너가 시작될 때 실행할 명령어를 설정
+- ENTRYPOINT도 비슷한 역할을 함 
+
+##### ENTRYPOINT와 CMD의 차이점
+
+- ENTRYPOINT는 커맨드를 인자로 받아 사용할 수 있는 스크립트의 역할을 할 수 있음
+- 컨테이너에 ENTRYPOINT가 설정되면 run 명령어의 맨 마짐가에 입력된 cmd를 인자로 삼아 출력
+
+##### entrypoint를 이용한 스크립트 실행
+
+- 일반적으로 스크립트 파일을 실행하도록 설정함 
+
+##### JSON 배열 형태와 일반 형식의 차이점
+
+- JSON 배열 형태가 아닌 CMD 또는 ENTRYPOINT를 사용하면 실제로 이미지를 생성할 때 cmd와 entrypoint에 /bin/sh -c가 앞에 추가된다고 생각하면 된다.
+- CMD echo test -> /bin/sh -c echo test
+- ENTRYPOINT /entrypoint.sh -> /bin/sh -c /entrypoint.sh
+- JSON  형태로 입력하면 입력된 명령어가 그대로 이미지에서 사용됨
+- CMD ["echo", "test"] -> echo test
+- ENTRYPOINT ["/bin/bash", "/entrypoint.sh"] -> /bin/bash /entrypoint.sh
+
+### 2.4.5 Dockerfile로 빌드할 때 주의할 점
+
+- 하나의 명령어는 역슬래시를 통해 가독성을 높일 수 잇음
+- .dockerignore 파일을 작성해 필요한 피일만 컨텍스트에 포함
+- 빌드 캐시를 기용해 이미지 레이어 재사용하는 방법
+- 더미 파일들을 남기지 않게 하기 위해 RUN 명령를  && 연산자를 통해 하나로 묶는것도 좋음 -> 이미지 레이어 수가 줄어듬
