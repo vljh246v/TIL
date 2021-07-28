@@ -85,16 +85,16 @@
     apiVersion: v1
     kind: Pod
     metadata:
-    name: my-nginx-pod
-    labels:
         name: my-nginx-pod
+        labels:
+            name: my-nginx-pod
     spec:
     containers:
     - name: my-nginx-container
         image: nginx:latest
         ports:
         - containerPort: 80
-            protocol: TCP
+          protocol: TCP
     - name: ubuntu-sidecar-container
         image: alicek106/rr-test:curl
         command: ["tail"]
@@ -114,4 +114,95 @@
 - '하나의 포드는 하나의 완전한 애플리케이션' 이라는 점이 중요
 - 위 예제에서는 nginx 컨테이너는 그 자체만으로도 완전한 애플리케이션
 - 그러나 컨테이너가 실행되기 위해 부가적인 기능이 필요하다면 '사이드카(sidecar)' 컨테이너를 포드에 포함 시킬 수 있음
+
+## 6.3 레플리카셋(Replica Set) : 일정 개수의 포드를 유지하는 컨트롤러
+
+### 6.3.1 레플리카셋을 사용하는 이유
+
+- YMAL파일에 포드만 정의해 생성하게 된다면 이 포드의 생애 주기는 어떻게 될까?
+- kubectl delete로 삭제된 포드는 포드의 컨테이너 또한 삭제된 뒤 쿠버네티스에서 영원히 사라지게 됨
+- 쿠버네티스 사용자에 의해서만 라이프사이클이 관리됨.
+- 실제로 외부 사용자의 요청을 처리해야 하는 마이크로 서비스의 구조라면 이러한 방식을 사용하기 어려움
+- 만약 삭제되거나 장애가 발생해 더 이상 포드에 접근하지 못하게 됐을 때, 직접 포드를 삭제하고 다시 생성하지 않는 한 해당 포드는 다시 복구되지 않음
+- 이러한 한계점을 해결하기 위해 레플리카셋이라는 오브젝트를 함께 사용
+- 레플리카셋이 수행하는 역할
+    - 정해진 수의 동일한 포드가 항상 실행되도록 관리
+    - 노드 장애 등의 이유로 포드를 사용할 수 없다면 다른 노드에서 포드를 다시 생성
+
+### 6.3.2 레플리카셋 사용하기
+
+- 아래는 nginx 포드를 생성하는 레플리카셋 예제이다.
+
+    ```YAML
+    apiVersion: apps/v1
+    kind: ReplicaSet
+    metadata:
+        name:  replicast-nginx
+    spec:
+        replicas: 3
+        selector:
+            matchLabels:
+                app: my-nginx-pods-label
+        template:
+            metadata:
+                name:  my-nginx-pod
+                labels:
+                    app: my-nginx-pods-label
+            spec:
+                containers:
+                    - image:  nginx:latest
+                      name:  nginx
+                      ports:
+                      - containerPort: 80
+    ```
+
+    ![ReplicaSet](https://lh3.googleusercontent.com/pw/AM-JKLVsC_5gJBeI65CK8l0Wy6_LJxocfl_k-qxR-FjHPdvSetsat4B_D2erfd3gbBdf-_wQnx3w0ZFbibWiNq2Jo1aUtJEfGB_ThiX7rd_wRuW3ny8TcYDlfosIW9QFE7F2_kCGwuzghEnf7WZN-9FRpKYhxw=w894-h204-no?authuser=0)
+
+- spec.replicas : 동일한 포드를 몇개 유지시킬 것인지 설정
+- spec.template 아래의 내용들 : 포드를 생성할 때 사용할 템플릿을 정의
+
+### 6.3.3 레플리카셋의 동작 원리
+- 레플리카셋은 포드와 연결돼 있지 않음
+- 라벨 셀렉터를 이용해 느슨한 연결을 포드와 사용
+
+    ```YAML
+    apiVersion: apps/v1
+    kind: ReplicaSet
+    metadata:
+        name:  replicast-nginx
+    spec:
+        replicas: 3
+        selector:
+            matchLabels:
+                app: my-nginx-pods-label # 해당 주석 위부터 레플리카셋 정의
+        template:  # 해당 주석 아래 부터 포드 정의
+            metadata:
+                name:  my-nginx-pod
+                labels:
+                    app: my-nginx-pods-label
+            spec:
+                containers:
+                    - image:  nginx:latest
+                      name:  nginx
+                      ports:
+                      - containerPort: 80
+    ```
+
+- 포드를 생서할 때 부가 정보를 설정할 수 있는데, 부가 정보중에는 랍ㄹ, 주석 등도 포함
+- 특히 라벨은 포드 등의 쿠버네티스 리소스를 분류할 때 유용하게 사용할 수 있는 메타데이터
+- 라벨은 부가적인 정보를 표현할 뿐만 아니라, 서로 다른 오브젝트가 서로를 찾아야 할 때 사용되기도 함
+- 레플리카셋은 spec.selector.matchLabels에 정의된 라벨을 통해생성해야 하는 포드를 찾음
+- 즉 app: my-nginx-pods-label을 가진 포드의 개수가 spec.replicas 에 정의된 숫자만큼 생성
+- 생성된 포드를 강제로 삭제하면 새로운 포드를 생성함
+
+    ![remove-pod](https://lh3.googleusercontent.com/pw/AM-JKLV_74qJIioOIcrYvPDT6r0qLTFKhinzV4kIsuukEY4wCh6bz1lOqFAZszJwJnAoQ9DYsXJcSgFu0bwLRFH2K0GusiIvDFpfHwrt72CxqQa9dXdJmNXbcDdTlV6qYchSEWquWehZq0cOa_2YdSpEZ45U0g=w890-h542-no?authuser=0)
+
+- kubectl edit 명령어를 통해 pod에 있는 라벨을 삭제한다면 관리 대상으로 간주하던 파드가 하나 사라졌기 때문에 새로운 pod를 생성함
+    ![edit](https://lh3.googleusercontent.com/pw/AM-JKLWwBKCIjsCJF6Xt0q8UHeBf3c4y_X5V6LBOG1W1HbCtfypMZXMS4r7neWL_bfVuhIRGZ9tmizT5SJO9-cnVFh51Z82PNI1vmIuR9s2-7mhiffZSuWTYKGgmDDGZRn4KSoVIVI3CV-5yLKrUh-bL4EvwAA=w1272-h728-no?authuser=0)
+- 레플리카셋의 목적은 '포드를 생성하는 것' 이 아닌 '일정 개수의 포드를 유지하는 것'
+
+### 6.3.4 레플리케이션 컨트롤러 vs 레플리카셋
+- 이전 버전의 쿠버네티스에서는 레플리카셋이 아닌 레플리케이션 컨트롤러를 사용해서 포드의 개수를 유지함
+- 다른점은 레플리케이션 컨트롤러는 표현식 기반의 라벨 셀렉터를 사용한다는 점
+- 현재 버전에서는 [사용을 권장하지 않음](https://kubernetes.io/ko/docs/concepts/workloads/controllers/replicationcontroller/)
 
