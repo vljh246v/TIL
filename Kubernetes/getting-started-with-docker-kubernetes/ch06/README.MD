@@ -206,3 +206,74 @@
 - 다른점은 레플리케이션 컨트롤러는 표현식 기반의 라벨 셀렉터를 사용한다는 점
 - 현재 버전에서는 [사용을 권장하지 않음](https://kubernetes.io/ko/docs/concepts/workloads/controllers/replicationcontroller/)
 
+## 6.4 디플로이먼트(Deployment) : 레플리카셋, 포드의 배포를 관리
+
+### 6.4.1 디플로이먼트 사용하기
+
+- 운영환경에서는 레플리카셋보다는 레플리카셋과 포드의 정보를 정의하는 **디플로이먼트(Deployment)**라는 이름의 오브젝트를 YAML 파일에 정의해 사용
+- 디플로이먼트는 레플리카셋의 상위 오브젝트 
+- 디플로이먼트를 생성하면 해당 디플로이먼트에 대응하는 레플리카셋도 함께 생성됨
+- 아래 예시는 디플로이먼트를 사용하는 예시이다.
+
+```YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-nginx
+  template:
+    metadata:
+      name: my-nginx-pod
+      labels:
+        app: my-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.10
+        ports:
+        - containerPort: 80
+
+```
+
+    ![dep](https://lh3.googleusercontent.com/pw/AM-JKLWOLWnq5cf3ezikoifhhP128DTaB3BoR67Jl_J2mV5hVQAjRfBAUp68YzhBOniFqXhtvdlwdIOP9jSmyQqWxBU9RqGV2sePcenfYIwBGRuqiJqHYNm3Zi_j4wDKfRva8uEUoSWLWxi_EgXeFSDqYCfmkw=w1272-h728-no?authuser=0)
+
+- 실제로 레플리카셋 또한 생성된 것을 보 수 있다.
+
+### 6.4.2 디플로이먼트를 사용하는 이유
+
+- 핵심적인 이유 중 하나는 애플리케이션의 업데이트와 배포를 더욱 편하게 만들기 위함
+- 예를 들어 애플리케이션을 업데이트 할 때 레플리카셋의 변경 사항을 저장하는 리비전을 남겨 롤백을 가능하게해주고, 무중단 서비스를 위해 포드의 롤링 업데이트의전략을 지정할 수도있음
+- 아래는 레플리카셋 리비전 정보를 저장하는 예제이다.
+- --record 옵션을 통해 리비전을 기록할 수 있다.
+- 우선  Deployment를 생성하고 --record 옵션을 통해 리비전을 기록
+
+    ![step1](https://lh3.googleusercontent.com/pw/AM-JKLV149KC7GsssprnLinIs29zE419psQILnrx1V1BFtvnr9M5Tru1ZnQdD6XuSA0cfpfbWQxL-UdglUwWMBwwtcarTrqLCJAV0GjuU1Ze_UExExE-_1zlj5itqA8karX7aNyoTBo7QLFioZMxZfsODcNhSA=w1030-h458-no?authuser=0)
+
+- 그리고 set image 명령어를 통해 이미지를 변경
+
+    ![step2](https://lh3.googleusercontent.com/pw/AM-JKLW6t7A5yo1bWEbVVhPV7xuaLc8OPfgq0uIKDmr75h_w77PuOsYWMLj90tZeS_TYT4RfPXvblVukwuAsXMXZJ3Xl6G0sNXq9ENTtUj6bgxIwnLFbpP8ejTjQBm-WABa5zozKRV09iwBI_96_YdHg7dT_ZQ=w1078-h94-no?authuser=0)
+
+- 다시 포드 목록을 보면 이미지를 업데이트 했으므로 새롭게 생성된 포드 목록을 볼 수 있음
+
+    ![step3](https://lh3.googleusercontent.com/pw/AM-JKLV5GrHq_pyJix3gipsVrjQRF-bX5EtkCkzKtkGTl3edxM1HtmrYFxmk9uOE82PZG_vRjp-HEpFiA2aQuAopzIsq_z7dEzTSshBcurd1hcL4I-Q0Y6rRs88ZpY0tkzZqV8ADUJ9hjwm4HYPZ1Jd94wXJAQ=w1058-h214-no?authuser=0)
+
+- 그 뒤에 레플리카셋의 목록을 출력해보면 두개의 레플리카셋을 볼 수있음
+
+    ![step4](https://lh3.googleusercontent.com/pw/AM-JKLU7GAkICzhNpS5BLAxbbIMQ3iNgfJmHGcQyCTh9Rf7FqFc8Rz9H8DntU8Pf6SZ08HPwV0SrHXIBjd2PB3cRoLY1UvyHYzj0x4nodrbMBhxzZwKX1B9U-cJYPOFKJv7P1qp5f4VxhU2cy9FrqO0kPGG7GA=w958-h158-no?authuser=0)
+
+- 해시값을 보면 금방 생성한 레플리카셋과 이전에 생성해둔 레플리카셋임을 알 수 있음
+- 디플로이먼트의 포드 정보를 업데이트함으로써 새로운 레플리카셋과 포드를 생성했어도, 이전 버전의 레플리카셋을 삭제하지 않고 남겨 둠
+- 리비전 정보를 확인해보면 아래와 같음
+
+    ![step5](https://lh3.googleusercontent.com/pw/AM-JKLWpLLS1ekrfPRbYEQMlC7NakJ8logZMblkGCiB781mjmZcjhO_Hb780hdjqHeFl2bXiHOULtSg5dtv5litv_HQkSd_gOFV92pPuROlWAw59kx0PoAUugnf4LqGBrxrZIZqwwzL3Hg1SUDnhYZbog1YJRg=w1300-h206-no?authuser=0)
+
+- --record=true 옵션으로 디플로이먼트를 변경하면 이전 사항을 위아 같이 디플로이먼트에 기록함으로써 레플리카셋을 보존할 수 있음
+- 만약 이전 버전의 레플리카셋으로 롤백을 하고 싶다면  --to-revision={REVISION NUMBER} 를 통해 되돌리기가 가능
+
+    ![step6](https://lh3.googleusercontent.com/pw/AM-JKLXIRQP_Phj6AX4eptx3mjOZAN3Jo04S7YliTsDfJp2QMrrhFQlq3wrWraPglkE2OE7zGak7bCm0DUXoSY5TKOsyG0YuY2gh0TEcdSmEE752btD7ReuzlK6njkjvpZDfTfwUDfxo-dXxGhtkcDv8APe5vw=w1044-h274-no?authuser=0)
+
+- 이처럼 디플로이먼트는 여러 개의 레플리카셋을 관리하기 위한 상위 오브젝트임
