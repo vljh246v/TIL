@@ -65,6 +65,53 @@
 - kubectl describe 명령어를 통ㅌ해 리소스의 자세한 정보를 얻어올 수 있음
     ![describe](https://lh3.googleusercontent.com/pw/AM-JKLWQArej9KMF8beYORph4kxsiAwtD6o5Tw9Ih2AU-kX5B8vL05Wc1J_lDDGNAmInEG0fe3ixUwslqLWcQfgWc5MCxnFDPmJjCCH7BwJXhnKUODGo6EUBsmP6pbqKbivAN51Mzn5rsDRvoJp57XGt_DwCig=w342-h242-no?authuser=0)
 - 내부 ip로 접근을 해야만 포드의 Nginx 서버로 요청을 보낼 수 있음
+- kubectl exec -it <pod 이름>  bash 명령어로 접근 가능
 - 쿠버네티스 외부 또는 내부에서 포드에 접근하려면 서비스(service)라고 하는 쿠버네티스 오브젝트를 따로 생성해야 한다.
 - kubectl logs my-nginx-pod 를 통해 로깅을 할 수 있다.
 - 쿠버네티스의 오브젝트는 kubectl delete -f 명령어로 쉽게 삭제할 수 있다.
+
+### 6.2.2 포드 vs 도커 컨테이너
+
+- 기능만 놓고 본다면 포드는 docker run 으로 생성한 단일 nginx 컨테이너와 크게 다르지 않아 보이기도 함
+- 쿠버네티스가 포드를 사용하는 이유는 여러 리눅스 네임스페이스를 공유하는 컨테이너들을 추상화 된 집합으로 사용하기 위함이다.
+- kubectl get pods 명령어로 포드 목록을 출력했을 때, READY 항목에서 1/1라고 표시되어 있다.
+- 이는 Nginx 포드에 1개의 컨테이너가 정의돼 있으며, 이 컨테이너는 정상적으로 준비됐다는 뜻
+    ![pods](https://lh3.googleusercontent.com/pw/AM-JKLXKreJEUrkOXjAx0GrJ1vK3p36xtagIZ4MJNNajsBMX6lFZwt0oYxwKbIRBtJMRePBInFmUvNemnAky9SREhw87Kw_wFrYGPlnk1WsweSMFSXgT_ltHIjBLC0yTL4ikrGMPpU7ltUHQTdyLrtkN941KUg=w704-h124-no?authuser=0)
+- 하지만 포드는 1개의 컨테이너로 구성해야 하는 것은 아님
+- READY 항목은 컨테이너 개수에 따라 2/2도 될 수 있고, 3/3도 될 수 있다.
+- 아래는 위 포드에 우분투 컨테이너를 추가하는 예제이다.
+
+    ```YAML
+    apiVersion: v1
+    kind: Pod
+    metadata:
+    name: my-nginx-pod
+    labels:
+        name: my-nginx-pod
+    spec:
+    containers:
+    - name: my-nginx-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+            protocol: TCP
+    - name: ubuntu-sidecar-container
+        image: alicek106/rr-test:curl
+        command: ["tail"]
+        
+        args: ["-f", "/dev/null"]
+    ```
+
+- 해당 포드에 우분투 컨테이너를 추가 했음
+    ![container2](https://lh3.googleusercontent.com/pw/AM-JKLXI8PsECYXHRM8FHneDN2YPO9qpcAnTgCCI0uRw12PSqV3FrbjyuajO7vXYP9M9pAU_aIdD9t_iXS7B0CqRKd-POc5w4hQ-FADT4brIiJdeBFqiMa_TCiNPDMlhjOtftSyLiJVDVyXycIjYel-p9wha-g=w722-h124-no?authuser=0)
+
+- 그리고 exec 명령어를 통해 새롭게 추가된 우분투 컨테이너 내부로 들어가 로컬호스트로 http 요청을 전송하면 nginx 서버의 응답이 도착하는것을 확인할 수 있댜.
+    ![localhost](https://lh3.googleusercontent.com/pw/AM-JKLX_B41chPeeBXnzC-i4UQJ6yKgRdBbEpFjOBYgB_AjQ6OgjMoZACugi4TXD2Gt2lhAb8-3nnHh0OQaWRt1HB9CnGJzXgwbV8KF55LIF46RnJ3NyMZwWAH-vHOj1LxbLWG6Y8zRMB5JOeStljKbMhlyE6w=w958-h316-no?authuser=0)
+- 이는 포드 내의 컨테이너들이 네트워크 네임스페이스 등과 같은 리눅스 네임스페이스를 공유해 사용하기 때문
+
+### 6.2.3 완전한 애플리케이션으로서의 포드
+
+- '하나의 포드는 하나의 완전한 애플리케이션' 이라는 점이 중요
+- 위 예제에서는 nginx 컨테이너는 그 자체만으로도 완전한 애플리케이션
+- 그러나 컨테이너가 실행되기 위해 부가적인 기능이 필요하다면 '사이드카(sidecar)' 컨테이너를 포드에 포함 시킬 수 있음
+
