@@ -277,3 +277,164 @@ spec:
     ![step6](https://lh3.googleusercontent.com/pw/AM-JKLXIRQP_Phj6AX4eptx3mjOZAN3Jo04S7YliTsDfJp2QMrrhFQlq3wrWraPglkE2OE7zGak7bCm0DUXoSY5TKOsyG0YuY2gh0TEcdSmEE752btD7ReuzlK6njkjvpZDfTfwUDfxo-dXxGhtkcDv8APe5vw=w1044-h274-no?authuser=0)
 
 - 이처럼 디플로이먼트는 여러 개의 레플리카셋을 관리하기 위한 상위 오브젝트임
+
+## 6.5 서비스(Service) : 포드를 연결하고 외부에 노출
+
+- 디플로이먼트를 통해 생성된 포드에는 어떻게 접근할 수 있는 방법은?
+- 포드의 ip는 영속적이지 않아 항상 변할 수 있다는 점도 유의해야 함
+- 여러개의 디플로이먼트를 하나의 완벽한 애플리케이션으로 연동하려면 포드 IP가 아닌, 서로를 발견(Discovery)할 수 있는 다른 방법이 필요
+- 디플로이먼트의 YAML 파일에는 단지 포드의 애플리케이션이 사용할 내부 포트만 정의함
+- 해당 포트를 외부로 노출해 사용자들이 접근하거나, 다른 디플로이먼트의 포드들이 내부적으로 접근하려면 서비스(service)라고 부르는 별도의 쿠버네티스 오브젝트를 생성해야 함
+- 서비스의 핵심 기능
+  - 여러 개의 포드에 쉽게 접근할 수 있도록 고유한 도메인 이름을 부여
+  - 여러 개의 포드에 접근할 때, 요청을 분산하는 로드 밸런서 기능을 수행
+  - 클라우드 플랫폼의 로드 밸런서, 클러스터 노드의 포트 등을 통해 포드를 외부로 노출
+
+### 6.5.1 서비스의 종류
+
+- 아래는 서비스 예제를 활용할때 필요한 디플로이먼트 예제이다.
+
+```YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hostname-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webserver
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      containers:
+      - name: my-webserver
+        image: alicek106/rr-test:echo-hostname
+        ports:
+        - containerPort: 80
+
+```
+
+- 서비스는 포드에 어떻게 접근할 것이냐에 따라 종류가 여러개로 나눠짐
+- 대표적 서비스 타입 
+  - ClusterIP 타입 : 쿠버네티스 내부에서만 포드들에 접근할 때 사용함, 외부로 포드를 노출하지 않기 때문에 쿠버네티스 클러스터 내부에서만 사용되는 포드에 적합
+  - NodePort 타입 : 포드에 접근할 수 있는 포트를 클러스터의 모든 노드에 동일하게 개방함. 따라서 외부에서 포드에 접근할 수 있는 서비스 타입
+  - LoadBalancer 타입 : 클라우드 플랫폼에서 제공하는 로드 밸런서를 동적으로 프로비저닝해 포드에 연결, 클라우드 플랫폼 환경에서만 사용 가능
+
+### 6.5.2 ClusterIP 타입의 서비스 - 쿠버네티스 내부에서만 포드에 접근하기
+
+- 아래 내용은 간ㄷ나한 CLusterIP 타입 예제이다.
+
+```YAML
+apiVersion: v1
+kind: Service
+metadata:
+  name: hostname-svc-clusterip
+spec:
+  selector:
+    app: webserver
+  ports:
+  - port: 8080
+    targetPort: 80
+    name: web-port
+  type: ClusterIP
+```
+
+- spec.selector : selector 항목은 이 서비스에서 어떠한 라벨을 가지는 포드에 접근할 수 있게 만들 것인지 결정
+- spec.ports.port : 생성된 서비스는 쿠버네티스 내부에서만 사용할 수 있는 고유한 ip를 할당받음. port 항목에는 서비스의 IP에 접근할 때 사용할 포트를 설정
+- spec.ports.targetPort : selector 항목에서 정의한 라벨에 의해 접근 대상이 될 포드들이 내부적으로 사용하고 있는 포드를 입력. 즉 포드 템플릿에 정의된 containerPort와 같은 값으로 설정해야 함
+- spec.type : 서비스가 어떤 타입인지 나타냄
+- kubectl apply 명령어를 통해 서비스를 생성할 수 있음
+    ![svc](https://lh3.googleusercontent.com/pw/AM-JKLVkrDaEjKK9zvTZ_ng2Ih4g-PQXdxhLIoMrnbop0em0OpsVnun1XnRIkYZtwlDwyQkBMWVBkj-qbRN1w0P5FqPZvpXJoQTbN2Mk9GB0u6Ys1sazQJ39PDPmUCVrmBc0aizzTBRU2-D-jZiwGXgkrBQavQ=w1208-h240-no?authuser=0)
+
+- 서비스를 사용해 포드에 접근하는 방법은 위 출력 내용중 CLUSTER-IP 항목의 IP와 PORT 항목의 포트를 통해 요청을 보내면 된다.
+- 임시 포드를 만들어 요청을 전송하면 아래와 같은 결과를 볼 수 있다.
+    ![pod](https://lh3.googleusercontent.com/pw/AM-JKLUiDyXxeJCytJO_WkXBXbd039Z1cV41VBUHKV2HjC9gmK8vnd7SYk2OXQoxjqZXLv1ja-v2qdq8wWnhtl8aHbiOWwQPfvtXD6V1mODXksVy-h6Pax3d1kyhcts7xl8SbxSl_P79KoObAs-9MZvpxK8fEA=w1248-h616-no?authuser=0)
+
+- 서비스의 IP:PORT 를 통해 포드에 접근이 가능하다.
+- 또한 자동을 요청을 분산하고 있음.
+- 서비스를 생성할 때 별도의 설정을 하지 않아도 서비스는 연결된 포드에 대해 로드 밸런싱을 수행한다.
+- 서비스는 IP 뿐만 아니라 서비스 이름 그 자체로도 접근할 수 있음
+- 애플리케이션이 서비스나 포드를 쉽게 찾을 수 있도록 내부 DNS를 구동하고 있음
+    ![dns](https://lh3.googleusercontent.com/pw/AM-JKLUBb_Qg4kxo39wfXWPszaXxODL0vJn15c7gWCcKO7Ulemtoo7RHd42_9lZuH8I4gw1sWM6dnrqsjofOY578k84EE4SdFPcLXr8KaDpGVvAyFUv_yInEirCyP0J2QPxbwA-2APe6oLSCP3Zkdfgchmqakg=w1112-h78-no?authuser=0)
+- 서비스의 이름과 같은 도메인 이름을 사요하는 것이 일반적임
+- 정리하면 아래와 같다.
+  1. 특정 라벨을 가지는 포드를 서비스와 연결하기 위해 서비스의 YAML 파일에 selector 항목을 정의
+  2. 포드에 접근할 때 사용하는 포트(포드에 설정된 containerPort)를 YAML 팡리의 targetPort 항목에 정의
+  3. 서비스를 생성할 때, YAML 파일의 port 항목에 8080을 명시해 서비스의 Cluster IP와 8080 포트로 접근할 수 있게 설정 한다.
+  4. kubectl apply -f 명령어로 ClusterIP  타입의 서비스가 생성되면 서비스는 쿠버네티스 클러스터 내부에서만 사용할 수 있는 고유한 내부 IP를 할당받음
+  5. 쿠버네티티스 클러스터에서 서비스의 내부 IP 또는 서비스 이름으로 포드에 접근할 수 있다.
+
+    ![정리](https://lh3.googleusercontent.com/pw/AM-JKLUcKFV0ECsyYKTDdbfxzMnYGHSSWa-ZMKkpyXLS-UAiZFuOl0BsO2GbxXiMJnyPOVfU2JPLNDryHCGmZcs5_XoVmdjUSWMx-AWMfu1uywk3yjq31yW-zy5cEiHkmwCgPy5V58x1Jaqc9Vb16qnKRktwsA=w1920-h1080-no?authuser=0)
+
+### 6.5.3 NodePort 타입의 서비스 - 서비스를 이용해 포드를 외부에 노출하기
+
+- NodePort 타입의 서비스는 클러스터 외부에서도 접근할 수 있음
+- 모든 노드의 특정 포트를 개방해 서비스에 접근하는 방식
+- 아래는 NodePort 타입의 서비스 예제이다.
+
+```YAML
+apiVersion: v1
+kind: Service
+metadata:
+  name: hostname-svc-nodeport
+spec:
+  selector:
+    app: webserver
+  ports:
+  - port: 8080
+    targetPort: 80
+    name: web-port
+  type: NodePort
+```
+
+- type 항목을 변경한것 빼고는 모두 동일
+
+    ![svc](https://lh3.googleusercontent.com/pw/AM-JKLU6msGE9u6kOT9EuEAZF1X64vXbZRSTaoRuS_AxCqtGQ2HSrJmVPmAOQ4Vr5M5dh1aFcB36t_02PcBUcy4IlucauHiA2bQ_hPUhz455dKgAFqJ1xSrYXqzKRR2FnM0E6IH5lCm5GQfkQTJl1GtiCjQPyA=w1250-h236-no?authuser=0)
+
+- PORT(S) 항목에 출력된 숫자는 모든 노드에서 동일하게 접근할 수 있는 포트를 의미함
+- NodePort 타입의 서비스는 CLusterIP의 기능을 포함하고 있음
+- 실제 NodePort 를 통해 서비스를 외부에 제공하는 경우는 많지 않음 (Ingress 활용)
+
+### 6.5.4 클라우드 플랫폼의 로드 밸런서와 연동하기 - LoadBalancer 타입의 서비스
+
+- 클라우드 플랫폼에서 사용하는 기능 -> TODO로 남김
+
+### 6.5.5 트래픽의 분배를 결정하는 서비스 속성 : externalTrafficPolicy
+
+- LoadBalancer 타입과 NodePort 타입을 사용했을 때 각 노드로 들어오는 요청은 다시 포드 중 하나로 전달 됨
+- 하지만 이러한 요청 방법은 경우에 따라 효율적이지 않을 때도 있음
+- 아래 그림을 예로들어보면
+
+    ![externalTrafficPolicy](https://lh3.googleusercontent.com/pw/AM-JKLUvTnceu0lTnOa5bwPavZ1eWbkjgZn8ZCLp1dFWblexgaO3CA-4zCztWHdpsDosL-yeov2X_tX5cLVulTGY1ZigxjSbOtTK-L-YS0rGh7X80_0e8B4pT9dyF9WRcI2P8DKOp9iYUtE3BOClnXCS9eTtSQ=w2336-h1226-no?authuser=0)
+
+- 워커노드 A로 들어오는 요청은 (1) A에 위치한 a 포드 또는 (2) B에 위치한 b 포드중 하나로 전달 된다.
+- 다만 A 노드로 들어오는 요청이 굳이 B 노드로 전달되지 않고 A 노드 내부(a 포드)에서 처리될 수 있다는 점
+- 부맆룡한 네트워크 홉(hob)이 한 단계 발생할 수 있고, 노드간 리다이렉트로 인한 트래픽 출발지 주소가 바뀌는 SNAT가 발생할 수 있음ㄴㄴㄴ
+- 이러한 요청 전달 메커니즘은 서비스의 속성 중 externalTrafficPolicy 항목에 정의돼 있음
+
+    ![항목](https://lh3.googleusercontent.com/pw/AM-JKLUtVU9EhMGdFFSn_We0sdqcuUb7Bk6uNtU8o9TIDsbwGYvHnR9rlMITkQEOUPlvG4a2mT9OzGsGTA-eOtzPwACdbKLmYDng2gYcxGBre2ECB1ZgtErE3hy2e-fXe6eVcu4iRW1oV3VxL7h9Z8wKyR2SZg=w680-h694-no?authuser=0)
+
+- 기본 값은 Cluster임
+- externalTrafficPolicy 값을 Local로 설정하면 포드가 생성된 노드에서만 포드로 접근할 수 있다.
+- 다만 externalTrafficPolicy 값을 Local로 설정할 경우 각 노드에 포드가 고르지 않게 스캐줄링 됐을 때, 요청이 고르게 분산되지 않을 수 있다.
+
+### 6.5.6 요청을 외부 리다이렉트하는 서비스 : ExternalName
+
+- NodePort, ClusterIP, LoadBalancer 타입말고, 쿠버네티스를 외부 시스템과 연동해야 할 때는 ExternalName 타입의 서비스를 사용할 수도 있음
+- 아래는 지정한 CNAME을 반환하는 예제이다.
+
+```YAML
+apiVersion: v1
+kind: Service
+metadata:
+  name: externalname-svc
+spec:
+  type: ExternalName
+  externalName: my.database.com
+
+```
+
+- 쿠버네티스와 별개로 존재하는 레거시 시스템에 연동해야 하는 상황에서 유용하게 사용할 수 있음
