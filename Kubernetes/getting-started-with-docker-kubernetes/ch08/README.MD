@@ -18,7 +18,6 @@
 - kubectl get ingress 명령어로 인그레스 목록 확인 가능
 - 아래는 간단한 ingress 를 정의한 YAML 파일 예제
 
-
 ```YAML
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -135,12 +134,11 @@ spec:
           name: flask-port
 ```
 
-- http://localhost/echo-hostname 접근시 정상적인 화면을 볼 수 있다.
+- <http://localhost/echo-hostname> 접근시 정상적인 화면을 볼 수 있다.
 
-#### 인그레스 컨트롤러의 동작 원리 이해
+### 인그레스 컨트롤러의 동작 원리 이해
 
 1. [Nginx 인그레스 컨트롤러를 생성](https://kubernetes.github.io/ingress-nginx/deploy/#docker-deskto)
 2. Nginx 인그레스 컨트롤러를 외부로 노출하기 위한 서비스를 생성
 3. 요청 처리 규칙을 정의하는 인그레서 오브젝트 생성
 4. Nginx 인그레스 컨트롤러로 ㄷ르어온 요청은 인그레스 규칙에 따라 적절한 서비스로 전달
-
