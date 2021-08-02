@@ -267,3 +267,197 @@ spec:
 - kubectl create 명령어에서 --dry-run 과 -o yaml 옵션을 사용하면 컨피그맵을 생성하지 않은 채로 YAML 파일의 내용을 출력할 수 있다.
 
   ![ry-run](https://lh3.googleusercontent.com/pw/AM-JKLXbi4YmnE-KfScu5pDOk_kenEh-mbxcWvy1Oblr_VruHX_ABmqFSuRAViKOr0rwjD-UC0CAcFdAOihVi7vaKSwnv6nuW1HWnNJ5TheZrCTkwzPwJNdv4hnqOTsrgLBsbPMhiHILPNcBQGn3DNad4h0itw=w1606-h610-no?authuser=0)
+
+### 7.2.2 시크릿(Secret)
+
+#### 시크릿 사용 방법 익히기
+
+- 시크릿은 SSH  키, 비ㅁ리번호 등과 같이 민감한 정보를 저장하기 위한 용도로 사용되며, 네임스페이스에 종속되는 쿠버네티스 오브젝트
+- 컨피그맵과 사용 방법이 비슷함
+- 아래는 시크릿을 생성해서 패스워드를 저장하는 예제이다.
+
+```sh
+kubectl create secret generic \
+my-password --from-literal password=1q2w3e4r
+```
+
+- 컨피그맵처럼 --from-literal 대신 --from-file 이나 --from-env-file 옵션을 이용해 파일로부터 값을 읽어와 사용가능
+
+```sh
+kubectl create secret generic \
+our-password --from-file pw1 --from-file pw2
+```
+
+- generic 옵션은 데이터 사용목적에 따른 시크릿 종류를 나타낸 옵션
+- 아래 내용은 저장된 시크릿 목록과 내용을 표시한 것이다.
+
+  ![secret](https://lh3.googleusercontent.com/pw/AM-JKLUlrFaQZ5I3x8idwBhJ9MpzIDaq1R63ANJncZl_nHLqyVpIHvh8txUB4Lyg88K5yPFU_kRrO50sommrdRUUnVa3DxOmgvrfbGBclCCltfgEAE_nhLgBKmpUdQgodB_xqdEGqmZcU3Ce723SesysZVIvFA=w1052-h1226-no?authuser=0)
+
+- 키-값 쌍에서 기본적으로 base64 값으로 인코딩하여 저장한다.
+- 그렇기 때문에 YAML 파일로부터 secret를 생성할 때 데이터 값을 base64로 인코딩해서 YAML  파일을 작성해야 한다.
+- 이렇게 생성된 시크릿은 컨피그맵과 비슷하게 사용할 수 있음
+- 모든 키-값 쌍을 다 가지고 오려면 secretRef를 사용
+
+```YAML
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-env-example
+  labels:
+    name: secret-env-example
+spec:
+  containers:
+  - name: my-container
+    image: busybox
+    args: ['tail', '-f', '/dev/null']
+    envFrom:
+      - secretRef:
+          name: my-password
+
+```
+
+- 특정 데이터만 산태해 원하는 이름의 환경변수만 가지고 오려면 secretKeyRef를 사용
+
+```YAML
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selective-secret-env-example
+  labels:
+    name: selective-secret-env-example
+spec:
+  containers:
+  - name: my-container
+    image: busybox
+    args: ['tail', '-f', '/dev/null']
+    env:
+      - name: YOUR_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: our-password
+            key: pw2
+
+```
+
+- 또한 시크릿의 키-값 데이터를 파일로 포드의 볼륨에 마운트 할 수도 있음
+
+```YAML
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-volume-pod
+spec:
+  containers:
+  - name: my-container
+    image: busybox
+    args: ['tail', '-f', '/dev/null']
+    volumeMounts:                         
+      - mountPath: /etc/secret            # 시크릿의 데이터가 위취할 경로
+        name: secret-volume               # volumes에서 정의한 시크릿 볼륨 이름
+  volumes:
+    - name: secret-volume                 # 시크릿 볼륨 이용
+      secret:
+        secretName: our-password                # 키-값 쌍을 가져올 시크릿 이름
+```
+
+- 여러개의 키-값 쌍이 존재하는 시크릿에서 선택적으로 사용할 수도 있음
+
+```YAML
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selective-secret-volume-pod
+spec:
+  containers:
+  - name: my-container
+    image: busybox
+    args: ['tail', '-f', '/dev/null']
+    volumeMounts:                         
+      - mountPath: /etc/secret            # 시크릿의 데이터가 위취할 경로
+        name: secret-volume               # volumes에서 정의한 시크릿 볼륨 이름
+  volumes:
+    - name: secret-volume                 # 시크릿 볼륨 이용
+      secret:
+        secretName: our-password          # 키-값 쌍을 가져올 시크릿 이름(our-password )
+        items:
+          - key: pw1                      # pw1 라는 키에 대응하는 값이 사용됨
+            path: password1               # 최종 파일은 /etc/config/password1 이 됨
+```
+
+- 시크릿을 YAML 파일로 생성할 때 파일에 base64로 인코딩한 값을 입력했더라도 시크릿을 포드의 환경변수나 볼륨 파일로서 가져오면 디코딩된 값을 사용
+
+#### 이미지 레지스트리 접근을 위한 docker-registry 타입의 시크릿 사용하기
+
+- 사용 목적에 따라 여러 종류의 시크릿을 사용할 수도 있음
+- kubectl get secrets  명령어로 확인했을 때 TYPE 항목이 시크릿 종륭에 해당
+  ![secrets](https://lh3.googleusercontent.com/pw/AM-JKLVaUPwrQA5gMz8sDXmEWGancCo4GL5MJyWvQUe9_J7pY8ihGS5I5ZtMc8v6UGHJU9oxBkOFL1VG-VgZcfjzTShVYHNGBeKZsCs5ZyeSrKRSAL_Vu6iPVU95XWA3ZM7GZAY37yanxWIwXpHDvBu6vXMnew=w1034-h164-no?authuser=0)
+
+- 기본적으로 내부의 데이터를 들여다 볼 수 있는 Opaque 타입으로 설정돼어 있음
+- 앞에 명시 했었던 generic 옵션이 Opaque 타입에 해당하는 종류
+- 시크릿은 비공개 레지스트리에 접근할 때 사용하는 인증 용으로도 사용 가능
+- 포드를 생성할 때 YAML  파일에 정의된 이미지가 로컬에 존재하지 않으면 공개된 허브에서 자동으로 받아옴
+- 도커에서 사설 레지스트리에 접근하듯이 쿠버네티스에서는 docker login 명령어 대신에 레지스트리의 인증 정보를 저장하는 별도의 시크릿을 생성해 사용
+- 레지스트리 인증을 위해 시크릿을 생성하는 방법은 두가지가 있음
+- 첫번째는 docker login에 성공했을때 도커 엔진이 자동으로 생성하는 ~/.docker/config.json 파일을 사용하는 방법
+
+```sh
+kubectl create secret generic registry-auth \
+--from-file=.dockerconfigjson=/root/.docker/config.json \
+--type=kubernetes.io/dockerconfigjson
+
+```
+
+- 또는  시크릿을 생성한느 명령어에서 직접 로그인 인증 정보를 명시할 수도 있음
+- --docker-username=<유저 이름>,  --docker-password=<유저 패스워드>, --docker-server=<사설 레지스트리 주소> 같은 옵션을 사용해 사용 가능
+
+```sh
+kubectl create secret docker-registry registry-auht-by-cmd \
+--docker-username=alicek106 \
+--docker-password=1q2w3e4r \
+--docker-server=alicek106.registry.com
+```
+
+- 위 명령어로 생성된 시크릿은 kubernetes.io/dockerconfigjson 타입으로 설정
+  ![dockerconfigjson](https://lh3.googleusercontent.com/pw/AM-JKLVzsbhe8NibRKH04pEvMHvVjYN_ELd6UE4Lv8zYnc9RvV-JBStmx5_tM5nfH34HNvHyzvOnfh5N4dpFIkQT3YYVRlS4BuIZaKsQTdnIk8qculKij9QWHdkuBIn6wmMe_-pWiwvbDpCAt5G2xjUigufWbQ=w1016-h476-no?authuser=0)
+
+- 이 시크릿은 디플로이먼트 또는 포드 등에서 사설 레지스트리로부터 이미지를 받아 올 때 사용할 수 있다.
+
+```YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-from-private
+spec:
+  selector:
+    matchLabels:
+      app: deployment-from-private
+  template:
+    metadata:
+      labels:
+        app: deployment-from-private
+    spec:
+      containers:
+      - name: deployment-from-private
+        image: my-image                     # 개인이 만든 이미지 이름
+        imagePullSecrets:
+          - name:  registry-auht-by-cmd     # 시크릿 이름
+```
+
+#### TLS 키를 저장할 수 있는 tls 타입의 시크릿 사용하기
+
+- 시크릿은 TLS ㅇ녀결에 사용되는 공개키, 비밀키 등을 쿠버네티스에 자체적으로 저장할 수 있도록 tls 타입을 지원
+- 시크릿의 종류로 generic 이나 docker-registy 대신 tls를 사용하고, --cert와 --key 옵션을 사용해 인증서와 키를 직접 명시해 줌
+
+```sh
+-x509 -subj "/CN=example.com" -keyout cert.key -out cert.crt
+Generating a 4096 bit RSA private key
+```
+
+- 시크릿 정보를 확인해보면 cert.crt와 cert.key 파일의 내용이 tls.cert와 tls.key 라는 키로 저장돼 있음을 알 수 있다. 모두 base64로 저장
+  ![cert](https://lh3.googleusercontent.com/pw/AM-JKLUDnv6g6hDspRUGFV99qnYw3Uvou1UlVbeCc_4VzuMAPMcWt5tY76wGLsrIAs3HJdeNOuKRVcViBsKww7ZKWpN4Pv0lzqL77pqi56YbnqEovQ6PpdR9-uTTliMnNDxoiHr1wXxxPEWiuWl36cWLdGFKcw=w678-h904-no?authuser=0)
+
+#### 좀 더 쉽게 컨피그맵과 시크릿 리소스 배포하기
+
+- YAML 파일로 시크릿 정보를 배포하려면 데이터를 YAML 파일에 함께 저장해 두어야 하는데 가독성이나 파일과 데이터가 분리되지 않아 관리가 불편하다.
+- kustomize 기능을 사용하면 시크릿을 생성하기 위한 제너레이터 파일을 관리할 수 있다.
+- 컨피그맵도 사용 가능
