@@ -29,7 +29,6 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     kubernetes.io/ingress.class: "nginx"            # 해당 어노테이션은 1.18 버전부터는 Deprecated 
 spec:
-  c:
   - host: alicek106.example.com
     http:
       paths:
@@ -142,3 +141,80 @@ spec:
 2. Nginx 인그레스 컨트롤러를 외부로 노출하기 위한 서비스를 생성
 3. 요청 처리 규칙을 정의하는 인그레서 오브젝트 생성
 4. Nginx 인그레스 컨트롤러로 ㄷ르어온 요청은 인그레스 규칙에 따라 적절한 서비스로 전달
+
+
+## 8.3 인그레스의 세부 기능 : annotation을 이용한 설정
+
+- 이전에 작성된 ingress를 살펴보면 아래와 같은 annotation을 볼 수 있다.
+
+```YAML
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-examples
+  labels:
+    name: ingress-examples
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"            # 해당 어노테이션은 1.18 버전부터는 Deprecated 
+```
+
+- kubernetes.io/ingress.class는 해당 인그레스 규칙을 어떤 인그레스 컨트롤러에 적용할 것인지를 의미
+- 쿠버네티스 클러스터 자체에서 기본적으로 사용하도록 설정된 인그레스 컨트롤러가 존재하는 경우 컨트롤러를 인그레스에 명시해 주어야함
+- nginx.ingress.kubernetes.io/rewrite-target annotation은 인그레스에 정의된 경로로 들어오는 요청을 rewrite-target에 설정된 경로로 전달하는 역할을 함
+- 여러 어노테이션들은 각 컨트롤러에 맞는 공식 문서에서 확인 가능, [nginx 어노테이션](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/)
+
+## 8.4 Nginx 인그레스 컨트롤러에 SSL/TLS 보안 연결 적용
+
+- 인그레스를 활용하면 디플로이먼트나 서비스가 아닌, 앞쪽 인그레스 컨트롤러에 편리하게 SSL/TLS 보안 연결을 설정할 수 있음 
+- 아래는 사용할 인증서를 만드는 명령어이다.
+
+```sh
+ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=localhost" # /CN 부분은 본인의 호스트를 입력
+```
+
+- kubectl create secret tls tls-secret --key tls.key --cert tls.crt 명령어로 secret를 생성
+- 그리고 ingress 파일에 tls 옵션을 추가
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-examples
+  labels:
+    name: ingress-examples
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"            # 해당 어노테이션은 1.18 버전부터는 Deprecated 
+spec:
+  tls:
+  - hosts:
+      - localhost
+    secretName: tls-secret
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - pathType: Prefix                     
+        path: /echo-hostname
+        backend:
+          service:
+            name: hostname-service
+            port: 
+              number: 80
+
+```
+
+- spec.tls.hosts 항목에서 보안연결을 적용할 도메인 이름을 입력
+- 이후 요청을 보내면 정상적으로 접근할 수 있는 것을 볼 수 있다.(브라우저에서는 공인된 인증서가 아니기 때문에 에러가 발생 할 수 있음)
+
+  ![사파리](https://lh3.googleusercontent.com/pw/AM-JKLVYI9cRy5X6IyT8VNXbVSESpycsrVhFFevEVdHUCDlsjW6Q-31Nve-rG60DeY07C7QV94WT6vBpeI1LFMsXwc4xZJV9JpYf7wJW5aj0PFBy95-gnrUoqGB4hzhycukRMV3BY0Gd9Zgud9NnVcUIDeXJQA=w1284-h958-no?authuser=0)
+
+  ![curl](https://lh3.googleusercontent.com/pw/AM-JKLUidhxFbApzSWGDT-q1Pbr-ixVZ4QYx2NtP8pVBJ8j406pkUQLWOe1BcnGiSAEAtzLDY_BNV5aIHySqC9i_u3pJ88BYFsq14WWcxNIAZmeu9z58nt_H00z4V9pDiz4HzRPkcT1B3UOiJQMwJkxOz4z5XA=w850-h324-no?authuser=0)
+
+- 보안 연결을 사용하면 http로 연결하더라도 https로 연결됨, nginx 인그레스 컨트롤러가 https 리다이렉트 어노테이션인 ssl-redirect를 자동으로 true로 설정함
+
+## 8.5 여러 개의 인그레스 컨트롤러 사용하기
+
+- 하나의 쿠버네티스 클러트터에서 반드시 하나의 인그레스 컨트롤러를 사용해야 하는 것은 아님
+

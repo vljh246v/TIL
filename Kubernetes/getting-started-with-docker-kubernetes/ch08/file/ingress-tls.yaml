@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-examples
+  labels:
+    name: ingress-examples
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"            # 해당 어노테이션은 1.18 버전부터는 Deprecated 
+spec:
+  tls:
+  - hosts:
+      - localhost
+    secretName: tls-secret
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - pathType: Prefix                     
+        path: /echo-hostname
+        backend:
+          service:
+            name: hostname-service
+            port: 
+              number: 80
