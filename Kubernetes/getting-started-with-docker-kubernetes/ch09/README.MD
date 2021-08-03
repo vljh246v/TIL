@@ -85,3 +85,102 @@ spec:
 
 - content-creator 컨테이너에서 웹 컨텐츠를 생성하면  apache-webserver 컨테이너 htdocs 디렉터리에도 동일한 웹 컨텐츠가 생성 됨
 
+## 9.2 네트워크 볼륨
+
+- 쿠버네티스틑 별도의 플러그인을 설치하지 않아도 다양한 종류의 네트워크 볼륨을 포드에 마운트할 수 있다.
+
+### NFS를 네트워크 볼륨으로 사용하기
+
+- NFS는 NFS 클라이언트와 NFS 서버로 구성
+- 클라이언트는 워커 노드의 기능을 사용할
+- 아래는클러스터 내부에 임시 NFS 서버를 생성하는 예제이다.
+
+```YAML
+# nfs-deployument.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-server
+spec:
+  selector:
+    matchLabels:
+      role: nfs-server
+  template:
+    metadata:
+      labels:
+        role: nfs-server
+    spec:
+      containers:
+      - name: nfs-server
+        image: gcr.io/google_containers/volume-nfs:0.8
+        ports:
+          - containerPort: 2049
+            name: nfs
+          - containerPort: 20048
+            name: mountd
+          - containerPort: 111
+            name: rpcbind
+        securityContext:
+          privileged: true
+
+---
+
+# nfs-service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfs-service
+spec:
+  selector:
+    role: nfs-server
+  ports:
+  - port: 2049
+    name:  nfs
+  - port: 20048
+    name:  mountd
+  - port: 111
+    name:  rpcbind
+
+```
+
+- 아래는 NFS 서버의 볼륨을 마운트한 포드 예제이다.
+
+```YAML
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nfs-pod
+spec:
+  containers:
+  - name: nfs-mount-container
+    image: busybox
+    args: ["tail", "-f", "/dev/null"]
+    volumeMounts:
+      - mountPath: /mnt                 # 포드 컨테이너 내부의 /mnt 디렉터리에 마운트
+        name: nfs-volume
+  volumes:
+    - name: nfs-volume
+      nfs:                              # NFS 서버의 볼륨을 포드의 컨테이너에 마운트
+        path: /
+        server: {NFS_SERVICE_IP}
+```
+
+- 컨테이너 내부에서 /mnt 디렉터리에 저장하면 실제 NFS 서버에 저장됨
+- {NFS_SERVICE_IP} 내용에는 서비스의 DNS 이름이 아닌 NFS 서버의 IP가 설정돼야함
+- 이유는 컨테이너 내부에서는 DNS를 통해 찾을 수 있지만 NFS 볼륨의 마운트는 컨테이너가아닌 노드에서 발생함
+- ip를 확인해서 적용하는 방식으로 진행해야 한다.
+
+```sh
+# NFS 서버에 접근하기 위해 서비스의 Cluster IP를 얻음
+export NFS_SERVICE_IP=$(kubectl get svc/nfs-service -o jsonpath='{.spec.clusterIP}')
+
+# nfs-pod의 server 항목을 NFS_SERVICE_IP로 교체해 생성
+cat nfs-pod.yaml | sed "s/{NFS_SERVICE_IP}/$NFS_SERVICE_IP/g" | kubectl apply -f -
+```
+
+- 포드가 정상적으로 실행 =됐는지 확인하면 저장 공간을 마운트해 사용하고 있는 것을 볼 수 있다.
+
+  ![NFS](https://lh3.googleusercontent.com/pw/AM-JKLVlTgHK_7nAuDjiDFNrP-0s_i_Wc6cAugUqzDB59M-ntEF8jXnpPsHQe3RBPKht-rJqBjIvDv5PnxVmAcC2eJ49LKvvzHhU3yU-BpyQ2S917Rcitppo4lpsH2eYcx1MHJ33e-NII56lW6O4C9KwfHt2IQ=w1012-h326-no?authuser=0)
+
