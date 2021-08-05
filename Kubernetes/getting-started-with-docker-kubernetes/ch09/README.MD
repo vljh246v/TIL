@@ -184,3 +184,131 @@ cat nfs-pod.yaml | sed "s/{NFS_SERVICE_IP}/$NFS_SERVICE_IP/g" | kubectl apply -f
 
   ![NFS](https://lh3.googleusercontent.com/pw/AM-JKLVlTgHK_7nAuDjiDFNrP-0s_i_Wc6cAugUqzDB59M-ntEF8jXnpPsHQe3RBPKht-rJqBjIvDv5PnxVmAcC2eJ49LKvvzHhU3yU-BpyQ2S917Rcitppo4lpsH2eYcx1MHJ33e-NII56lW6O4C9KwfHt2IQ=w1012-h326-no?authuser=0)
 
+## 9.3 PV, PVC를 이용한 불륨 관리
+
+### 9.3.1 퍼시스턴트 볼륨과 퍼시스턴트 볼륨 클레임을 사용하는 이유
+
+- 실제 어플리케이션 개발시에는 볼륨에 대한 내용을 YAML 파일에 직접 입력
+- 여러 종류의 NFS 를 사용하기도 하고, 디플리오먼트를 다른 개발 부서에 배포하거나 웹상에 공개할 경우 고정된 NFS 정보는 문제가 됨
+- 볼륨과 애플리케잉션의 정의사 서로 밀접하게 연관돼 있어 분리할 수 없는 상황이 생김
+- 이러한 불편함을 해결하기 위해 퍼시스턴트 볼륨(Persistent Volume : PV) 과 퍼시스턴트 볼륨 클레임(Persistent Volume Claim : PVC)이라는 오브젝트를 사용
+- 포드가 볼륨의 세부적인 사항을 몰라도 볼륨을 사용할 수 있도록 추상화 해주는 역할을 함
+
+- 인프라 관리자와 사용자가 나눠져 있다면 아래와 같은 과정을 거침
+  1. 인프라 관리자는 네트워크 볼륨의 정보를 이용해 퍼시스턴트 볼륨리소스를 미리 생성해 둠. 네트워크 볼륨의 정보에는 NFS나 iSCSI와 같은 스토리지 서버에 망누트하기 위한 엔트포인트를 포함할 수 있음
+  2. 사용자는 포드를 정의하는 YAML 파일에 **'이 포드는 데이터를 영속적으로 저장해야 하므로 마운트할 수 있는 외부 볼륨이 필요하다'**라는 의미의 퍼시스턴트 볼륨 크렐임을 명시하고 생성
+  3. 쿠버네티스틑 생성해둔 퍼시스턴트 볼륨의 속성과 사용자가 생성한 퍼시스턴트 볼륨클레임의 요구 사항이 일치한다면 두 개의 리소스를 매칭 시켜 바인딩함
+
+- 위 과정에서 중요한 점은 **'사용자는 디플로이먼트의 YAML 파일에 볼륨의 상세한 스펙을 정의하지 않아도 된다.'**는 것
+- 디플로이먼트는 외부 볼륨을 필요로 한다는 사실만 포함해 배포함
+
+### 9.3.2 퍼시스턴트 볼륨과 퍼시스턴트 볼륨 클레임 사용하기
+
+- 퍼시스턴트 볼륨과 클레임 오브젝트는 각각 pv, pvc 라는 이름으로 줄여서 사용한다.
+
+- 아래는 이전에 만들었던 nfs를 사용해 pv를 작성한 예제이다.
+
+```YAML
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv
+spec:
+  capacity:
+    storage: 5Gi                              # 이 볼륨의 크기
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce                           # 하나의 포드에 의해서만 마운트 될 수 있음
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: slow
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /
+    server: 10.105.173.246
+```
+
+- kubectl get pv 명령어로 확인해보면 정상적으로 생성된 것을 확인할 수 있다.
+- 아래는  개발자의 입장에서 PersistentVolumeClaim 과 Pod를 함계 생성한 예제이다.
+
+```YAML
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-local-pvc              # 1. my-local-pvc 라는 이름의 pvc를 생성
+spec:
+  resources:
+    requests:
+      storage: 5Gi                # 2.2 볼륨크기가 최소 5Gi 인 퍼시스턴트 볼륨과 연결
+  accessModes:
+    - ReadWriteOnce               # 2.1 속성이 ReadWriteOnce인 퍼시스턴트 볼륨과 연결
+  storageClassName: "slow"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: local-mount-container
+  labels:
+    name: local-mount-container
+spec:
+  containers:
+  - name: local-mount-container
+    image: busybox
+    args: ["tail", "-f", "/dev/null"]
+    volumeMounts:
+      - mountPath: /mnt
+        name: local-volum
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 80
+  volumes:
+    - name: local-volum
+      persistentVolumeClaim:
+        claimName: my-local-pvc    # 3. my-local-pvc라는 이름의 pvc 사용
+```
+- 정상적으로 연결 후 pod도 정상 Running 상태인 것을 볼 수 있다.
+
+  ![pod](https://lh3.googleusercontent.com/pw/AM-JKLXFP8sV92Htx5gPkF5d6Dx-9ESjYvqT-gT88fmKdTJL2h4sg2zv89K5jiEefDJY_q2CeQ9X2zJgyfV7To4cAVYFTj-um7z4K_5jt9YDlVIowGzLct5on0xrLyNBrLB2ftj6nIMAjJO8AzODzc_pXEDsRQ=w1680-h420-no?authuser=0)
+
+- 퍼시스턴트 볼륨의 사용 방법을 정리해 보면
+  1. nfs를 쿠버네티스에서 퍼시스턴트 볼륨으로 등록, 또한 볼륨의 읽기 및 쓰기 속성(accessModes), 볼륨의 크기를 별도로 설정
+  2. 퍼시스턴트 볼륨 클레임을 먼저 정의 후, 퍼시스턴트 볼륨 클레임에는 원하는 볼륨의 조건을 나열(크기 : 5Gi, accessModes : ReadWriteOnce)
+  3. 퍼시스턴트 불륨 클레임과 퍼시스턴트 볼륨 조건이 일치하기 때문에 두 리소스가 연결, kubectl get pv,pvc 확인시에 리소스 상태가 연결(Bound) 상태로 바뀐 것을 확인 할 수 있음
+  4. 정의한 pod 에서는 퍼시스턴트 볼륨 클레임을 사용하도록 설정
+
+### 9.3.3 퍼시스턴트 볼륨을 선택하기 위한 조건 명시
+
+- 사용하는 볼륨의 크기가 애플리케이션에 필요한 최소한의 조건인지, 여러 개의 포드에 의해 마운트 가능한지, 읽기 전용인지 등의 조건은 쿠버네티스에게 알려 줄 필요가 있다.
+
+#### accessModes와 볼륨 크기, 스토리지클래스, 라벨 셀렉터를 이요한 퍼시스턴트 볼륨 선택
+
+- accessModes는 볼륨에 대해 읽기 및 스기 작업이 가능한자, 여러개의 인스턴스에 의해 마운트 될 수 있는지 등을 의미
+  ![옵션](https://lh3.googleusercontent.com/pw/AM-JKLXcCr8ZtCBkVjTnm3McLrsaaF7ro4edXsvQaCtZJzxYi9qnWBA0hbgW11jiJRVrnIvAiAFoNyEwL07IuaX3QZfKxHf__ghHLwPEw9zg6ugsDNgtGWQn7Iuv9K5Vw4Q9chdncflLh0Ar9Uy2nqkd7aaA7w=w1680-h408-no?authuser=0)
+
+- 또한 자주 사용되는 조건으로는 볼륨의 크기가 있음
+- spec.resources.requests.storage 항목
+- 단, accessModes모드나 볼륨의 크기는 해당 볼륨의 메타데이터일 뿐, 볼륨이 정말로 그러한 속성을 가지도록 강제하지는 않음
+- 예를 들어 퍼시스턴트 볼륨 설정에서 spec.capacity.storage 에 크기를 설정 한다고 해서 해당 크기의 파티션이 생기는건 아님
+- 적절한 볼륨을 찾아주는 라벨 정도로 생각
+
+### 9.3.4 퍼시스턴트 볼륨의 라이프사이클과 Reclaim Policy
+
+- 퍼시스턴트 볼륨을 갓 생성하면 Status 항목이 Avaliable 로 설정됨
+- 퍼시스턴트 볼륨 클레임을 새로 생성해 바인드 하면 STATUS 항목이 Bound로 바뀜
+- 퍼시스턴트 볼륨 클레임을 삭제했을 때, 퍼피스턴트 볼륨의 데이터를 어떻게 처리할 것인지 별도로 정의 가능, 이를 쿠버네티스에서는 Reclaim Policy 라고 부름
+- Reclaim Policy 에는 크게 Retain, Delete, Recycle가 있음
+  - Retain
+    - 퍼시스턴트 볼륨의 사용이 끝난 뒤에도 스토리지에 저장된 데이터를 계속해서 보존 가능
+    - Avaliable -> (pvc 생성) -> Bound -> (pvc 삭제) -> Retain
+  - Delete
+    - 퍼시스턴트 볼륨의 사용이 끝나고 나면 퍼시스턴트 볼륨이 삭제
+    - 파일도 모두 유실
+  - Recycle
+    - 데이터를 모두 지운 뒤에 다시 Avaliable 상태로 만들어 줌
+    - 다만 해당 상태는 Deprecated 됨
