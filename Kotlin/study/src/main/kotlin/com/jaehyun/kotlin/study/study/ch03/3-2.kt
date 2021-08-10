@@ -2,19 +2,21 @@ package com.jaehyun.kotlin.study.study.ch03
 
 import java.lang.StringBuilder
 
-fun main(args: Array<String>){
+fun main(){
 //    val list = listOf(1, 2, 3)
 //    println(list)
 
     val list = listOf(1, 2, 3)
-    println(joinToString(list, "; ", "(", ")"))
+    println(joinToString(list, separator = "; ", prefix = "(", postfix = ")"))
+    println(joinToString(list))
+    println(joinToString(list, "; "))
 }
 
 fun <T> joinToString(
     collections: Collection<T>,
-    separator: String,
-    prefix: String,
-    postfix: String
+    separator: String = ", ",
+    prefix: String = "",
+    postfix: String = ""
 ) : String {
     val result = StringBuilder(prefix)
 
