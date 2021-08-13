@@ -38,6 +38,12 @@ open class RichButton2 : Clickable {
 
 }
 
+abstract class Animated {
+    abstract fun animate()
+    open fun stopAnimating() {} // 비추상 함수는 기본적으로 final
+    fun animateTwice() {}
+
+}
 
 fun main() {
     Button().click()
