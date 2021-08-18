@@ -71,17 +71,17 @@ class Outer {
     }
 }
 
-interface Expr
+sealed class Expr {
+    class Num(val value: Int) : Expr()
+    class Sum(val left: Expr, val right: Expr) : Expr()
+}
 
-class Num(val value: Int) : Expr
-class Sum(val left: Expr, val right: Expr) : Expr
+
 
 fun eval(e: Expr): Int =
     when(e){
-        is Num -> e.value
-        is Sum -> eval(e.right) + eval(e.left)
-        else ->
-            throw IllegalArgumentException("!")
+        is Expr.Num -> e.value
+        is Expr.Sum -> eval(e.right) + eval(e.left)
     }
 
 fun main() {
