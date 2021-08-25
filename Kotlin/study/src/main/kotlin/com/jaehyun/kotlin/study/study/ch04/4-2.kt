@@ -34,6 +34,19 @@ class MyButton2 : View2 {
     }
 }
 
+interface User2 {
+    val nickName: String
+}
+
+class PrivateUser(override val nickName: String) : User2
+
+class SubscribingUser(private val email: String) : User2 {
+    override val nickName: String
+        get() = email.substringBefore('@')
+}
+
+
+
 fun main() {
     val hyun = User("현석")
     println(hyun.isSubscribed)
