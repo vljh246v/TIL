@@ -45,7 +45,34 @@ class SubscribingUser(private val email: String) : User2 {
         get() = email.substringBefore('@')
 }
 
+class FacebookUser(private val accountId: Int) : User2 {
+    override val nickName: String = getFacebookName(accountId)
+    private fun getFacebookName(accountId: Int): String = accountId.toString()
+}
 
+interface User3 {
+    val email: String
+    val nickName: String
+        get() = email.substringBefore('@')
+}
+
+class CustomUser(override val email: String) : User3
+
+class User4(val name: String) {
+    var address: String = "unspecified"
+        set(value: String) {
+            print(value)
+            field = value
+        }
+}
+
+class LengthCounter {
+    var counter: Int = 0
+        private set
+    fun addWord(word: String) {
+        counter += word.length
+    }
+}
 
 fun main() {
     val hyun = User("현석")
