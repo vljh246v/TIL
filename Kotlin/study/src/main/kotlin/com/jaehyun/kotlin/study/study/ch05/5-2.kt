@@ -9,9 +9,15 @@ fun main() {
 //
 //    val numbers = mapOf(0 to "zero", 1 to "one")
 //    println(numbers.mapValues { it.value.uppercase() })
-    val people = listOf(Person("A", 27), Person("B", 31))
-    println(people.all(canBeInClub27))
-    println(people.any(canBeInClub27))
-    println(people.count(canBeInClub27))
-    println(people.find(canBeInClub27))
+    val people = listOf(Person("A", 27), Person("B", 31), Person("C", 31), Person("D", 25))
+
+//    println(people.all(canBeInClub27))
+//    println(people.any(canBeInClub27))
+//    println(people.count(canBeInClub27))
+//    println(people.find(canBeInClub27))
+
+    println(people.groupBy { it.age })
+
+    val list = listOf("a", "ab", "b")
+    println(list.groupBy { it.first() })
 }
