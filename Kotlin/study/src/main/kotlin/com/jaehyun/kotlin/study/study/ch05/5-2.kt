@@ -2,6 +2,8 @@ package com.jaehyun.kotlin.study.study.ch05
 
 val canBeInClub27 = { p: Person -> p.age <= 27 }
 
+data class Book(val title: String, val authors: List<String>)
+
 fun main() {
 //    val list = listOf(1, 2, 3, 4)
 //    println(list.filter { it % 2 == 0 })
@@ -15,9 +17,15 @@ fun main() {
 //    println(people.any(canBeInClub27))
 //    println(people.count(canBeInClub27))
 //    println(people.find(canBeInClub27))
+//
+//    println(people.groupBy { it.age })
+//
+//    val list = listOf("a", "ab", "b")
+//    println(list.groupBy { it.first() })
 
-    println(people.groupBy { it.age })
+    val books = listOf(Book("1", listOf("a", "b")), Book("2", listOf("a", "c")), Book("3", listOf("b", "d")))
 
-    val list = listOf("a", "ab", "b")
-    println(list.groupBy { it.first() })
+    println(books.flatMap { it.authors }.toSet())
+
+
 }
