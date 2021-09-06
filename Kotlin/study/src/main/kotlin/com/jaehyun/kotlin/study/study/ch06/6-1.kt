@@ -1,7 +1,6 @@
 package com.jaehyun.kotlin.study.study.ch06
 
-fun strLenSafe(s: String?): Int =
-    if (s != null) s.length else 0
+fun strLenSafe(s: String?): Int = s?.length ?: 0
 
 fun printAllCaps(s: String?) {
     val allCaps: String? = s?.uppercase()
@@ -16,10 +15,7 @@ class Address(val streetAddress: String, val zipCode: Int, val city: String, val
 class Company(val name: String, val address: Address?)
 class Person(val name: String, val company: Company?)
 
-fun Person.countryName(): String {
-    val country = this.company?.address?.country
-    return if (country != null) country else "Unknown"
-}
+fun Person.countryName(): String = company?.address?.country ?: "Unknown"
 
 fun foo(s: String?) {
     val t: String = s ?: ""
@@ -40,5 +36,8 @@ fun main() {
 
     val person = Person("Dmitry", null)
     println(person.countryName())
+
+    val x: String? = null
+    println(strLenSafe(x))
 
 }
