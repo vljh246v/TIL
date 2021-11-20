@@ -34,4 +34,8 @@ public class Bag {
   public void plusAmount(final Long amount) {
     this.amount += amount;
   }
+
+  public Long getAmount() {
+    return amount;
+  }
 }
