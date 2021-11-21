@@ -1,4 +1,4 @@
-package com.demoversion.object.domain;
+package com.demoversion.object.domain.theater;
 
 import java.time.LocalDateTime;
 import lombok.Getter;

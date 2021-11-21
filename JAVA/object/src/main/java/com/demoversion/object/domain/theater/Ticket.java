@@ -1,4 +1,4 @@
-package com.demoversion.object.domain;
+package com.demoversion.object.domain.theater;
 
 import lombok.Getter;
 import lombok.Setter;

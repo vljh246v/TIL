@@ -1,4 +1,4 @@
-package com.demoversion.object.domain;
+package com.demoversion.object.domain.theater;
 
 public class TicketSeller {
 
