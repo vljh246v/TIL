@@ -7,38 +7,34 @@ import org.junit.jupiter.api.Test;
 class TicketOfficeTest {
 
   @Test
-  void getTicket() {
+  void sellTicketTo_has_Invitation_Audience() {
 
-    final Long baseAmount = 10L;
-    final Ticket ticket = new Ticket();
-    final TicketOffice ticketOffice = new TicketOffice(baseAmount, ticket);
-
-    assertThat(ticketOffice.getTicket()).isEqualTo(ticket);
-  }
-
-  @Test
-  void minusAmount() {
     final Long baseAmount = 10L;
     final Long ticketFee = 1L;
+    final Bag bag = new Bag(new Invitation(), 10L);
+    final Audience audience = new Audience(bag);
     final Ticket ticket = new Ticket();
     ticket.setFea(ticketFee);
     final TicketOffice ticketOffice = new TicketOffice(baseAmount, ticket);
 
-    ticketOffice.minusAmount(ticket.getFea());
-
-    assertThat(ticketOffice.getAmount()).isEqualTo(baseAmount - ticket.getFea());
+    ticketOffice.sellTicketTo(audience);
+    assertThat(ticketOffice.getAmount()).isEqualTo(baseAmount);
   }
 
   @Test
-  void plusAmount() {
+  void sellTicketTo_did_not_has_Invitation_Audience() {
+
     final Long baseAmount = 10L;
     final Long ticketFee = 1L;
+    final Bag bag = new Bag(null, 10L);
+    final Audience audience = new Audience(bag);
     final Ticket ticket = new Ticket();
     ticket.setFea(ticketFee);
     final TicketOffice ticketOffice = new TicketOffice(baseAmount, ticket);
 
-    ticketOffice.plusAmount(ticket.getFea());
-
-    assertThat(ticketOffice.getAmount()).isEqualTo(baseAmount + ticket.getFea());
+    ticketOffice.sellTicketTo(audience);
+    assertThat(ticketOffice.getAmount()).isEqualTo(baseAmount + ticketFee);
   }
+
+
 }

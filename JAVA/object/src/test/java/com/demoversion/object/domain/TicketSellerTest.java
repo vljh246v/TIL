@@ -7,16 +7,40 @@ import org.junit.jupiter.api.Test;
 class TicketSellerTest {
 
   @Test
-  void getTicketOffice() {
+  void sellTo() {
 
     final Long baseAmount = 10L;
-    final Ticket baseTicket = new Ticket();
+    final Long ticketFee = 1L;
+    final Bag bag = new Bag(null, 10L);
+    final Audience audience = new Audience(bag);
 
-    final TicketOffice ticketOffice = new TicketOffice(baseAmount, baseTicket);
+    final Ticket ticket = new Ticket();
+    ticket.setFea(ticketFee);
+    final TicketOffice ticketOffice = new TicketOffice(baseAmount, ticket);
 
-    final Ticket ticket = ticketOffice.getTicket();
+    final MockTicketSeller ticketSeller = new MockTicketSeller(ticketOffice);
 
-    assertThat(ticket).isEqualTo(baseTicket);
-    assertThat(ticketOffice.getTickets()).isEmpty();
+    ticketSeller.sellTo(audience);
+
+    assertThat(ticketSeller.isSetToIsVerify()).isTrue();
+  }
+
+  class MockTicketSeller extends TicketSeller {
+
+    private boolean setToIsVerify = false;
+
+    public MockTicketSeller(final TicketOffice ticketOffice) {
+      super(ticketOffice);
+    }
+
+    @Override
+    public void sellTo(final Audience audience) {
+      super.sellTo(audience);
+      setToIsVerify = true;
+    }
+
+    public boolean isSetToIsVerify() {
+      return setToIsVerify;
+    }
   }
 }

@@ -8,71 +8,33 @@ import org.junit.jupiter.api.Test;
 class BagTest {
 
   @Test
-  void hasInvitation() {
-    final Bag bag = new Bag(new Invitation(), 10L);
+  void hold_has_invitation() {
+    final Long baseAmount = 10L;
+    final Invitation invitation = new Invitation();
 
-    assertThat(bag.hasInvitation()).isTrue();
-  }
+    final Bag bag = new Bag(invitation, baseAmount);
 
-  @Test
-  void hasTicket() {
-    final Bag bag = new Bag(new Invitation(), 10L);
-    bag.setTicket(new Ticket());
+    final Long ticketFee = 1L;
+    final Ticket ticket = new Ticket();
+    ticket.setFea(ticketFee);
 
+    final Long ticketAmount = bag.hold(ticket);
+    assertThat(ticketAmount).isEqualTo(0L);
     assertThat(bag.hasTicket()).isTrue();
   }
 
   @Test
-  void setTicket() {
-
-    final MockBag bag = new MockBag(new Invitation(), 10L);
-
-    bag.setTicket(new Ticket());
-
-    assertThat(bag.setTicketIsVerify()).isTrue();
-
-  }
-
-  @Test
-  void minusAmount() {
+  void hold_did_not_has_invitation() {
     final Long baseAmount = 10L;
-    final Long minusAmount = 1L;
-    final MockBag bag = new MockBag(new Invitation(), baseAmount);
-    bag.minusAmount(minusAmount);
+    final Bag bag = new Bag(null, baseAmount);
 
-    assertThat(bag.getAmount()).isEqualTo(baseAmount - minusAmount);
-  }
+    final Long ticketFee = 1L;
+    final Ticket ticket = new Ticket();
+    ticket.setFea(ticketFee);
 
-  @Test
-  void plusAmount() {
-    final Long baseAmount = 10L;
-    final Long plusAmount = 1L;
-    final MockBag bag = new MockBag(new Invitation(), baseAmount);
-    bag.plusAmount(plusAmount);
-
-    assertThat(bag.getAmount()).isEqualTo(baseAmount + plusAmount);
-  }
-
-  class MockBag extends Bag {
-
-    private boolean setTicketVerify = false;
-
-    public MockBag(final Long amount) {
-      super(amount);
-    }
-
-    public MockBag(final Invitation invitation, final Long amount) {
-      super(invitation, amount);
-    }
-
-    public boolean setTicketIsVerify() {
-      return setTicketVerify;
-    }
-
-    @Override
-    public void setTicket(final Ticket ticket) {
-      super.setTicket(ticket);
-      setTicketVerify = true;
-    }
+    final Long ticketAmount = bag.hold(ticket);
+    assertThat(ticketAmount).isEqualTo(ticketFee);
+    assertThat(bag.hasTicket()).isTrue();
+    assertThat(bag.getAmount()).isEqualTo(baseAmount - ticket.getFea());
   }
 }
