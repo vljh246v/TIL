@@ -1,7 +1,11 @@
 package com.demoversion.object.domain.movie;
 
 import java.math.BigDecimal;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@EqualsAndHashCode
+@Getter
 public class Money {
 
   public static final Money ZERO = Money.wons(0);
