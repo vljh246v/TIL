@@ -2,9 +2,9 @@ package com.demoversion.object.domain.movie;
 
 import com.demoversion.object.domain.movie.discountpolicy.DiscountPolicy;
 import java.time.Duration;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Movie {
 
   private final String title;
