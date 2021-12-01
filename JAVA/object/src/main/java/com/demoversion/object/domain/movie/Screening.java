@@ -1,9 +1,9 @@
 package com.demoversion.object.domain.movie;
 
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Screening {
 
   private final Movie movie;
