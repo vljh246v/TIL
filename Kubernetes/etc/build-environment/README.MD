@@ -36,3 +36,9 @@ Vagrantfile
 
 ## 2. Vagrantfile을 통한 가상머신 생성
 * [VagrantFile](./Vagrantfile)을 원하는 폴더에 넣은 후, vagrant up 실행 
+
+## 3. 노드에 ssh 접속
+* VM 에서 생서한 노드를 우측클릭 -> 설정 -> 네트워크 -> 고급 -> 포트포워딩을 선택
+* 해당 노드에 호스트 포트를 통해 ssh 접속 
+* 호스트 포트가 60010 이라면 ssh -p60010 root@127.0.0.1
+* 최초 root 비번은 vagrant
