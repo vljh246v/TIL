@@ -42,3 +42,5 @@ Vagrantfile
 * 해당 노드에 호스트 포트를 통해 ssh 접속 
 * 호스트 포트가 60010 이라면 ssh -p60010 root@127.0.0.1
 * 최초 root 비번은 vagrant
+
+# 4. worker node join 
