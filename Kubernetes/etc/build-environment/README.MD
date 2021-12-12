@@ -44,3 +44,22 @@ Vagrantfile
 * 최초 root 비번은 vagrant
 
 # 4. worker node join 
+
+* join.sh 를 열어 join에 필요한 정보를 출력하여 각 worker node 에 입력
+
+```sh
+[root@k8s-master ~]# cat ~/join.sh
+kubeadm join 192.168.56.10:6443 --token 47x98p.i2d2z958nrfy1kqn --discovery-token-ca-cert-hash sha256:6b6205c7878151b379180e74437b50c1c58c78d3397522a8c244fb191dfab94d
+
+[root@k8s-node1 ~]# kubeadm join 192.168.56.10:6443 --token 47x98p.i2d2z958nrfy1kqn --discovery-token-ca-cert-hash sha256:6b6205c7878151b379180e74437b50c1c58c78d3397522a8c244fb191dfab94d
+```
+
+
+# 5. node 연결 확인
+
+```sh
+[root@k8s-master ~]# kubectl get nodes
+NAME         STATUS   ROLES                  AGE     VERSION
+k8s-master   Ready    control-plane,master   2d12h   v1.22.4
+k8s-node1    Ready    <none>                 2d11h   v1.22.4
+```
