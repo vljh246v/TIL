@@ -141,3 +141,4 @@ Spring/untitled/.idea/workspace.xml
 
 # etc
 Kubernetes/getting-started-with-docker-kubernetes/volume/*
+/Kubernetes/etc/build-environment/.vagrant/
