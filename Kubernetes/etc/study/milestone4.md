@@ -17,7 +17,7 @@
 * Overcommit 설정이 가능
 * request : 128Mi, limits : 256Mi를 설정했다면 '최소한 128Mi의 메모리 사용은 보장되지만, 유휴 메모리 자원이 있다면 최대 256Mi 까지 사용 가능'
 
-```yml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
