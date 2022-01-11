@@ -1,5 +1,6 @@
 package com.demo.ddd.domain;
 
+import com.demo.ddd.value.Money;
 import java.util.List;
 import lombok.Getter;
 
@@ -85,7 +86,7 @@ public class Order {
     private void calculateTotalAmounts() {
 
         this.totalAmounts = orderLines.stream()
-            .map(it -> new Money(it.getAmounts()))
+            .map(OrderLine::getAmounts)
             .mapToInt(Money::getValue)
             .sum();
     }

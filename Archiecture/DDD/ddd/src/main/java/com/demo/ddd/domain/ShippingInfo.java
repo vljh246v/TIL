@@ -1,5 +1,7 @@
 package com.demo.ddd.domain;
 
+import com.demo.ddd.value.Address;
+import com.demo.ddd.value.Receiver;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class ShippingInfo {
 
-    private final String receiverName;
-    private final String receiverPhoneNumber;
-    private final String shippingAddress1;
-    private final String shippingAddress2;
-    private final String shippingZipcode;
+    private final Receiver receiver;
+    private final Address address;
 }
