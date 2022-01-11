@@ -11,9 +11,9 @@ public class OrderLine {
     private final int quantity; // 수량
     private final Money amounts; // 총 합 가격
 
-    public OrderLine(Product product, int price, int quantity) {
+    public OrderLine(Product product, Money price, int quantity) {
         this.product = product;
-        this.price = new Money(price);
+        this.price = new Money(price.getValue());
         this.quantity = quantity;
         this.amounts = calculateAmounts();
     }

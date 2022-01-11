@@ -7,9 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Receiver {
+public class OrderNo {
 
-    private final String name;
-    private final String phoneNumber;
+    private final String orderNumber;
 
 }

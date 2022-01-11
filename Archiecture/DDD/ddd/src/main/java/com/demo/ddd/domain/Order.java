@@ -1,13 +1,14 @@
 package com.demo.ddd.domain;
 
 import com.demo.ddd.value.Money;
+import com.demo.ddd.value.OrderNo;
 import java.util.List;
 import lombok.Getter;
 
 @Getter
 public class Order {
 
-    private String orderNumber;
+    private OrderNo id;
     private List<OrderLine> orderLines;
     private int totalAmounts;
     private OrderStatus state;
@@ -60,18 +61,18 @@ public class Order {
 
         Order other = (Order) obj;
 
-        if (this.orderNumber == null) {
+        if (this.id == null) {
             return false;
         }
 
-        return this.orderNumber.equals(other.getOrderNumber());
+        return this.id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
 
