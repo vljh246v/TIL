@@ -10,7 +10,7 @@ public class CustomerInfoPrintService {
         this.printer = printer;
     }
 
-    public void calculateDiscount(final List<String> name) {
+    public void printCustomerInfo(final List<String> name) {
         printer.print(name);
     }
 }
