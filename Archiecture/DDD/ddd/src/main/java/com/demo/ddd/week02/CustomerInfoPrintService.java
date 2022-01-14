@@ -4,13 +4,13 @@ import java.util.List;
 
 public class CustomerInfoPrintService {
 
-    private final SessionPrintEngine sessionPrintEngine;
+    private final Printer printer;
 
-    public CustomerInfoPrintService() {
-        sessionPrintEngine = new SessionPrintEngine();
+    public CustomerInfoPrintService(final Printer printer) {
+        this.printer = printer;
     }
 
     public void calculateDiscount(final List<String> name) {
-        sessionPrintEngine.printClassAndSessionAndCustomerInfo("CalculateDiscountService", name);
+        printer.print(name);
     }
 }
