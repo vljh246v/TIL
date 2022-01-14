@@ -1,7 +1,8 @@
-package com.demo.ddd.week01.domain;
+package com.demo.ddd.order.domain.entity;
 
-import com.demo.ddd.week01.value.Money;
-import com.demo.ddd.week01.value.OrderNo;
+import com.demo.ddd.order.domain.value.Money;
+import com.demo.ddd.order.domain.value.OrderNo;
+import com.demo.ddd.order.domain.value.OrderStatus;
 import java.util.List;
 import lombok.Getter;
 
@@ -15,12 +16,12 @@ public class Order {
     private ShippingInfo shippingInfo;
 
 
-    public Order(List<OrderLine> orderLines, ShippingInfo shippingInfo) {
+    public Order(final List<OrderLine> orderLines, final ShippingInfo shippingInfo) {
         setOrderLines(orderLines);
         setShippingInfo(shippingInfo);
     }
 
-    public void changeShippingInfo(ShippingInfo newShippingInfo) {
+    public void changeShippingInfo(final ShippingInfo newShippingInfo) {
         if (!state.isShippingChangeable()) {
             throw new IllegalStateException("can't change shipping in " + state);
         }
@@ -39,14 +40,14 @@ public class Order {
     public void completePayment() {
     }
 
-    public void setOrderLines(List<OrderLine> orderLines) {
+    public void setOrderLines(final List<OrderLine> orderLines) {
         verifyAtLeastOneOrMoreOrderLines(orderLines);
         this.orderLines = orderLines;
         calculateTotalAmounts();
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -59,7 +60,7 @@ public class Order {
             return false;
         }
 
-        Order other = (Order) obj;
+        final Order other = (Order) obj;
 
         if (this.id == null) {
             return false;
@@ -77,7 +78,7 @@ public class Order {
     }
 
 
-    private void setShippingInfo(ShippingInfo shippingInfo) {
+    private void setShippingInfo(final ShippingInfo shippingInfo) {
         if (shippingInfo == null) {
             throw new IllegalArgumentException("no ShippingInfo");
         }
@@ -93,7 +94,7 @@ public class Order {
     }
 
 
-    private void verifyAtLeastOneOrMoreOrderLines(List<OrderLine> orderLines) {
+    private void verifyAtLeastOneOrMoreOrderLines(final List<OrderLine> orderLines) {
         if (orderLines == null || orderLines.isEmpty()) {
             throw new IllegalArgumentException("no OrderLine");
         }

@@ -1,7 +1,7 @@
-package com.demo.ddd.week01.domain;
+package com.demo.ddd.order.domain.entity;
 
-import com.demo.ddd.week01.value.Address;
-import com.demo.ddd.week01.value.Receiver;
+import com.demo.ddd.order.domain.value.Address;
+import com.demo.ddd.order.domain.value.Receiver;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

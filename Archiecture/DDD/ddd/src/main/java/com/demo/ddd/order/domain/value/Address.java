@@ -1,4 +1,4 @@
-package com.demo.ddd.week01.value;
+package com.demo.ddd.order.domain.value;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

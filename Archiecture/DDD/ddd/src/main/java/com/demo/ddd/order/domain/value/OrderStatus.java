@@ -1,4 +1,4 @@
-package com.demo.ddd.week01.domain;
+package com.demo.ddd.order.domain.value;
 
 public enum OrderStatus {
     PAYMENT_WAITING {

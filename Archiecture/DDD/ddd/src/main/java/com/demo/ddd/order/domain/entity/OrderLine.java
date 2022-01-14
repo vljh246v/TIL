@@ -1,6 +1,6 @@
-package com.demo.ddd.week01.domain;
+package com.demo.ddd.order.domain.entity;
 
-import com.demo.ddd.week01.value.Money;
+import com.demo.ddd.order.domain.value.Money;
 import lombok.Getter;
 
 @Getter
@@ -11,7 +11,7 @@ public class OrderLine {
     private final int quantity; // 수량
     private final Money amounts; // 총 합 가격
 
-    public OrderLine(Product product, Money price, int quantity) {
+    public OrderLine(final Product product, final Money price, final int quantity) {
         this.product = product;
         this.price = new Money(price.getValue());
         this.quantity = quantity;
