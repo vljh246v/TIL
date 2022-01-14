@@ -1,4 +1,4 @@
-package com.demo.ddd.value;
+package com.demo.ddd.week01.value;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -7,8 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class OrderNo {
+public class Receiver {
 
-    private final String orderNumber;
+    private final String name;
+    private final String phoneNumber;
 
 }

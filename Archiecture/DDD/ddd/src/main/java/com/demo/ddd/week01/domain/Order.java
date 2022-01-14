@@ -1,7 +1,7 @@
-package com.demo.ddd.domain;
+package com.demo.ddd.week01.domain;
 
-import com.demo.ddd.value.Money;
-import com.demo.ddd.value.OrderNo;
+import com.demo.ddd.week01.value.Money;
+import com.demo.ddd.week01.value.OrderNo;
 import java.util.List;
 import lombok.Getter;
 

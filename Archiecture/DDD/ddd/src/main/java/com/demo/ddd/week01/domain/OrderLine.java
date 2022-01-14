@@ -1,6 +1,6 @@
-package com.demo.ddd.domain;
+package com.demo.ddd.week01.domain;
 
-import com.demo.ddd.value.Money;
+import com.demo.ddd.week01.value.Money;
 import lombok.Getter;
 
 @Getter

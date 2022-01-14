@@ -1,4 +1,4 @@
-package com.demo.ddd.value;
+package com.demo.ddd.week01.value;
 
 public class Money {
 
