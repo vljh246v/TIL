@@ -1,7 +1,7 @@
 package com.demo.ddd.order.domain.entity;
 
 import com.demo.ddd.order.domain.value.Money;
-import com.demo.ddd.order.domain.value.OrderNo;
+import com.demo.ddd.order.domain.value.OrderId;
 import com.demo.ddd.order.domain.value.OrderStatus;
 import java.util.List;
 import lombok.Getter;
@@ -9,11 +9,12 @@ import lombok.Getter;
 @Getter
 public class Order {
 
-    private OrderNo id;
+    private OrderId id;
     private List<OrderLine> orderLines;
     private int totalAmounts;
     private OrderStatus state;
     private ShippingInfo shippingInfo;
+    private Orderer orderer;
 
 
     public Order(final List<OrderLine> orderLines, final ShippingInfo shippingInfo) {

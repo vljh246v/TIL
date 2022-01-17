@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class OrderNo {
+public class OrderId {
 
     private final String orderNumber;
 
