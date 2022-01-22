@@ -6,10 +6,14 @@ import com.demo.ddd.order.domain.value.OrderStatus;
 import java.util.List;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OrderColumn;
 import lombok.Getter;
 
 @Getter
@@ -20,6 +24,9 @@ public class Order {
     @EmbeddedId
     private OrderNo id;
 
+    @ElementCollection
+    @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_number"))
+    @OrderColumn(name = "line_idx")
     private List<OrderLine> orderLines;
 
     @Column(name = "total_amounts")

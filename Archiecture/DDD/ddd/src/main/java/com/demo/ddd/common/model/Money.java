@@ -1,5 +1,8 @@
 package com.demo.ddd.common.model;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class Money {
 
     private final int value;

@@ -8,9 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
 @Embeddable
 public class ShippingInfo {
@@ -20,7 +18,7 @@ public class ShippingInfo {
         @AttributeOverride(name = "name", column = @Column(name = "order_name")),
         @AttributeOverride(name = "phoneNumber", column = @Column(name = "order_phone"))
     })
-    private final Receiver receiver;
+    private Receiver receiver;
 
     @Embedded
     @AttributeOverrides({
@@ -28,8 +26,17 @@ public class ShippingInfo {
         @AttributeOverride(name = "address1", column = @Column(name = "shipping_addr1")),
         @AttributeOverride(name = "address2", column = @Column(name = "shipping_addr2"))
     })
-    private final Address address;
+    private Address address;
 
     @Column(name = "shipping_message")
     private String message;
+
+    public ShippingInfo() {
+    }
+
+    public ShippingInfo(final Receiver receiver, final Address address, final String message) {
+        this.address = address;
+        this.message = message;
+        this.receiver = receiver;
+    }
 }

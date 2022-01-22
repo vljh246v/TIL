@@ -1,6 +1,4 @@
 spring:
-  #  profiles:
-  #    active: demo
   h2:
     console:
       enabled: true

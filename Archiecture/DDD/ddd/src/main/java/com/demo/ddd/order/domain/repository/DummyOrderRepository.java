@@ -13,6 +13,6 @@ public class DummyOrderRepository implements OrderRepository {
 
     @Override
     public Order findById(final OrderNo orderNo) {
-        return new Order(List.of(), new ShippingInfo(new Receiver("name", "phoneNumber"), new Address("address1", "address2", "zipCode")));
+        return new Order(List.of(), new ShippingInfo(new Receiver("name", "phoneNumber"), new Address("address1", "address2", "zipCode"), "message"));
     }
 }
