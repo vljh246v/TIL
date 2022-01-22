@@ -6,6 +6,7 @@ import com.demo.ddd.order.domain.value.OrderStatus;
 import java.util.List;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -20,7 +21,10 @@ public class Order {
     private OrderNo id;
 
     private List<OrderLine> orderLines;
-    private int totalAmounts;
+
+    @Column(name = "total_amounts")
+    private Money totalAmounts;
+
     private OrderStatus state;
 
     @Embedded
@@ -104,10 +108,12 @@ public class Order {
 
     private void calculateTotalAmounts() {
 
-        this.totalAmounts = orderLines.stream()
+        final int sum = orderLines.stream()
             .map(OrderLine::getAmounts)
             .mapToInt(Money::getValue)
             .sum();
+
+        this.totalAmounts = new Money(sum);
     }
 
 
