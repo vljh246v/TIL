@@ -1,6 +1,7 @@
 package com.demo.ddd.order.domain.value;
 
 public enum OrderStatus {
+
     PAYMENT_WAITING {
         public boolean isShippingChangeable() {
             return true;
@@ -16,4 +17,5 @@ public enum OrderStatus {
     public boolean isShippingChangeable() {
         return false;
     }
+
 }

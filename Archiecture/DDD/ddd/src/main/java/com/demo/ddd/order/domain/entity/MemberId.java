@@ -1,9 +1,18 @@
 package com.demo.ddd.order.domain.entity;
 
-import lombok.Data;
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Data
-public class MemberId {
+@Getter
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@Embeddable
+public class MemberId implements Serializable {
 
-    private Long memberId;
+    @Column(name = "member_id")
+    private final Long id;
 }

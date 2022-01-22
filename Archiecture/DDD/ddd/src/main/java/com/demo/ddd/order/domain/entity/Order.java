@@ -1,21 +1,37 @@
 package com.demo.ddd.order.domain.entity;
 
-import com.demo.ddd.order.domain.value.Money;
-import com.demo.ddd.order.domain.value.OrderId;
+import com.demo.ddd.common.model.Money;
+import com.demo.ddd.order.domain.value.OrderNo;
 import com.demo.ddd.order.domain.value.OrderStatus;
 import java.util.List;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 import lombok.Getter;
 
 @Getter
+@Entity
+@Access(AccessType.FIELD)
 public class Order {
 
-    private OrderId id;
+    @EmbeddedId
+    private OrderNo id;
+
     private List<OrderLine> orderLines;
     private int totalAmounts;
     private OrderStatus state;
+
+    @Embedded
     private ShippingInfo shippingInfo;
+
+    @Embedded
     private Orderer orderer;
 
+
+    public Order() {
+    }
 
     public Order(final List<OrderLine> orderLines, final ShippingInfo shippingInfo) {
         setOrderLines(orderLines);
