@@ -2,7 +2,7 @@ package com.demo.ddd.order.domain.entity;
 
 import com.demo.ddd.common.model.Money;
 import com.demo.ddd.order.domain.value.OrderNo;
-import com.demo.ddd.order.domain.value.OrderStatus;
+import com.demo.ddd.order.domain.value.OrderState;
 import java.util.List;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -12,17 +12,24 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 import lombok.Getter;
 
 @Getter
 @Entity
+@Table(name = "purchase_order")
 @Access(AccessType.FIELD)
 public class Order {
 
     @EmbeddedId
     private OrderNo id;
+
+    @Embedded
+    private Orderer orderer;
 
     @ElementCollection
     @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_number"))
@@ -32,13 +39,12 @@ public class Order {
     @Column(name = "total_amounts")
     private Money totalAmounts;
 
-    private OrderStatus state;
+    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
+    private OrderState state;
 
     @Embedded
     private ShippingInfo shippingInfo;
-
-    @Embedded
-    private Orderer orderer;
 
 
     public Order() {
@@ -57,12 +63,12 @@ public class Order {
     }
 
     public void changeShipped() {
-        this.state = OrderStatus.SHIPPED;
+        this.state = OrderState.SHIPPED;
     }
 
     public void cancel() {
         verifyNotYetShipped();
-        this.state = OrderStatus.CANCELED;
+        this.state = OrderState.CANCELED;
     }
 
     public void completePayment() {
@@ -131,7 +137,7 @@ public class Order {
     }
 
     private void verifyNotYetShipped() {
-        if (state != OrderStatus.PAYMENT_WAITING && state != OrderStatus.PREPARING) {
+        if (state != OrderState.PAYMENT_WAITING && state != OrderState.PREPARING) {
             throw new IllegalStateException("aleady shipped");
         }
     }
