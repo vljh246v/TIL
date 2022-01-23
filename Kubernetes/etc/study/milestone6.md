@@ -64,6 +64,7 @@ spec:
 * Rolling Update를 지원
 
 > 마스터 노드에서도 실행되는 파드를 만드려면!?
+>
 > tolerations 톨러레이션을 설정하면 됨
 > 
 > ```yaml 
@@ -80,11 +81,17 @@ spec:
 > ```
 >
 > [Taints 와 Tolerations](https://kubernetes.io/ko/docs/concepts/scheduling-eviction/taint-and-toleration/)
+>
 > lable 값이 아닌 taint 라는 방법으로 파드 할당할 노드를 컨트롤할 수 있음
+>
 > taint(더러움/얼룩)
+>
 > taint 라는 기능을 통해 특정 노드에 포드가 할당되는 것을 막는 기능
+>
 > ![master-taint](https://lh3.googleusercontent.com/pw/AM-JKLVHOhcYzQLQllE0uutfR1Y3Qvfd9q71GvvFV8laE2eYEbzh-8h7BsV-Zx-c_b-C2mD-ssH5v6aAitfSB8T0Tumv8E8cF8_cko3zs1immfK-a09rNZs5JNfdUoECRmrCVHoP1DY46DlbTb8CnRY_ciiYRg=w496-h43-no?authuser=0)
+>
 > taint에 대응하는 tolerations(관용/용인) 을 설정가능
+>
 > 더러움을 용인한다는 뜻으로 생각?
 > 
 
