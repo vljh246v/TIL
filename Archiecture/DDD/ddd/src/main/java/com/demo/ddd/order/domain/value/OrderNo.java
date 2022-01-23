@@ -1,16 +1,25 @@
 package com.demo.ddd.order.domain.value;
 
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class OrderNo {
+@Embeddable
+public class OrderNo implements Serializable {
 
-    private final String orderNumber;
+    @Column(name = "order_number")
+    private Long number;
 
+    private OrderNo() {
+    }
+
+    public OrderNo(final Long number) {
+        this.number = number;
+    }
 }

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository {
 
-    Order findByNumber(OrderNo orderNo);
+    Order findById(OrderNo orderNo);
 }

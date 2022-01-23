@@ -1,15 +1,26 @@
 package com.demo.ddd.order.domain.value;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
+@Embeddable
 public class Receiver {
 
-    private final String name;
-    private final String phoneNumber;
+    @Column(name = "receiver_name")
+    private String name;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    public Receiver(final String name, final String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
+
+    protected Receiver() {
+    }
 }
