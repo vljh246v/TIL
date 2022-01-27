@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class CustomerTest {
 
     @Test
-    void purchaseSucceedsWhenEnoughInventory_적() {
+    void purchaseSucceedsWhenEnoughInventory_detroit() {
 
         // given
         Store store = new Store();
