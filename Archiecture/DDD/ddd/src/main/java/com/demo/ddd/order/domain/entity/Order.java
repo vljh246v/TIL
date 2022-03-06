@@ -1,6 +1,9 @@
 package com.demo.ddd.order.domain.entity;
 
+import com.demo.ddd.common.converter.MoneyConverter;
 import com.demo.ddd.common.model.Money;
+import com.demo.ddd.event.Events;
+import com.demo.ddd.event.OrderCanceledEvent;
 import com.demo.ddd.order.domain.value.OrderNo;
 import com.demo.ddd.order.domain.value.OrderState;
 import java.util.List;
@@ -8,6 +11,7 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -36,6 +40,7 @@ public class Order {
     @OrderColumn(name = "line_idx")
     private List<OrderLine> orderLines;
 
+    @Convert(converter = MoneyConverter.class)
     @Column(name = "total_amounts")
     private Money totalAmounts;
 
@@ -69,6 +74,7 @@ public class Order {
     public void cancel() {
         verifyNotYetShipped();
         this.state = OrderState.CANCELED;
+        Events.raise(new OrderCanceledEvent(this.id.getNumber().toString()));
     }
 
     public void completePayment() {

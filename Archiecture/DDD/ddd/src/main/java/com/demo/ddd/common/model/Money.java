@@ -2,12 +2,11 @@ package com.demo.ddd.common.model;
 
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode
 public class Money {
 
-    private final int value;
+    private int value;
 
-    public Money(final int value) {
+    public Money(int value) {
         this.value = value;
     }
 
@@ -15,7 +14,7 @@ public class Money {
         return value;
     }
 
-    public Money multiply(final int multiplier) {
+    public Money multiply(int multiplier) {
         return new Money(value * multiplier);
     }
 
@@ -24,3 +23,6 @@ public class Money {
         return Integer.toString(value);
     }
 }
+
+
+
