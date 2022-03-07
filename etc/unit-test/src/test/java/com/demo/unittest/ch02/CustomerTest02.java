@@ -1,4 +1,4 @@
-package com.demo.unittest.ch01;
+package com.demo.unittest.ch02;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -9,7 +9,11 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 
-class CustomerTest {
+import com.demo.unittest.ch01.Customer;
+import com.demo.unittest.ch01.Product;
+import com.demo.unittest.ch01.Store;
+
+class CustomerTest02 {
 
     @Test
     void purchaseSucceedsWhenEnoughInventory_detroit() {
