@@ -1,0 +1,3 @@
+configMapData:
+  env: prod
+  log: info
