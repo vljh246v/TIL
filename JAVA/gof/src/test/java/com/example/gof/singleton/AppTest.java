@@ -48,6 +48,6 @@ class AppTest {
             settings2 = (Settings) in.readObject();
         }
 
-        assertThat(settings1).isNotEqualTo(settings2);
+        assertThat(settings1).isEqualTo(settings2);
     }
 }
