@@ -25,7 +25,10 @@ class ClientTest {
         }
 
         final String email = "vljh246v@naver.com";
-        List<Case> carName = Arrays.asList(new Case("avante", new AvanteCarFactory()));
+        List<Case> carName = Arrays.asList(
+                new Case("avante", new AvanteCarFactory()),
+                new Case("k5", new K5CarFactory())
+        );
 
         return carName.stream()
               .map(c -> DynamicTest.dynamicTest(
