@@ -13,21 +13,29 @@ class ClientTest {
 
     @TestFactory
     Stream<DynamicTest> orderCar() {
+
+        class Case{
+            private final String carName;
+            private final CarFactory carFactory;
+
+            Case(String carName, CarFactory carFactory) {
+                this.carName = carName;
+                this.carFactory = carFactory;
+            }
+        }
+
         final String email = "vljh246v@naver.com";
-        List<String> carName = Arrays.asList("avante", "k5");
+        List<Case> carName = Arrays.asList(new Case("avante", new AvanteCarFactory()));
 
-        Stream<DynamicTest> orderCar =
-                carName.stream()
-                       .map(name -> DynamicTest.dynamicTest(
-                               "car Nmae: " + name,
-                               () -> {
-                                   Car car = CarFactory.orderCar(name, email);
-                                   assertThat(car.getName()).isEqualTo(name);
-                                   System.out.println(car);
-                               }
-                               ));
-
-       return orderCar;
+        return carName.stream()
+              .map(c -> DynamicTest.dynamicTest(
+                       "car Nmae: " + c.carName,
+                       () -> {
+                           Car car = c.carFactory.orderCar(c.carName, email);
+                           assertThat(c.carName).isEqualTo(car.getName());
+                           System.out.println(car);
+                       }
+                       ));
     }
 
 }
