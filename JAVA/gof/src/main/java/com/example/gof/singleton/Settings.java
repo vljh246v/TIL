@@ -5,7 +5,7 @@ public class Settings {
 
     private static Settings instance;
 
-    public static Settings getInstance() {
+    public static synchronized Settings getInstance() {
         if(instance == null) {
             instance = new Settings();
             return instance;
