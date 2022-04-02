@@ -3,12 +3,9 @@ package com.example.gof.singleton;
 public class Settings {
     private Settings() {}
 
-    private static Settings instance;
+    private static final Settings INSTANCE = new Settings();
 
-    public static synchronized Settings getInstance() {
-        if(instance == null) {
-            instance = new Settings();
-        }
-        return instance;
+    public static Settings getInstance() {
+        return INSTANCE;
     }
 }
