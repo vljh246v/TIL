@@ -3,7 +3,7 @@ package com.example.gof.singleton;
 public class Settings {
     private Settings() {}
 
-    private static Settings instance;
+    private static volatile Settings instance;
 
     public static Settings getInstance() {
         if(instance == null) {
