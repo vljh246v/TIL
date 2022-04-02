@@ -26,7 +26,5 @@ public interface CarFactory {
     private static void prepareFor(String name) {
         System.out.println(name + " 만들 준비 중");
     }
-    private static void sendEmailTo(String email, Car car) {
-        System.out.println(car.getName() + " 다 만들었습니다.");
-    }
+    void sendEmailTo(String email, Car car);
 }
