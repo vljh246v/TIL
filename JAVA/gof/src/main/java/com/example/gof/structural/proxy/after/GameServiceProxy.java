@@ -14,4 +14,9 @@ public class GameServiceProxy implements GameService {
         gameService.startGame();
         System.out.println(System.currentTimeMillis() - before);
     }
+
+    @Override
+    public void endGame() {
+        gameService.endGame();
+    }
 }

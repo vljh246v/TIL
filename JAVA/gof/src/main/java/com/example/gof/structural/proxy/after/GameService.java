@@ -4,4 +4,6 @@ public interface GameService {
 
     void startGame();
 
+    void endGame();
+
 }
