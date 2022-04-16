@@ -11,4 +11,9 @@ public class GameEndCommand implements Command {
     public void execute() {
         game.end();
     }
+
+    @Override
+    public void undo() {
+        new GameStartCommand(this.game).execute();
+    }
 }
