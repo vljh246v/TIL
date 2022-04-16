@@ -1,4 +1,4 @@
-package com.example.gof.behavioral.chain.before;
+ package com.example.gof.behavioral.chain.before;
 
 public class AuthRequestHandler extends RequestHandler {
 
