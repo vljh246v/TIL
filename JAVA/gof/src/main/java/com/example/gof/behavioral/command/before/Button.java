@@ -1,14 +1,14 @@
-package com.example.gof.behavioral.command;
+package com.example.gof.behavioral.command.before;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class MyApp {
+public class Button {
 
-    private final Game game;
+    private final Light light;
 
     public void press() {
-        game.start();
+        light.off();
     }
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.example.gof.behavioral.command;
+package com.example.gof.behavioral.command.before;
 
 public class Light {
 
