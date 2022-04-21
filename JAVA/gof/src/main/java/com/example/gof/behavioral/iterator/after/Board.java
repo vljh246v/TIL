@@ -1,6 +1,7 @@
-package com.example.gof.behavioral.iterator.before;
+package com.example.gof.behavioral.iterator.after;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Board {
@@ -11,11 +12,12 @@ public class Board {
         return posts;
     }
 
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-    }
-
     public void addPost(String content) {
         this.posts.add(new Post(content));
     }
+
+    public Iterator<Post> getRecentPostIterator() {
+        return new RecentPostIterator(this.posts);
+    }
+
 }
