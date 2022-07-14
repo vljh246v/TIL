@@ -1,4 +1,4 @@
-package com.demo.boot.reactive;
+package com.demo.boot.reactive.service;
 
 import com.demo.boot.ch01.Dish;
 import java.time.Duration;
@@ -19,7 +19,7 @@ public class KitchenService {
     private final Random picker = new Random();
 
     public Flux<Dish> getDishes() {
-        return Flux.<Dish> generate(sink -> sink.next(randomDish()))
+        return Flux.<Dish>generate(sink -> sink.next(randomDish()))
             .delayElements(Duration.ofMillis(getRandomTimeDuration()));
     }
 
