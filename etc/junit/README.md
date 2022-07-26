@@ -8,7 +8,7 @@
 
 * [~~Get the Name of the Currently Executing Test in JUnit~~](./src/test/kotlin/com/demo/junit/day20220725)
 * Failed to Load ApplicationContext for JUnit Test of Spring Controller
-* Assert that an Object is from a Specific Type
+* [~~Assert that an Object is from a Specific Type~~](./src/test/kotlin/com/demo/junit/day20220726)
 * Best Practices For Unit Testing In Java
 * Using Fail Assertion in JUnit
 * JUnit 4 on How to Ignore a Base Test Class
