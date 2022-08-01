@@ -31,7 +31,7 @@
 * JUnit Custom Display Name Generator API
 * JUnit 5 Temporary Directory Support
 * Using SpringJUnit4ClassRunner with Parameterized
-* Get the Path of the /src/test/resources Directory in JUnit
+* [Get the Path of the /src/test/resources Directory in JUnit](https://www.baeldung.com/junit-src-test-resources-directory-path) / [(example code)](./src/test/kotlin/com/demo/junit/day20220801)
 * Tagging and Filtering JUnit Tests
 * Skipping Tests with Maven
 * Using JUnit 5 with Gradle
@@ -51,7 +51,7 @@
 * Inject Parameters into JUnit Jupiter Unit Tests
 * Migrating from JUnit 4 to JUnit 5
 * A Guide to JUnit 5 Extensions
-* [Guide to Dynamic Tests in Junit 5](https://www.baeldung.com/junit5-dynamic-tests) / [(example code)](./src/test/kotlin/com/demo/junit/day20220727)
+* [~~Guide to Dynamic Tests in Junit 5~~](https://www.baeldung.com/junit5-dynamic-tests) / [(example code)](./src/test/kotlin/com/demo/junit/day20220727)
 * Introduction to JUnitParams
 * A Guide to @RepeatedTest in Junit 5
 * A Quick JUnit vs TestNG Comparison
