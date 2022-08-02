@@ -3,6 +3,8 @@ package com.jaehyun.kotlin.study.jackson.custom
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonGetter
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.annotation.JsonRawValue
+import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -61,5 +63,53 @@ internal class TestClassTest {
         assertThat(result).contains(32.toString())
         assertThat(result).contains("KR")
     }
-}
 
+    @Test
+    fun jsonRawValueTest() {
+
+        class MyBean(val name: String, @JsonRawValue val json: String)
+
+        val bean = MyBean("My bean",  "{\"attr\":false}")
+
+        val result = ObjectMapper().writeValueAsString(bean)
+        print(result)
+        assertThat(result).contains("{\"attr\":false}")
+    }
+
+    @Test
+    fun jsonValueTest_class() {
+
+        class MyBean(val name: String, val age: Int, val country: String) {
+
+            @JsonValue
+            fun getMyBean(): String {
+                return "MyBean(name='$name', age=$age, country='$country')"
+            }
+        }
+
+        val bean = MyBean("My bean", 32, "KR")
+
+        val result = ObjectMapper().writeValueAsString(bean)
+        print(result)
+        assertThat(result).contains("My bean")
+        assertThat(result).contains(32.toString())
+        assertThat(result).contains("KR")
+    }
+
+    @Test
+    fun jsonValueTest_enum() {
+        val result = ObjectMapper().writeValueAsString(Type.TYPE_A)
+        print(result)
+        assertThat(result).contains("Type A")
+    }
+
+    enum class Type(val id: Int, private val typeName: String) {
+        TYPE_A(1, "Type A"),
+        TYPE_B(1, "Type B");
+
+        @JsonValue
+        fun getName(): String {
+            return typeName
+        }
+    }
+}
