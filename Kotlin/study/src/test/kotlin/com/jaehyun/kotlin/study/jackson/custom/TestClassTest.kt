@@ -1,15 +1,19 @@
 package com.jaehyun.kotlin.study.jackson.custom
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonGetter
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import com.fasterxml.jackson.annotation.JsonRawValue
-import com.fasterxml.jackson.annotation.JsonRootName
-import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.annotation.*
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 internal class TestClassTest {
 
@@ -134,5 +138,37 @@ internal class TestClassTest {
         assertThat(result).contains("KR")
     }
 
+    @Test
+    fun jsonSerializeTest() {
 
+        class MyBean(
+            val name: String,
+            @get:JsonSerialize(using = CustomDateSerializer::class) val date: Date)
+
+        val df = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+        val toParse = "03-08-2022 12:18:00"
+        val date  = df.parse(toParse)
+
+        val bean = MyBean("My bean", date)
+
+        val mapper = ObjectMapper()
+        val result = mapper.writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains(toParse)
+    }
+}
+
+class CustomDateSerializer(t: Class<Date>? = null) : StdSerializer<Date>(t) {
+    companion object {
+        private val formatter = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+    }
+    @Throws(IOException::class, JsonProcessingException::class)
+    override fun serialize(
+        value: Date,
+        generator: JsonGenerator,
+        provider: SerializerProvider
+    ) {
+        generator.writeString(formatter.format(value))
+    }
 }
