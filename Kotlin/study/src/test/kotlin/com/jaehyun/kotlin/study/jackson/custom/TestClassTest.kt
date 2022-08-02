@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonGetter
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.annotation.JsonRawValue
+import com.fasterxml.jackson.annotation.JsonRootName
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -112,4 +114,25 @@ internal class TestClassTest {
             return typeName
         }
     }
+
+    @Test
+    fun jsonRootNameTest() {
+
+        @JsonRootName(value = "bean")
+        class MyBean(val name: String, val age: Int, val country: String)
+
+        val bean = MyBean("My bean", 32, "KR")
+
+        val mapper = ObjectMapper()
+        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE)
+        val result = mapper.writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("bean")
+        assertThat(result).contains("My bean")
+        assertThat(result).contains(32.toString())
+        assertThat(result).contains("KR")
+    }
+
+
 }
