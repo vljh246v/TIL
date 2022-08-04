@@ -3,6 +3,7 @@ package com.jaehyun.kotlin.study.jackson.custom
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.InjectableValues
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.SerializerProvider
@@ -177,6 +178,39 @@ internal class TestClassTest {
 
         print(result)
         assertThat(result.name).isEqualTo("My bean")
+    }
+
+    @Test
+    fun jacksonInjectTest() {
+        class BeanWithInject () {
+
+            @JacksonInject("id1")
+            val id1: Int? = null
+
+            @JacksonInject("id2")
+            val id2: Long? = null
+
+            val name: String? = null
+            override fun toString(): String {
+                return "BeanWithInject(id1=$id1, id2=$id2, name=$name)"
+            }
+        }
+
+        val json = "{\"name\":\"My bean\"}"
+
+        val mapper = ObjectMapper()
+        val inject = InjectableValues.Std()
+            .addValue("id1", 1)
+            .addValue("id2", 2L)
+
+        val result = mapper.reader(inject)
+            .forType(BeanWithInject::class.java)
+            .readValue<BeanWithInject>(json)
+
+        print(result)
+        assertThat(result.name).isEqualTo("My bean")
+        assertThat(result.id1).isEqualTo(1)
+        assertThat(result.id2).isEqualTo(2L)
     }
     
 }
