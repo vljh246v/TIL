@@ -157,6 +157,29 @@ internal class TestClassTest {
         print(result)
         assertThat(result).contains(toParse)
     }
+
+    @Test
+    fun jsonCreatorTest() {
+        class BeanWithCreator @JsonCreator constructor(
+            @JsonProperty("id")  val id: Int,
+            @JsonProperty("theName") val name: String
+        ) {
+            override fun toString(): String {
+                return "BeanWithCreator(id=$id, name='$name')"
+            }
+        }
+
+        val json = "{\"id\":1,\"theName\":\"My bean\"}"
+
+        val mapper = ObjectMapper()
+        val result = mapper.readerFor(BeanWithCreator::class.java)
+            .readValue<BeanWithCreator>(json)
+
+        print(result)
+        assertThat(result.name).isEqualTo("My bean")
+    }
+
+
 }
 
 class CustomDateSerializer(t: Class<Date>? = null) : StdSerializer<Date>(t) {
