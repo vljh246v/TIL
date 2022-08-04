@@ -212,7 +212,34 @@ internal class TestClassTest {
         assertThat(result.id1).isEqualTo(1)
         assertThat(result.id2).isEqualTo(2L)
     }
-    
+
+    @Test
+    fun jsonAnySetterTest() {
+        class ExtendableBean {
+            val name: String? = null
+            val properties: MutableMap<String, String> = mutableMapOf()
+
+            @JsonAnySetter
+            fun add(key: String, value: String) {
+                properties[key] = value
+            }
+
+            override fun toString(): String {
+                return "ExtendableBean(name=$name, properties=$properties)"
+            }
+        }
+
+        val json = "{\"name\":\"My bean\",\"attr2\":\"val2\",\"attr1\":\"val1\"}"
+
+        val mapper = ObjectMapper()
+        val result = mapper.readerFor(ExtendableBean::class.java)
+            .readValue<ExtendableBean>(json)
+
+        print(result)
+        assertThat(result.name).isEqualTo("My bean")
+        assertThat(result.properties).containsEntry("attr2", "val2")
+        assertThat(result.properties).containsEntry("attr1", "val1")
+    }
 }
 
 class CustomDateSerializer(t: Class<Date>? = null) : StdSerializer<Date>(t) {
