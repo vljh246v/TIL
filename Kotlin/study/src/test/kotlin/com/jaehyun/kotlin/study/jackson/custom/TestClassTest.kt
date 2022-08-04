@@ -178,8 +178,7 @@ internal class TestClassTest {
         print(result)
         assertThat(result.name).isEqualTo("My bean")
     }
-
-
+    
 }
 
 class CustomDateSerializer(t: Class<Date>? = null) : StdSerializer<Date>(t) {
