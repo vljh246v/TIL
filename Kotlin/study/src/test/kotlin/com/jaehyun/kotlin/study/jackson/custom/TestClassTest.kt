@@ -289,6 +289,28 @@ internal class TestClassTest {
         assertThat(result.name).isEqualTo("demo")
         assertThat(df.format(result.eventDate)).isEqualTo("20-12-2014 02:30:00")
     }
+
+    @Test
+    fun jsonAliasTest() {
+        class AliasBean {
+            @JsonAlias(value = ["fName", "f_name"])
+            var firstName: String? = null
+            var lastName: String? = null
+
+            override fun toString(): String {
+                return "AliasBean(firstName=$firstName, lastName=$lastName)"
+            }
+        }
+
+        val json = "{\"fName\": \"version\", \"lastName\": \"demo\"}"
+
+        val mapper = ObjectMapper()
+        val result = mapper.readerFor(AliasBean::class.java)
+            .readValue<AliasBean>(json)
+
+        print(result)
+        assertThat(result.firstName).isEqualTo("version")
+    }
 }
 
 class CustomDateDeserializer(t: Class<Date>? = null): StdDeserializer<Date>(t) {
