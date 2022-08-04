@@ -2,16 +2,17 @@ package com.jaehyun.kotlin.study.jackson.custom
 
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.InjectableValues
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -266,6 +267,40 @@ internal class TestClassTest {
         print(result)
         assertThat(result.myName).isEqualTo("My bean")
         assertThat(result.id).isEqualTo(1)
+    }
+
+    @Test
+    fun jsonDeserializeTest() {
+        class EventWithSerializer {
+            var name: String? = null
+
+            @JsonDeserialize(using = CustomDateDeserializer::class)
+            var eventDate: Date? = Date()
+        }
+
+        val df = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+        val json = "{\"name\":\"demo\",\"eventDate\":\"20-12-2014 02:30:00\"}"
+
+        val mapper = ObjectMapper()
+        val result = mapper.readerFor(EventWithSerializer::class.java)
+            .readValue<EventWithSerializer>(json)
+
+        print(result)
+        assertThat(result.name).isEqualTo("demo")
+        assertThat(df.format(result.eventDate)).isEqualTo("20-12-2014 02:30:00")
+    }
+}
+
+class CustomDateDeserializer(t: Class<Date>? = null): StdDeserializer<Date>(t) {
+    companion object {
+        private val formatter = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+    }
+
+    @Throws(IOException::class, ParseException::class)
+    override fun deserialize(jsonParser: JsonParser, context: DeserializationContext): Date {
+        val date = jsonParser.text
+
+        return formatter.parse(date)
     }
 }
 
