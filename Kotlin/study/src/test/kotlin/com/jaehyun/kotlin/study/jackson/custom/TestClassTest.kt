@@ -185,12 +185,12 @@ internal class TestClassTest {
         class BeanWithInject () {
 
             @JacksonInject("id1")
-            val id1: Int? = null
+            var id1: Int? = null
 
             @JacksonInject("id2")
-            val id2: Long? = null
+            var id2: Long? = null
 
-            val name: String? = null
+            var name: String? = null
             override fun toString(): String {
                 return "BeanWithInject(id1=$id1, id2=$id2, name=$name)"
             }
@@ -216,8 +216,8 @@ internal class TestClassTest {
     @Test
     fun jsonAnySetterTest() {
         class ExtendableBean {
-            val name: String? = null
-            val properties: MutableMap<String, String> = mutableMapOf()
+            var name: String? = null
+            var properties: MutableMap<String, String> = mutableMapOf()
 
             @JsonAnySetter
             fun add(key: String, value: String) {
@@ -239,6 +239,33 @@ internal class TestClassTest {
         assertThat(result.name).isEqualTo("My bean")
         assertThat(result.properties).containsEntry("attr2", "val2")
         assertThat(result.properties).containsEntry("attr1", "val1")
+    }
+
+    @Test
+    fun jsonSetterTest() {
+        class MyBean {
+            var myName: String? = null
+            val id: Int? = null
+
+            @JsonSetter("name")
+            fun setTheName(theName: String){
+                this.myName = theName
+            }
+
+            override fun toString(): String {
+                return "MyBean(myName=$myName, id=$id)"
+            }
+        }
+
+        val json = "{\"id\":1,\"name\":\"My bean\"}"
+
+        val mapper = ObjectMapper()
+        val result = mapper.readerFor(MyBean::class.java)
+            .readValue<MyBean>(json)
+
+        print(result)
+        assertThat(result.myName).isEqualTo("My bean")
+        assertThat(result.id).isEqualTo(1)
     }
 }
 
