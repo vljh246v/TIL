@@ -432,4 +432,30 @@ class TestClassTest {
         assertThat(result).doesNotContain("lastName")
         assertThat(result).doesNotContain("companyName")
     }
+
+    @Test
+    fun jsonAutoDetectTest() {
+
+        @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+        class MyBean(
+            private var firstName: String? = null,
+            var lastName: String? = null
+        ) {
+            fun getFullName(): String {
+                return "$firstName $lastName"
+            }
+
+            override fun toString(): String {
+                return "MyBean(firstName=$firstName, lastName=$lastName)"
+            }
+        }
+
+        val bean = MyBean("jaehyun", "lim")
+
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("firstName")
+        assertThat(result).contains("lastName")
+    }
 }
