@@ -1,23 +1,15 @@
 package com.jaehyun.kotlin.study.jackson.custom
 
 import com.fasterxml.jackson.annotation.*
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.io.IOException
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
-internal class TestClassTest {
+class TestClassTest {
 
     @Test
     fun jsonAnyGetterTest() {
@@ -77,7 +69,7 @@ internal class TestClassTest {
 
         class MyBean(val name: String, @JsonRawValue val json: String)
 
-        val bean = MyBean("My bean",  "{\"attr\":false}")
+        val bean = MyBean("My bean", "{\"attr\":false}")
 
         val result = ObjectMapper().writeValueAsString(bean)
         print(result)
@@ -145,11 +137,12 @@ internal class TestClassTest {
 
         class MyBean(
             val name: String,
-            @get:JsonSerialize(using = CustomDateSerializer::class) val date: Date)
+            @get:JsonSerialize(using = CustomDateSerializer::class) val date: Date
+        )
 
         val df = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
         val toParse = "03-08-2022 12:18:00"
-        val date  = df.parse(toParse)
+        val date = df.parse(toParse)
 
         val bean = MyBean("My bean", date)
 
@@ -163,7 +156,7 @@ internal class TestClassTest {
     @Test
     fun jsonCreatorTest() {
         class BeanWithCreator @JsonCreator constructor(
-            @JsonProperty("id")  val id: Int,
+            @JsonProperty("id") val id: Int,
             @JsonProperty("theName") val name: String
         ) {
             override fun toString(): String {
@@ -183,7 +176,7 @@ internal class TestClassTest {
 
     @Test
     fun jacksonInjectTest() {
-        class BeanWithInject () {
+        class BeanWithInject {
 
             @JacksonInject("id1")
             var id1: Int? = null
@@ -249,7 +242,7 @@ internal class TestClassTest {
             val id: Int? = null
 
             @JsonSetter("name")
-            fun setTheName(theName: String){
+            fun setTheName(theName: String) {
                 this.myName = theName
             }
 
@@ -311,31 +304,132 @@ internal class TestClassTest {
         print(result)
         assertThat(result.firstName).isEqualTo("version")
     }
-}
 
-class CustomDateDeserializer(t: Class<Date>? = null): StdDeserializer<Date>(t) {
-    companion object {
-        private val formatter = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+    @Test
+    fun jsonIgnorePropertiesTest() {
+        @JsonIgnoreProperties(value = ["firstName"])
+        class BeanWithIgnore(
+            var firstName: String? = null,
+            var lastName: String? = null
+        ) {
+            override fun toString(): String {
+                return "AliasBean(firstName=$firstName, lastName=$lastName)"
+            }
+        }
+
+        val bean = BeanWithIgnore("jaehyun", "lim")
+
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("lim")
+        assertThat(result).doesNotContain("jaehyun")
     }
 
-    @Throws(IOException::class, ParseException::class)
-    override fun deserialize(jsonParser: JsonParser, context: DeserializationContext): Date {
-        val date = jsonParser.text
+    @Test
+    fun jsonIgnoreTest() {
+        class BeanWithIgnore(
+            @JsonIgnore
+            var firstName: String? = null,
+            var lastName: String? = null
+        ) {
+            override fun toString(): String {
+                return "AliasBean(firstName=$firstName, lastName=$lastName)"
+            }
+        }
 
-        return formatter.parse(date)
-    }
-}
+        val bean = BeanWithIgnore("jaehyun", "lim")
 
-class CustomDateSerializer(t: Class<Date>? = null) : StdSerializer<Date>(t) {
-    companion object {
-        private val formatter = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("lim")
+        assertThat(result).doesNotContain("jaehyun")
     }
-    @Throws(IOException::class, JsonProcessingException::class)
-    override fun serialize(
-        value: Date,
-        generator: JsonGenerator,
-        provider: SerializerProvider
-    ) {
-        generator.writeString(formatter.format(value))
+
+    @Test
+    fun jsonIgnoreTypeTest() {
+
+        @JsonIgnoreType
+        class Name(
+            var firstName: String? = null,
+            var lastName: String? = null
+        ) {
+            override fun toString(): String {
+                return "Name(firstName=$firstName, lastName=$lastName)"
+            }
+
+        }
+
+        class User(
+            var id: String,
+            var name: Name
+        ) {
+            override fun toString(): String {
+                return "User(id='$id', name=$name)"
+            }
+        }
+
+        val bean = User("1", Name("jaehyun", "lim"))
+
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("1")
+        assertThat(result).doesNotContain("jaehyun")
+        assertThat(result).doesNotContain("lim")
+    }
+
+    @Test
+    fun jsonIncludeTest_NON_NULL() {
+        @JsonInclude(value = JsonInclude.Include.NON_NULL)
+        class MyBean(
+            var firstName: String? = null,
+            var lastName: String? = null
+        ) {
+            override fun toString(): String {
+                return "MyBean(firstName=$firstName, lastName=$lastName)"
+            }
+        }
+
+        val bean = MyBean("jaehyun", null)
+
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("jaehyun")
+        assertThat(result).doesNotContain("lim")
+    }
+
+    @Test
+    fun jsonIncludeTest_CUSTOM() {
+        @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
+        class MyBean(
+            var firstName: String? = null,
+            var lastName: String? = null,
+            @get:JsonInclude(content = JsonInclude.Include.CUSTOM, contentFilter = PhoneNumberFilter::class)
+            var privateInfo: Map<String, String> = mutableMapOf(),
+            @get:JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = CompanyNameFilter::class)
+            var companyName: String? = null,
+        ) {
+            override fun toString(): String {
+                return "MyBean(firstName=$firstName, lastName=$lastName, privateInfo=$privateInfo, companyName=$companyName)"
+            }
+        }
+
+        val bean = MyBean(
+            "jaehyun",
+            "",
+            mapOf("phoneNumber" to "010-1111-2222", "address" to "seoul"),
+            "NAVER"
+        )
+
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("firstName")
+        assertThat(result).contains("phoneNumber")
+        assertThat(result).doesNotContain("lastName")
+        assertThat(result).doesNotContain("companyName")
     }
 }
