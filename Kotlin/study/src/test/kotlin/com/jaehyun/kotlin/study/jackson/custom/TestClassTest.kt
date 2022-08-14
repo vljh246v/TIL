@@ -510,4 +510,44 @@ class TestClassTest {
         print(result)
         assertThat(result).isInstanceOf(Dog::class.java)
     }
+
+    @Test
+    fun jsonPropertyTest() {
+
+        class MyBean {
+            var id: String? = null
+            var name: String? = null
+
+            @JsonProperty("name")
+            fun setTheName(theName: String) {
+                this.name = theName
+            }
+
+            @JsonProperty("name")
+            fun getTheName(): String? {
+                return this.name
+            }
+
+            override fun toString(): String {
+                return "MyBean(id='$id', name='$name')"
+            }
+        }
+
+        var bean = MyBean().apply {
+            id = "1"
+            name = "demo"
+        }
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("id")
+        assertThat(result).contains("1")
+        assertThat(result).contains("name")
+        assertThat(result).contains("demo")
+
+        bean = ObjectMapper().readValue(result, MyBean::class.java)
+        print(result)
+        assertThat(bean.id).contains("1")
+        assertThat(bean.name).contains("demo")
+    }
 }
