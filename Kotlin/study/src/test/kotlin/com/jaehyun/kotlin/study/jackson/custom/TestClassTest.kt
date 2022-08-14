@@ -1,13 +1,35 @@
 package com.jaehyun.kotlin.study.jackson.custom
 
-import com.fasterxml.jackson.annotation.*
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.annotation.JacksonInject
+import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonGetter
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonIgnoreType
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.annotation.JsonRawValue
+import com.fasterxml.jackson.annotation.JsonRootName
+import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.databind.InjectableValues
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+
 
 class TestClassTest {
 
@@ -457,5 +479,67 @@ class TestClassTest {
         print(result)
         assertThat(result).contains("firstName")
         assertThat(result).contains("lastName")
+    }
+
+    @Test
+    fun jsonPolymorphicTest_Serialization() {
+
+        val dog = Dog().apply {
+            name = "dog"
+            barkVolume = 10L
+        }
+        val cat = Cat().apply {
+            name = "cat"
+            isNeutering = true
+        }
+
+        var result = ObjectMapper().writeValueAsString(dog)
+        print(result)
+        assertThat(result).contains("type")
+        assertThat(result).contains("dog")
+
+        result = ObjectMapper().writeValueAsString(cat)
+        print(result)
+        assertThat(result).contains("type")
+        assertThat(result).contains("cat")
+    }
+
+    @Test
+    fun jsonPolymorphicTest_Deserialization() {
+
+        val json = "{\"name\":\"lacy\",\"type\":\"dog\",\"barkVolume\":10}"
+        val result = ObjectMapper().readValue(json, Animal::class.java)
+
+        print(result)
+        assertThat(result).isInstanceOf(Dog::class.java)
+    }
+
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+    )
+    @JsonSubTypes(
+        JsonSubTypes.Type(Dog::class, name = "dog"),
+        JsonSubTypes.Type(Cat::class, name = "cat")
+    )
+    open class Animal {
+        var name: String? = null
+    }
+
+    @JsonTypeName("dog")
+    class Dog : Animal() {
+        var barkVolume = 0L
+        override fun toString(): String {
+            return "Dog(name='$name', barkVolume=$barkVolume)"
+        }
+    }
+
+    @JsonTypeName("cat")
+    class Cat : Animal() {
+        var isNeutering = true
+        override fun toString(): String {
+            return "Cat(name='$name', isNeutering=$isNeutering)"
+        }
     }
 }
