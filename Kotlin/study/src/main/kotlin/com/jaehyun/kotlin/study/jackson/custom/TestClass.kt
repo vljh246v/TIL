@@ -1,5 +1,7 @@
 package com.jaehyun.kotlin.study.jackson.custom
 
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -144,4 +146,24 @@ class User {
     @JsonProperty("password")
     @JsonView(View.Admin::class)
     var password: String? = null
+}
+
+class Parent {
+    var id: Int? = null
+
+    @JsonManagedReference
+    var children: MutableList<Child> = mutableListOf()
+    override fun toString(): String {
+        return "Parent(id=$id, children=$children)"
+    }
+}
+
+class Child {
+    var id: Int? = null
+
+    @JsonBackReference
+    var parent: Parent? = null
+    override fun toString(): String {
+        return "Child(id=$id, parent=$parent)"
+    }
 }

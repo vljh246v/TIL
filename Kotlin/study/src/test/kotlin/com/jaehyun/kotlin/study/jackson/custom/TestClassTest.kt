@@ -617,4 +617,34 @@ class TestClassTest {
         assertThat(result).contains("user_id")
         assertThat(result).contains("password")
     }
+
+
+    @Test
+    fun jsonReferenceTest() {
+        val parent = Parent().apply {
+            this.id = 1
+
+            val child1 = Child().apply {
+                this.id = 1
+            }
+
+            val child2 = Child().apply {
+                this.id = 2
+            }
+
+            this.children.add(child1)
+            this.children.add(child2)
+
+            child1.parent = this
+            child2.parent = this
+        }
+
+        val result = ObjectMapper()
+            .writeValueAsString(parent)
+
+        print(result)
+        assertThat(result).contains("children")
+    }
+
+
 }
