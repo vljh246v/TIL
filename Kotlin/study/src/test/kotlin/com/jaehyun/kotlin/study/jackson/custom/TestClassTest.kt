@@ -579,4 +579,42 @@ class TestClassTest {
         print(result)
         assertThat(result).contains(toParse)
     }
+
+    @Test
+    fun jsonUnwrappedTest() {
+
+        val bean = UnwrappedUser(1, Name("demo", "lim"))
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("demo")
+        assertThat(result).contains("1")
+        assertThat(result).doesNotContain("name")
+    }
+
+    @Test
+    fun jsonViewTest() {
+
+        val bean = User()
+            .apply {
+                this.userId = 10L
+                this.password = "1234"
+            }
+
+        var result = ObjectMapper()
+            .writerWithView(View.User::class.java)
+            .writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("user_id")
+        assertThat(result).doesNotContain("password")
+
+        result = ObjectMapper()
+            .writerWithView(View.Admin::class.java)
+            .writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("user_id")
+        assertThat(result).contains("password")
+    }
 }
