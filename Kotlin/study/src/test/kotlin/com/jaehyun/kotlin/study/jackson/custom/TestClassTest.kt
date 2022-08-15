@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonGetter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -26,6 +27,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.TimeZone
 
 
 class TestClassTest {
@@ -549,5 +551,32 @@ class TestClassTest {
         print(result)
         assertThat(bean.id).contains("1")
         assertThat(bean.name).contains("demo")
+    }
+
+    @Test
+    fun jsonFormatTest() {
+        class MyBean(
+            var name: String,
+            @get:JsonFormat(
+                shape = JsonFormat.Shape.STRING,
+                pattern = "dd-MM-yyyy hh:mm:ss"
+            )
+            var date: Date
+        ) {
+            override fun toString(): String {
+                return "MyBean(name='$name', date=$date)"
+            }
+        }
+
+        val df = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+        df.timeZone = TimeZone.getTimeZone("UTC")
+
+        val toParse = "15-08-2022 01:00:00"
+        val parse = df.parse(toParse)
+        val bean = MyBean("party", parse)
+        val result = ObjectMapper().writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains(toParse)
     }
 }
