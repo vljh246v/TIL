@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFilter
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonGetter
 import com.fasterxml.jackson.annotation.JsonIgnore
@@ -18,11 +19,14 @@ import com.fasterxml.jackson.annotation.JsonRawValue
 import com.fasterxml.jackson.annotation.JsonRootName
 import com.fasterxml.jackson.annotation.JsonSetter
 import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.InjectableValues
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.text.SimpleDateFormat
@@ -646,5 +650,100 @@ class TestClassTest {
         assertThat(result).contains("children")
     }
 
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun jsonIdentityInfoTest() {
+        val user = UserWithIdentity().apply {
+            id = 1
+            name = "demo"
+        }
+        val item = ItemWithIdentity().apply {
+            id = 2
+            itemName = "book"
+            owner = user
+        }
+        user.addItem(item)
 
+
+        val result = ObjectMapper().writeValueAsString(user)
+        print(result)
+        assertThat(result).contains("userItems")
+        assertThat(result).contains("owner")
+    }
+
+    @Test
+    fun jsonFilterTest() {
+        @JsonFilter("myFilter")
+        class BeanWithFilter(
+            var id: Int,
+            var name: String?
+        ) {
+            override fun toString(): String {
+                return "BeanWithFilter(id=$id, name=$name)"
+            }
+        }
+
+        val bean = BeanWithFilter(1, "demo")
+
+        val filters = SimpleFilterProvider().addFilter(
+            "myFilter",
+            SimpleBeanPropertyFilter.filterOutAllExcept("name")
+        )
+
+        val result = ObjectMapper()
+            .writer(filters)
+            .writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("name")
+        assertThat(result).doesNotContain("id")
+    }
+
+    @Test
+    fun jacksonAnnotationsInsideTest() {
+
+        @CustomAnnotation
+        class BeanWithCustomAnnotation(
+            var id: Int,
+            var name: String?,
+            var dateCreated: Date?
+        ) {
+            override fun toString(): String {
+                return "BeanWithCustomAnnotation(id=$id, name=$name, dateCreated=$dateCreated)"
+            }
+        }
+
+        val bean = BeanWithCustomAnnotation(1, "demo", null)
+
+
+        val result = ObjectMapper()
+            .writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).doesNotContain("dateCreated")
+        assertThat(result).contains("id")
+        assertThat(result).contains("name")
+    }
+
+    @Test
+    fun mixInTest() {
+
+        val bean = Employee("demo", 32, Address("add1", "add2"))
+
+        var result = ObjectMapper()
+            .writeValueAsString(bean)
+
+        print(result)
+        assertThat(result).contains("name")
+        assertThat(result).contains("age")
+        assertThat(result).contains("address")
+
+        val mapper = ObjectMapper()
+        mapper.addMixIn(Address::class.java, MyMixInForIgnoreType::class.java)
+
+        result = mapper.writeValueAsString(bean)
+        assertThat(result).contains("name")
+        assertThat(result).contains("age")
+        assertThat(result).doesNotContain("address")
+    }
 }

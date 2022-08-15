@@ -1,6 +1,8 @@
 package com.jaehyun.kotlin.study.jackson.custom
 
 import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonIgnoreType
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -8,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.annotation.JsonView
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
@@ -167,3 +170,43 @@ class Child {
         return "Child(id=$id, parent=$parent)"
     }
 }
+
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
+class ItemWithIdentity {
+    var id = 0
+    var itemName: String? = null
+    var owner: UserWithIdentity? = null
+    override fun toString(): String {
+        return "ItemWithIdentity(id=$id, itemName=$itemName, owner=$owner)"
+    }
+}
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
+class UserWithIdentity {
+    fun addItem(item: ItemWithIdentity) {
+        userItems.add(item)
+    }
+
+    override fun toString(): String {
+        return "UserWithIdentity(id=$id, name=$name, userItems=$userItems)"
+    }
+
+    var id = 0
+    var name: String? = null
+    var userItems: MutableList<ItemWithIdentity> = mutableListOf()
+}
+
+class Employee(
+    val name: String,
+    val age: Int,
+    val address: Address
+)
+
+class Address(
+    val address1: String,
+    val address2: String
+)
+
+@JsonIgnoreType
+class MyMixInForIgnoreType {}
