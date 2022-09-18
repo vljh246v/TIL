@@ -1,7 +1,7 @@
-package com.demo.lock.service
+package com.demo.lock.lock.service
 
-import com.demo.lock.entity.Product
-import com.demo.lock.repository.ProductRepository
+import com.demo.lock.lock.entity.Product
+import com.demo.lock.lock.repository.ProductRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

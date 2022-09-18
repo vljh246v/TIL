@@ -1,6 +1,6 @@
-package com.demo.lock.controller
+package com.demo.lock.lock.controller
 
-import com.demo.lock.service.ProductService
+import com.demo.lock.lock.service.ProductService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping

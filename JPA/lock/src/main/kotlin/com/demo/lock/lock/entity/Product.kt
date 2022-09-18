@@ -1,4 +1,4 @@
-package com.demo.lock.entity
+package com.demo.lock.lock.entity
 
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
