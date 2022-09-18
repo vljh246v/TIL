@@ -1,6 +1,5 @@
 package com.demo.lock.ds.ds20220823;
 
-import com.demo.lock.ds.ds202000823.TestEntity;
 import com.demo.lock.ds.ds202000823.TestRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-class TestTest {
+class Test_20220918 {
 
     @Autowired
     private TestRepository testRepository;
