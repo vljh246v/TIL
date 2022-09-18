@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class LockApplication
 
 fun main(args: Array<String>) {
-	runApplication<LockApplication>(*args)
+    runApplication<LockApplication>(*args)
 }
