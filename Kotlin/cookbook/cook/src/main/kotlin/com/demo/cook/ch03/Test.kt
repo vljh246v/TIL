@@ -3,7 +3,6 @@ package com.demo.cook.ch03
 class Test
 
 class Task(
-    val name: String,
     _priority: Int = DEFAULT_PRIORITY
 ) {
     companion object {
@@ -22,3 +21,14 @@ class Task(
 
     private fun validPriority(p: Int) = p.coerceIn(MIN_PRIORITY, MAX_PRIORITY)
 }
+
+data class Product(
+    val name: String,
+    val price: Double,
+    val onSale: Boolean = false
+)
+
+data class OrderItem(
+    val product: Product,
+    val quantity: Int
+)
