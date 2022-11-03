@@ -69,4 +69,18 @@ internal class TaskTest {
             { assertThat(p.onSale).isFalse() }
         )
     }
+
+    @Test
+    fun `load messages`() {
+        val customer = Customer("Fred").apply { messages }
+        assertEquals(3, customer.messages.size)
+    }
+
+    @Test
+    fun `unary minus point`() {
+        val point = Point(10, 20)
+        assertEquals(point.unaryMinus(), Point(-10, -20))
+    }
+
+
 }
