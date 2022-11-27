@@ -1,0 +1,27 @@
+server:
+  port: 9000
+
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - name: AuthFilter
+          args:
+            whiteList:
+              passToken: admin
+
+      routes:
+        - id: all
+          uri: http://localhost:8080
+          predicates:
+            - Path=/**
+
+
+---
+spring:
+  config.activate.on-profile: test
+
+
+server:
+  port: 9000
