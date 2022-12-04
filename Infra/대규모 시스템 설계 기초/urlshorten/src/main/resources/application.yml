@@ -1,0 +1,6 @@
+
+spring:
+  config:
+    import:
+      - classpath:properties/jpa.yml
+      - classpath:properties/private.yml
