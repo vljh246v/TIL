@@ -8,9 +8,11 @@ import com.demo.clean.account.application.port.in.SendMoneyCommand;
 import com.demo.clean.account.application.port.in.SendMoneyUseCase;
 import com.demo.clean.account.domain.Account.AccountId;
 import com.demo.clean.account.domain.Money;
+import com.demo.clean.common.WebAdapter;
 
 import lombok.RequiredArgsConstructor;
 
+@WebAdapter
 @RestController
 @RequiredArgsConstructor
 public class SendMoneyController {

@@ -5,10 +5,11 @@ import com.demo.clean.account.domain.Money;
 import com.demo.clean.common.SelfValidating;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 
-
-@Getter
+@Value
+@EqualsAndHashCode(callSuper = false)
 public class SendMoneyCommand extends SelfValidating<SendMoneyCommand> {
 
     @NotNull

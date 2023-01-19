@@ -10,13 +10,14 @@ import com.demo.clean.account.application.port.out.UpdateAccountStatePort;
 import com.demo.clean.account.domain.Account;
 import com.demo.clean.account.domain.Account.AccountId;
 import com.demo.clean.account.domain.Activity;
+import com.demo.clean.common.PersistenceAdapter;
 
 import lombok.RequiredArgsConstructor;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @RequiredArgsConstructor
-@Service
+@PersistenceAdapter
 class AccountPersistenceAdapter implements
 								LoadAccountPort,
 								UpdateAccountStatePort {
