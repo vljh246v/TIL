@@ -1,0 +1,104 @@
+{
+    "took": 17,
+    "timed_out": false,
+    "_shards": {
+        "total": 5,
+        "successful": 5,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 10000,
+            "relation": "gte"
+        },
+        "max_score": null,
+        "hits": [
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "ej3JqmkBjjM-ebDb8BkT",
+                "_score": 2,
+                "_source": {
+                    "movieCd": "20148854",
+                    "prdtYear": "2017",
+                    "typeNm": "장편",
+                    "movieNm": "증거불충분",
+                    "movieNmEn": ""
+                },
+                "sort": [
+                    2,
+                    "20148854"
+                ]
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "sT3JqmkBjjM-ebDb9DvI",
+                "_score": 2,
+                "_source": {
+                    "movieCd": "20149932",
+                    "prdtYear": "2017",
+                    "typeNm": "장편",
+                    "movieNm": "도깨비",
+                    "movieNmEn": "THE DEATH ANGEL"
+                },
+                "sort": [
+                    2,
+                    "20149932"
+                ]
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "oj3JqmkBjjM-ebDb8BES",
+                "_score": 2,
+                "_source": {
+                    "movieCd": "20150971",
+                    "prdtYear": "2017",
+                    "typeNm": "장편",
+                    "movieNm": "해빙",
+                    "movieNmEn": "Bluebeard"
+                },
+                "sort": [
+                    2,
+                    "20150971"
+                ]
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "ez3JqmkBjjM-ebDb8BkT",
+                "_score": 2,
+                "_source": {
+                    "movieCd": "20150974",
+                    "prdtYear": "2017",
+                    "typeNm": "장편",
+                    "movieNm": "독고",
+                    "movieNmEn": ""
+                },
+                "sort": [
+                    2,
+                    "20150974"
+                ]
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "CjzJqmkBjjM-ebDb8P0R",
+                "_score": 2,
+                "_source": {
+                    "movieCd": "20150976",
+                    "prdtYear": "2017",
+                    "typeNm": "장편",
+                    "movieNm": "신과함께-죄와 벌",
+                    "movieNmEn": "Along With the Gods: The Two Worlds"
+                },
+                "sort": [
+                    2,
+                    "20150976"
+                ]
+            }
+        ]
+    }
+}
