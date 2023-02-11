@@ -45,7 +45,7 @@ POST movie_search/_search
 {
     "query": {
         "match": {
-            "movieNm": "기묘한 가족"
+            "movieNm": "가족"
         }
     }
 }
@@ -313,5 +313,90 @@ PUT movie_nested
                 }
             }
         }
+    }
+}
+
+PUT movie_nested/_doc/1
+{
+    "movieCd": "201846",
+    "repGenreNm":"멜로/로맨스",
+    "companies": [
+        {
+            "companyCd":"20173401",
+            "companyNm":"(주)케이피에이기획"
+        }
+    ]
+}
+
+
+GET movie_nested/_search
+{
+    "query":{
+        "bool": {
+            "must": [
+                {
+                    "term":{
+                        "repGenreNm":"멜로/로맨스"
+                    }
+                },
+                {
+                    "nested": {
+                        "path": "companies",
+                        "query": {
+                            "bool": {
+                                "must": [
+                                    {
+                                        "term": {
+                                            "companies.companyCd": "20173401"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+
+// count api
+POST movie_search/_count
+{
+    "query": {
+        "query_string": {
+            "default_field":"prdtYear",
+            "query": "2017"
+        }
+    }
+}
+
+
+// explain api
+POST movie_search/_search
+{
+    "query": {
+        "term": {
+            "prdtYear": "2017"
+        }
+    }
+}
+
+
+POST movie_search/_doc/eDzJqmkBjjM-ebDb8PsR/_explain
+{
+    "query": {
+        "term": {
+            "prdtYear": "2017"
+        }
+    }
+}
+
+// Profile API
+POST movie_search/_search
+{
+    "profile": true,
+    "query": {
+        "match_all": {}
     }
 }

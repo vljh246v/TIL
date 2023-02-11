@@ -1,5 +1,566 @@
 {
-    "acknowledged": true,
-    "shards_acknowledged": true,
-    "index": "movie_nested"
+    "took": 72,
+    "timed_out": false,
+    "_shards": {
+        "total": 5,
+        "successful": 5,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 10000,
+            "relation": "gte"
+        },
+        "max_score": 1,
+        "hits": [
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "djzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20180804",
+                    "movieNm": "곤지암",
+                    "movieNmEn": "",
+                    "prdtYear": "2016",
+                    "openDt": "",
+                    "typeNm": "장편",
+                    "prdtStatNm": "개봉예정",
+                    "nationAlt": "한국",
+                    "genreAlt": [
+                        "공포",
+                        "호러",
+                        "",
+                        "스릴러"
+                    ],
+                    "repNationNm": "한국",
+                    "repGenreNm": "공포(호러)",
+                    "directors": [
+                        {
+                            "peopleNm": "정범식"
+                        }
+                    ],
+                    "companys": [
+                        {
+                            "companyCd": "2016841",
+                            "companyNm": "(주)하이브미디어코프"
+                        }
+                    ]
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "eDzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20180803",
+                    "movieNm": "행복의 나라",
+                    "movieNmEn": "Land of Happiness",
+                    "prdtYear": "2017",
+                    "openDt": "",
+                    "typeNm": "장편",
+                    "prdtStatNm": "",
+                    "nationAlt": "한국",
+                    "genreAlt": [
+                        "드라마",
+                        "가족"
+                    ],
+                    "repNationNm": "한국",
+                    "repGenreNm": "드라마",
+                    "directors": [
+                        {
+                            "peopleNm": "정민규"
+                        }
+                    ],
+                    "companys": []
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "ejzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20174647",
+                    "movieNm": "튼튼이의 모험",
+                    "movieNmEn": "Loser’s Adventure",
+                    "prdtYear": "2017",
+                    "openDt": "",
+                    "typeNm": "장편",
+                    "prdtStatNm": "기타",
+                    "nationAlt": "한국",
+                    "genreAlt": [
+                        "드라마"
+                    ],
+                    "repNationNm": "한국",
+                    "repGenreNm": "드라마",
+                    "directors": [
+                        {
+                            "peopleNm": "고봉수"
+                        }
+                    ],
+                    "companys": []
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "fzzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20189901",
+                    "movieNm": "더 포리너",
+                    "movieNmEn": "The Foreigner",
+                    "prdtYear": "2017",
+                    "openDt": "20180207",
+                    "typeNm": "장편",
+                    "prdtStatNm": "개봉예정",
+                    "nationAlt": "영국,중국",
+                    "genreAlt": [
+                        "액션",
+                        "스릴러"
+                    ],
+                    "repNationNm": "영국",
+                    "repGenreNm": "액션",
+                    "directors": [
+                        {
+                            "peopleNm": "마틴 캠벨"
+                        }
+                    ],
+                    "companys": []
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "hDzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20141708",
+                    "movieNm": "우리는 썰매를 탄다",
+                    "movieNmEn": "Parallel",
+                    "prdtYear": "2014",
+                    "openDt": "",
+                    "typeNm": "장편",
+                    "prdtStatNm": "개봉예정",
+                    "nationAlt": "한국",
+                    "genreAlt": [
+                        "다큐멘터리"
+                    ],
+                    "repNationNm": "한국",
+                    "repGenreNm": "다큐멘터리",
+                    "directors": [
+                        {
+                            "peopleNm": "김경만"
+                        }
+                    ],
+                    "companys": [
+                        {
+                            "companyCd": "20100475",
+                            "companyNm": "태흥영화(주)"
+                        }
+                    ]
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "hzzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20178395",
+                    "movieNm": "12 솔져스",
+                    "movieNmEn": "12 Strong",
+                    "prdtYear": "2018",
+                    "openDt": "20180131",
+                    "typeNm": "장편",
+                    "prdtStatNm": "개봉예정",
+                    "nationAlt": "미국",
+                    "genreAlt": [
+                        "액션",
+                        "드라마",
+                        "전쟁"
+                    ],
+                    "repNationNm": "미국",
+                    "repGenreNm": "액션",
+                    "directors": [
+                        {
+                            "peopleNm": "니콜라이 퓰시"
+                        }
+                    ],
+                    "companys": []
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "jTzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20168161",
+                    "movieNm": "1급기밀",
+                    "movieNmEn": "The Discloser",
+                    "prdtYear": "2016",
+                    "openDt": "20180124",
+                    "typeNm": "장편",
+                    "prdtStatNm": "개봉",
+                    "nationAlt": "한국",
+                    "genreAlt": [
+                        "드라마"
+                    ],
+                    "repNationNm": "한국",
+                    "repGenreNm": "드라마",
+                    "directors": [
+                        {
+                            "peopleNm": "홍기선"
+                        }
+                    ],
+                    "companys": [
+                        {
+                            "companyCd": "20126335",
+                            "companyNm": "(주)미인픽쳐스"
+                        },
+                        {
+                            "companyCd": "20154688",
+                            "companyNm": "(주)미디어모굴"
+                        }
+                    ]
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "jjzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20172963",
+                    "movieNm": "착한 형수 2 무삭제",
+                    "movieNmEn": "",
+                    "prdtYear": "2017",
+                    "openDt": "20180123",
+                    "typeNm": "장편",
+                    "prdtStatNm": "개봉",
+                    "nationAlt": "한국",
+                    "genreAlt": [
+                        "멜로",
+                        "로맨스"
+                    ],
+                    "repNationNm": "한국",
+                    "repGenreNm": "멜로/로맨스",
+                    "directors": [
+                        {
+                            "peopleNm": "곽영근"
+                        }
+                    ],
+                    "companys": [
+                        {
+                            "companyCd": "20154628",
+                            "companyNm": "(주)영화사 사계절"
+                        }
+                    ]
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "mzzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20180766",
+                    "movieNm": "호두까기 인형 ",
+                    "movieNmEn": "THE NUTCRACKER",
+                    "prdtYear": "2017",
+                    "openDt": "",
+                    "typeNm": "장편",
+                    "prdtStatNm": "기타",
+                    "nationAlt": "영국",
+                    "genreAlt": [
+                        "공연"
+                    ],
+                    "repNationNm": "영국",
+                    "repGenreNm": "공연",
+                    "directors": [],
+                    "companys": []
+                }
+            },
+            {
+                "_index": "movie_search",
+                "_type": "_doc",
+                "_id": "pTzJqmkBjjM-ebDb8PsR",
+                "_score": 1,
+                "_source": {
+                    "movieCd": "20180764",
+                    "movieNm": "토스카 ",
+                    "movieNmEn": "TOSCA",
+                    "prdtYear": "2017",
+                    "openDt": "",
+                    "typeNm": "장편",
+                    "prdtStatNm": "기타",
+                    "nationAlt": "영국",
+                    "genreAlt": [
+                        "공연"
+                    ],
+                    "repNationNm": "영국",
+                    "repGenreNm": "공연",
+                    "directors": [],
+                    "companys": []
+                }
+            }
+        ]
+    },
+    "profile": {
+        "shards": [
+            {
+                "id": "[0V8LC9rzR7OX_-pkUPlICA][movie_search][0]",
+                "searches": [
+                    {
+                        "query": [
+                            {
+                                "type": "MatchAllDocsQuery",
+                                "description": "*:*",
+                                "time_in_nanos": 1267904,
+                                "breakdown": {
+                                    "set_min_competitive_score_count": 2,
+                                    "match_count": 0,
+                                    "shallow_advance_count": 0,
+                                    "set_min_competitive_score": 3170,
+                                    "next_doc": 8798,
+                                    "match": 0,
+                                    "next_doc_count": 11,
+                                    "score_count": 11,
+                                    "compute_max_score_count": 0,
+                                    "compute_max_score": 0,
+                                    "advance": 1821,
+                                    "advance_count": 2,
+                                    "score": 6990,
+                                    "build_scorer_count": 4,
+                                    "create_weight": 1525,
+                                    "shallow_advance": 0,
+                                    "create_weight_count": 1,
+                                    "build_scorer": 1245600
+                                }
+                            }
+                        ],
+                        "rewrite_time": 2324,
+                        "collector": [
+                            {
+                                "name": "SimpleTopScoreDocCollector",
+                                "reason": "search_top_hits",
+                                "time_in_nanos": 192537
+                            }
+                        ]
+                    }
+                ],
+                "aggregations": [],
+                "fetch": {
+                    "type": "fetch",
+                    "description": "",
+                    "time_in_nanos": 6172453,
+                    "breakdown": {
+                        "load_stored_fields": 116798,
+                        "load_stored_fields_count": 10,
+                        "next_reader": 70814,
+                        "next_reader_count": 1
+                    },
+                    "debug": {
+                        "stored_fields": [
+                            "_id",
+                            "_routing",
+                            "_source"
+                        ]
+                    },
+                    "children": [
+                        {
+                            "type": "FetchSourcePhase",
+                            "description": "",
+                            "time_in_nanos": 19396,
+                            "breakdown": {
+                                "process_count": 10,
+                                "process": 4630,
+                                "next_reader": 14766,
+                                "next_reader_count": 1
+                            },
+                            "debug": {
+                                "fast_path": 10
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "[0V8LC9rzR7OX_-pkUPlICA][movie_search][1]",
+                "searches": [
+                    {
+                        "query": [
+                            {
+                                "type": "MatchAllDocsQuery",
+                                "description": "*:*",
+                                "time_in_nanos": 1215454,
+                                "breakdown": {
+                                    "set_min_competitive_score_count": 2,
+                                    "match_count": 0,
+                                    "shallow_advance_count": 0,
+                                    "set_min_competitive_score": 6120,
+                                    "next_doc": 8748,
+                                    "match": 0,
+                                    "next_doc_count": 11,
+                                    "score_count": 11,
+                                    "compute_max_score_count": 0,
+                                    "compute_max_score": 0,
+                                    "advance": 4294,
+                                    "advance_count": 2,
+                                    "score": 8609,
+                                    "build_scorer_count": 4,
+                                    "create_weight": 1481,
+                                    "shallow_advance": 0,
+                                    "create_weight_count": 1,
+                                    "build_scorer": 1186202
+                                }
+                            }
+                        ],
+                        "rewrite_time": 7218,
+                        "collector": [
+                            {
+                                "name": "SimpleTopScoreDocCollector",
+                                "reason": "search_top_hits",
+                                "time_in_nanos": 159729
+                            }
+                        ]
+                    }
+                ],
+                "aggregations": []
+            },
+            {
+                "id": "[0V8LC9rzR7OX_-pkUPlICA][movie_search][2]",
+                "searches": [
+                    {
+                        "query": [
+                            {
+                                "type": "MatchAllDocsQuery",
+                                "description": "*:*",
+                                "time_in_nanos": 1256405,
+                                "breakdown": {
+                                    "set_min_competitive_score_count": 2,
+                                    "match_count": 0,
+                                    "shallow_advance_count": 0,
+                                    "set_min_competitive_score": 3606,
+                                    "next_doc": 12318,
+                                    "match": 0,
+                                    "next_doc_count": 11,
+                                    "score_count": 11,
+                                    "compute_max_score_count": 0,
+                                    "compute_max_score": 0,
+                                    "advance": 3505,
+                                    "advance_count": 2,
+                                    "score": 7232,
+                                    "build_scorer_count": 4,
+                                    "create_weight": 7673,
+                                    "shallow_advance": 0,
+                                    "create_weight_count": 1,
+                                    "build_scorer": 1222071
+                                }
+                            }
+                        ],
+                        "rewrite_time": 2620,
+                        "collector": [
+                            {
+                                "name": "SimpleTopScoreDocCollector",
+                                "reason": "search_top_hits",
+                                "time_in_nanos": 209344
+                            }
+                        ]
+                    }
+                ],
+                "aggregations": []
+            },
+            {
+                "id": "[0V8LC9rzR7OX_-pkUPlICA][movie_search][3]",
+                "searches": [
+                    {
+                        "query": [
+                            {
+                                "type": "MatchAllDocsQuery",
+                                "description": "*:*",
+                                "time_in_nanos": 1240434,
+                                "breakdown": {
+                                    "set_min_competitive_score_count": 2,
+                                    "match_count": 0,
+                                    "shallow_advance_count": 0,
+                                    "set_min_competitive_score": 3538,
+                                    "next_doc": 11860,
+                                    "match": 0,
+                                    "next_doc_count": 11,
+                                    "score_count": 11,
+                                    "compute_max_score_count": 0,
+                                    "compute_max_score": 0,
+                                    "advance": 3482,
+                                    "advance_count": 2,
+                                    "score": 7229,
+                                    "build_scorer_count": 4,
+                                    "create_weight": 2047,
+                                    "shallow_advance": 0,
+                                    "create_weight_count": 1,
+                                    "build_scorer": 1212278
+                                }
+                            }
+                        ],
+                        "rewrite_time": 2807,
+                        "collector": [
+                            {
+                                "name": "SimpleTopScoreDocCollector",
+                                "reason": "search_top_hits",
+                                "time_in_nanos": 227558
+                            }
+                        ]
+                    }
+                ],
+                "aggregations": []
+            },
+            {
+                "id": "[0V8LC9rzR7OX_-pkUPlICA][movie_search][4]",
+                "searches": [
+                    {
+                        "query": [
+                            {
+                                "type": "MatchAllDocsQuery",
+                                "description": "*:*",
+                                "time_in_nanos": 1260931,
+                                "breakdown": {
+                                    "set_min_competitive_score_count": 2,
+                                    "match_count": 0,
+                                    "shallow_advance_count": 0,
+                                    "set_min_competitive_score": 6886,
+                                    "next_doc": 8853,
+                                    "match": 0,
+                                    "next_doc_count": 11,
+                                    "score_count": 11,
+                                    "compute_max_score_count": 0,
+                                    "compute_max_score": 0,
+                                    "advance": 4322,
+                                    "advance_count": 2,
+                                    "score": 7861,
+                                    "build_scorer_count": 4,
+                                    "create_weight": 1624,
+                                    "shallow_advance": 0,
+                                    "create_weight_count": 1,
+                                    "build_scorer": 1231385
+                                }
+                            }
+                        ],
+                        "rewrite_time": 7909,
+                        "collector": [
+                            {
+                                "name": "SimpleTopScoreDocCollector",
+                                "reason": "search_top_hits",
+                                "time_in_nanos": 186814
+                            }
+                        ]
+                    }
+                ],
+                "aggregations": []
+            }
+        ]
+    }
 }
