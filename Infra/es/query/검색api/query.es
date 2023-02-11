@@ -173,3 +173,145 @@ POST movie_search/_search
         }
     }
 }
+
+// Query DSL의 주요 쿼리
+
+// Match All Query
+POST movie_search/_search
+{
+    "query": {
+        "match_all": {}
+    }
+}
+
+// Match Query
+POST movie_search/_search
+{
+    "query": {
+        "match": {
+            "movieNm": "그대 장미"
+        }
+    }
+}
+
+// multi match query
+POST movie_search/_search
+{
+    "query": {
+        "multi_match": {
+            "query": "가족",
+            "fields": [
+                "movieNm",
+                "movieNmEN"
+            ]
+        }
+    }
+}
+
+
+// Term Query
+POST movie_search/_search
+{
+    "query": {
+        "term": {
+            "genreAlt": "코미디"
+        }
+    }
+}
+
+// Bool Query
+POST movie_search/_search
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "term": {
+                        "repGenreNm": "코미디"
+                    }
+                },
+                {
+                    "match": {
+                        "repNationNm": "한국"
+                    }
+                }
+            ],
+            "must_not": [
+                {
+                    "match": {
+                        "typeNm": "단편"
+                    }
+                }
+            ]
+        }
+    }
+}
+
+// Query String
+POST movie_search/_search
+{
+    "query": {
+        "query_string": {
+            "default_field": "movieNm",
+            "query": "(어린이 날) AND (바른)"
+        }
+    }
+}
+
+// Perfix Query
+POST movie_search/_search
+{
+    "query": {
+        "prefix": {
+            "movieNm" : "자전차"
+        }
+    }
+}
+
+// exists Query
+POST movie_search/_search
+{
+    "query": {
+        "exists": {
+            "field": "movieNm "
+        }
+    }
+}
+
+// wildcard query
+POST movie_search/_search
+{
+    "query": {
+        "wildcard": {
+            "typeNm": "장?"
+        }
+    }
+}
+
+
+// Nested Query
+PUT movie_nested
+{
+    "settings": {
+        "number_of_replicas": 1,
+        "number_of_shards": 5
+    },
+    "mappings": {
+        "properties": {
+            "repGenreNm": {
+                "type": "keyword"
+            },
+            "companies": {
+                "type": "nested",
+                "properties": {
+                    "companyCd": {
+                        "type": "keyword"
+                    },
+                    "companyNm": {
+                        "type": "keyword"
+                    }
+                }
+            }
+        }
+    }
+}
