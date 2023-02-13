@@ -1,0 +1,1 @@
+package me.whiteship.refactoring._07_divergent_change;

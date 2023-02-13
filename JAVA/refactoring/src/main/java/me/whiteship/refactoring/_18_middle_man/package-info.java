@@ -1,0 +1,1 @@
+package me.whiteship.refactoring._18_middle_man;
