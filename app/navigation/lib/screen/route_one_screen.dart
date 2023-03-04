@@ -1,29 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:navigation/layout/main_layout.dart';
 
 class RouteOneScreen extends StatelessWidget {
   const RouteOneScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Route One'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Pop'),
-            ),
-          ],
+    return MainLayout(
+      title: 'Route One',
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Pop'),
         ),
-      ),
+      ],
     );
   }
 }
