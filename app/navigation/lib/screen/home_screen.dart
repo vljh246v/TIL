@@ -11,6 +11,18 @@ class HomeScreen extends StatelessWidget {
       title: 'Home Screen',
       children: [
         ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Pop'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).maybePop();
+          },
+          child: Text('Maybe Pop'),
+        ),
+        ElevatedButton(
           onPressed: () async {
             final result = await Navigator.of(context).push(
               MaterialPageRoute(
