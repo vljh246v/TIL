@@ -33,6 +33,12 @@ class RouteOneScreen extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
+            print(Navigator.of(context).canPop());
+          },
+          child: Text('Can Pop'),
+        ),
+        ElevatedButton(
+          onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => RouteTwoScreen(),

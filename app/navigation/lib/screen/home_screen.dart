@@ -12,6 +12,12 @@ class HomeScreen extends StatelessWidget {
       children: [
         ElevatedButton(
           onPressed: () {
+            print(Navigator.of(context).canPop());
+          },
+          child: Text('Can Pop'),
+        ),
+        ElevatedButton(
+          onPressed: () {
             Navigator.of(context).pop();
           },
           child: Text('Pop'),
