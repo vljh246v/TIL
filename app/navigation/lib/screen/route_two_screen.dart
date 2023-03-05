@@ -7,9 +7,14 @@ class RouteTwoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final argument = ModalRoute.of(context)!.settings.arguments;
     return MainLayout(
       title: 'Route Two',
       children: [
+        Text(
+          'arguments : $argument',
+          textAlign: TextAlign.center,
+        ),
         ElevatedButton(
           onPressed: () {
             Navigator.of(context).pop();
