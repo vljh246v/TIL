@@ -6,9 +6,8 @@ import javax.persistence.*
 @Table(name = "user_info")
 class UserEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    val id: Long? = null,
+    val id: String,
 
     val name: String,
     val age: Int,

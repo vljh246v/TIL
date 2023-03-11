@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/v1/user")
 class UserCommandController(
-    private val userCommandPort: UserCommandPort
+//    private val userCommandPort: UserCommandPort
 ) {
     @PostMapping
     fun addUser(@RequestBody saveUserDto: SaveUserDto){
-        userCommandPort.addUser(saveUserDto.toDomain())
+//        userCommandPort.addUser(saveUserDto.toDomain())
     }
 }

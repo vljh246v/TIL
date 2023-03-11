@@ -8,6 +8,7 @@ class UserCommandService(
 ) {
     fun addUser(name: String, age: Int, birth: String) {
         userSaveRepository.save(UserEntity(
+            id = "$name-$age",
             name = name,
             age = age,
             birthDay = birth
