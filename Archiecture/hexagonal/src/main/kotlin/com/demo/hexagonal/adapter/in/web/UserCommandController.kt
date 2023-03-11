@@ -1,7 +1,7 @@
-package com.demo.hexagonal.controller
+package com.demo.hexagonal.adapter.`in`.web
 
+import com.demo.hexagonal.application.port.`in`.UserCommandPort
 import com.demo.hexagonal.dto.SaveUserDto
-import com.demo.hexagonal.service.UserCommandService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/v1/user")
 class UserCommandController(
-    private val userCommandService: UserCommandService
+    private val userCommandPort: UserCommandPort
 ) {
     @PostMapping
     fun addUser(@RequestBody saveUserDto: SaveUserDto){
-        userCommandService.addUser(saveUserDto)
+        userCommandPort.addUser(saveUserDto.toDomain())
     }
 }
