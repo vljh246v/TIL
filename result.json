@@ -1,5 +1,5 @@
 {
-    "took": 4,
+    "took": 22,
     "timed_out": false,
     "_shards": {
         "total": 5,
@@ -9,15 +9,18 @@
     },
     "hits": {
         "total": {
-            "value": 21,
-            "relation": "eq"
+            "value": 10000,
+            "relation": "gte"
         },
         "max_score": null,
         "hits": []
     },
     "aggregations": {
-        "total_bytes": {
-            "value": 409
+        "bytes_percentile_ranks": {
+            "values": {
+                "5000.0": 32.353545517283216,
+                "10000.0": 45.0737829998751
+            }
         }
     }
 }
