@@ -1,17 +1,21 @@
 package com.demo.hexagonal.service
 
-import com.demo.hexagonal.adapter.out.persistence.UserEntity
-import com.demo.hexagonal.repository.UserSaveRepository
+import com.demo.hexagonal.application.port.out.UserSavePort
+import com.demo.hexagonal.domain.User
+import org.springframework.stereotype.Service
 
+@Service
 class UserCommandService(
-    private val userSaveRepository: UserSaveRepository
+    private val userSavePort: UserSavePort
 ) {
     fun addUser(name: String, age: Int, birth: String) {
-        userSaveRepository.save(UserEntity(
-            id = "$name-$age",
-            name = name,
-            age = age,
-            birthDay = birth
-        ))
+
+        userSavePort.saveUser(
+            User(
+                name = name,
+                age = age,
+                birthParam = birth
+            )
+        )
     }
 }
