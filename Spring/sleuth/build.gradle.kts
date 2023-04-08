@@ -24,8 +24,9 @@ extra["springCloudVersion"] = "2021.0.6"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+//	implementation("org.springframework.cloud:spring-cloud-starter-zipkin")
 	implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
-	implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
+//	implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
