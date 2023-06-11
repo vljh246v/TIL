@@ -1,6 +1,0 @@
-spring:
-  private:
-    info:
-      database:
-        username: root
-        password: 1234
