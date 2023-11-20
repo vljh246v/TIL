@@ -47,3 +47,18 @@ class Customer(val name: String) {
 data class Point(val x: Int, val y: Int)
 operator fun Point.unaryMinus() = Point(-x, -y)
 
+
+class Node(val name: String) {
+    fun makeChild(childName: String) {
+        create("$name.$childName")
+            .apply { println("Create ${this?.name} in ${this@Node.name}") }
+    }
+
+    fun create(name: String): Node? = Node(name)
+}
+
+
+fun main(args: Array<String>) {
+    val node = Node("parent")
+    node.makeChild("child")
+}
